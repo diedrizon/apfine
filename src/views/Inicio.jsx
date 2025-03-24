@@ -5,7 +5,6 @@ const Inicio = () => {
   return (
     <div className="inicio-container">
       <h1>Inicio</h1>
-      <p>Contenido principal aquí.</p>
     </div>
   );
 };

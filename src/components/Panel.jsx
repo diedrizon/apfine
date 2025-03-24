@@ -1,13 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/Panel.css";
 import {
   BiMoney,
   BiCog,
   BiBarChartAlt2,
-  BiWorld
+  BiWorld,
+  BiChevronDown,
+  BiChevronRight,
+  BiDollar,
+  BiListCheck,
+  BiCube,
+  BiFolder,
+  BiTargetLock,
+  BiBulb,
+  BiClipboard,
+  BiPackage,
+  BiBell,
+  BiUser,
+  BiBook,
+  BiBookOpen
 } from "react-icons/bi";
 
 const Panel = ({ isSidebarOpen, toggleSidebar }) => {
+  const [openModule, setOpenModule] = useState(null);
+
+  const toggleModule = (moduleName) => {
+    setOpenModule(openModule === moduleName ? null : moduleName);
+  };
+
+  const renderSubItem = (icon, label) => (
+    <li className="submenu-item">
+      {icon}
+      <span>{label}</span>
+    </li>
+  );
+
   return (
     <aside className={`sidebar ${isSidebarOpen ? "sidebar-open" : ""}`}>
       <div className="sidebar-header">
@@ -23,26 +50,81 @@ const Panel = ({ isSidebarOpen, toggleSidebar }) => {
         </button>
 
         <ul className="sidebar-menu">
-          <li className="module">
+          {/* Finanzas */}
+          <li className="module" onClick={() => toggleModule("finanzas")}>
             <BiMoney className="module-icon" />
             <span className="module-text">Finanzas</span>
+            {openModule === "finanzas" ? <BiChevronDown /> : <BiChevronRight />}
           </li>
-          <li className="module">
+          {openModule === "finanzas" && (
+            <ul className="submenu">
+              {renderSubItem(<BiDollar />, "Ingresos")}
+              {renderSubItem(<BiListCheck />, "Gastos")}
+              {renderSubItem(<BiCube />, "Gastos fijos")}
+              {renderSubItem(<BiFolder />, "Categorías")}
+              {renderSubItem(<BiTargetLock />, "Metas")}
+              {renderSubItem(<BiBulb />, "Recomendaciones")}
+            </ul>
+          )}
+
+          {/* Producción */}
+          <li className="module" onClick={() => toggleModule("produccion")}>
             <BiCog className="module-icon" />
             <span className="module-text">Producción</span>
+            {openModule === "produccion" ? <BiChevronDown /> : <BiChevronRight />}
           </li>
-          <li className="module">
+          {openModule === "produccion" && (
+            <ul className="submenu">
+              {renderSubItem(<BiBarChartAlt2 />, "Vista general")}
+              {renderSubItem(<BiCube />, "Materias primas")}
+              {renderSubItem(<BiPackage />, "Inventario")}
+              {renderSubItem(<BiClipboard />, "Órdenes de producción")}
+            </ul>
+          )}
+
+          {/* Reportes */}
+          <li className="module" onClick={() => toggleModule("reportes")}>
             <BiBarChartAlt2 className="module-icon" />
             <span className="module-text">Reportes</span>
+            {openModule === "reportes" ? <BiChevronDown /> : <BiChevronRight />}
           </li>
-          <li className="module">
+          {openModule === "reportes" && (
+            <ul className="submenu">
+              {renderSubItem(<BiPackage />, "Dashboard")}
+              {renderSubItem(<BiBarChartAlt2 />, "Datos / Reportes")}
+              {renderSubItem(<BiCube />, "Exportar")}
+              {renderSubItem(<BiBell />, "Alertas")}
+            </ul>
+          )}
+
+          {/* Comunidad y Educación */}
+          <li className="module" onClick={() => toggleModule("comunidad")}>
             <BiWorld className="module-icon" />
             <span className="module-text">Comunidad y Educación</span>
+            {openModule === "comunidad" ? <BiChevronDown /> : <BiChevronRight />}
           </li>
-          <li className="module">
+          {openModule === "comunidad" && (
+            <ul className="submenu">
+              {renderSubItem(<BiUser />, "Comunidad")}
+              {renderSubItem(<BiBook />, "Educación")}
+              {renderSubItem(<BiBookOpen />, "Tutoriales / Quiz")}
+            </ul>
+          )}
+
+          {/* Administración */}
+          <li className="module" onClick={() => toggleModule("admin")}>
             <BiCog className="module-icon" />
             <span className="module-text">Administración</span>
+            {openModule === "admin" ? <BiChevronDown /> : <BiChevronRight />}
           </li>
+          {openModule === "admin" && (
+            <ul className="submenu">
+              {renderSubItem(<BiUser />, "Gestión de usuarios")}
+              {renderSubItem(<BiTargetLock />, "Roles y permisos")}
+              {renderSubItem(<BiBulb />, "Supervisión de IA")}
+              {renderSubItem(<BiCog />, "Monitoreo / Configuración")}
+            </ul>
+          )}
         </ul>
       </div>
 

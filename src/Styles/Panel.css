@@ -4,7 +4,8 @@
   left: -250px;
   width: 250px;
   height: 100%;
-  background: #f8f9fa;
+  background: #101010;
+  color: white;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: left 0.3s ease;
   z-index: 1060;
@@ -21,13 +22,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #333;
 }
 
 .close-sidebar {
   background: none;
   border: none;
   font-size: 18px;
+  color: white;
   cursor: pointer;
 }
 
@@ -39,7 +41,7 @@
 
 .new-chat-btn {
   width: 100%;
-  background-color: #7a39e0;
+  background-color: #228be6;
   color: white;
   padding: 12px;
   border-radius: 8px;
@@ -62,34 +64,57 @@
 .module {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
   padding: 10px;
   font-size: 16px;
-  color: #333;
   border-radius: 6px;
+  cursor: pointer;
   transition: background-color 0.2s ease;
-  cursor: default;
 }
 
 .module:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .module-icon {
-  font-size: 20px;
+  font-size: 18px;
+  margin-right: 8px;
 }
 
 .module-text {
+  flex: 1;
   font-weight: 500;
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  font-size: 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submenu-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-footer {
   padding: 10px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #333;
   text-align: center;
 }
 
 .footer-email {
   font-size: 13px;
-  color: gray;
+  color: #ccc;
 }
