@@ -3,21 +3,19 @@
   top: 0;
   left: -250px;
   width: 250px;
-  height: 100%;
+  height: 100vh;
   background: #101010;
   color: white;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: left 0.3s ease;
-  /* Aumenta el z-index para que el panel quede encima del encabezado */
   z-index: 1300;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
-
 .sidebar-open {
   left: 0;
 }
-
 .sidebar-header {
   display: flex;
   justify-content: space-between;
@@ -25,7 +23,6 @@
   padding: 15px;
   border-bottom: 1px solid #333;
 }
-
 .close-sidebar {
   background: none;
   border: none;
@@ -33,13 +30,10 @@
   color: white;
   cursor: pointer;
 }
-
 .sidebar-body {
   flex: 1;
   padding: 15px;
-  overflow-y: auto;
 }
-
 .new-chat-btn {
   width: 100%;
   background-color: #228be6;
@@ -55,13 +49,11 @@
   gap: 8px;
   margin-bottom: 15px;
 }
-
 .sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
 .module {
   display: flex;
   align-items: center;
@@ -73,27 +65,22 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .module:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
 .module-icon {
   font-size: 18px;
   margin-right: 8px;
 }
-
 .module-text {
   flex: 1;
   font-weight: 500;
 }
-
 .submenu {
   list-style: none;
   padding-left: 20px;
   margin-top: 5px;
 }
-
 .submenu-item {
   display: flex;
   align-items: center;
@@ -104,23 +91,18 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .submenu-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
-
 .sidebar-footer {
   padding: 10px;
   border-top: 1px solid #333;
   text-align: center;
 }
-
 .footer-email {
   font-size: 13px;
   color: #ccc;
 }
-
-/* Overlay para dispositivos móviles */
 .overlay {
   position: fixed;
   top: 0;
@@ -128,6 +110,14 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  /* z-index justo debajo de la sidebar, pero encima de todo lo demás */
   z-index: 1290;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    left: -250px;
+  }
+  .sidebar-open {
+    left: 0;
+    width: 250px;
+  }
 }

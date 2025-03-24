@@ -3,13 +3,18 @@
   flex-direction: column;
   min-height: 100vh;
 }
-
 .main {
-  margin-top: 60px; /* Altura aproximada del header */
+  margin-top: 60px;
   transition: margin-left 0.3s ease;
   margin-left: 0;
 }
-
-.main.sidebar-open {
-  margin-left: 250px;
+@media (min-width: 769px) {
+  .main.sidebar-open {
+    margin-left: 250px;
+  }
+}
+@media (max-width: 768px) {
+  .main.sidebar-open {
+    margin-left: 0;
+  }
 }
