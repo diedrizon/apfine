@@ -1,0 +1,95 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #f8f9fa;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-open {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.close-sidebar {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sidebar-body {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.new-chat-btn {
+  width: 100%;
+  background-color: #7a39e0;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.module {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  font-size: 16px;
+  color: #333;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  cursor: default;
+}
+
+.module:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.module-icon {
+  font-size: 20px;
+}
+
+.module-text {
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+}
+
+.footer-email {
+  font-size: 13px;
+  color: gray;
+}
