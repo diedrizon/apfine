@@ -11,5 +11,5 @@
 }
 
 .main.sidebar-open {
-  margin-left: 250px;
+  margin-left: 270px; /* Se sincroniza con el padding del header */
 }
