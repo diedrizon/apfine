@@ -1,5 +1,17 @@
 .categorias-container {
   padding: 20px;
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
+}
+
+.categorias-container.sidebar-open {
+  margin-left: 270px;
+}
+
+@media (max-width: 768px) {
+  .categorias-container.sidebar-open {
+    margin-left: 0;
+  }
 }
 
 .categorias-header {
@@ -14,7 +26,6 @@
   gap: 20px;
 }
 
-/* Sección de lista de categorías */
 .categorias-list {
   flex: 2;
   display: flex;
@@ -59,14 +70,12 @@
   gap: 5px;
 }
 
-/* Sección derecha (summary) */
 .categorias-summary {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* Grid de colores e íconos en los modales */
 .color-grid {
   display: flex;
   flex-wrap: wrap;

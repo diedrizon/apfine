@@ -1,24 +1,24 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./database/authcontext";
-import Encabezado from "./components/Encabezado";
-import Panel from "./components/Panel";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Login from "./views/Login";
-import Inicio from "./views/Inicio";
-import Categorias from "./views/Categorias";
-import "./App.css";
+import React, { useState } from "react"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { AuthProvider } from "./database/authcontext"
+import Encabezado from "./components/Encabezado"
+import Panel from "./components/Panel"
+import ProtectedRoute from "./components/ProtectedRoute"
+import Login from "./views/Login"
+import Inicio from "./views/Inicio"
+import Categorias from "./views/Categorias"
+import "./App.css"
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [overlayActive, setOverlayActive] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [overlayActive, setOverlayActive] = useState(false)
 
   function toggleSidebar() {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsSidebarOpen(!isSidebarOpen)
   }
 
   function closeSidebar() {
-    setIsSidebarOpen(false);
+    setIsSidebarOpen(false)
   }
 
   return (
@@ -31,7 +31,7 @@ function App() {
             <div
               className="modal-overlay"
               onClick={() => {
-                setOverlayActive(false);
+                setOverlayActive(false)
               }}
               style={{
                 position: "fixed",
@@ -42,7 +42,7 @@ function App() {
                 background: "rgba(0,0,0,0.5)",
                 zIndex: 1350
               }}
-            ></div>
+            />
           )}
           <main className={`main ${isSidebarOpen ? "sidebar-open" : ""}`}>
             <Routes>
@@ -66,7 +66,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
-  );
+  )
 }
 
-export default App;
+export default App
