@@ -3,7 +3,7 @@ import { db } from "../database/firebaseconfig"
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore"
 import { Container, Button, Card } from "react-bootstrap"
 import * as FaIcons from "react-icons/fa"
-import { FaArrowUp, FaTrash, FaEdit } from "react-icons/fa"
+import { FaArrowUp, FaTrash, FaEdit, FaListUl, FaMoneyBillAlt } from "react-icons/fa"
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria"
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria"
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria"
@@ -22,6 +22,8 @@ function Categorias({ closeSidebar, setOverlayActive }) {
   const [categoriaNueva, setCategoriaNueva] = useState({ nombre: "", color: "", icono: "" })
   const [categoriaEditada, setCategoriaEditada] = useState(null)
   const [categoriaAEliminar, setCategoriaAEliminar] = useState(null)
+  const [expandedCategory, setExpandedCategory] = useState(null)
+
   const categoriasCollection = collection(db, "categorias")
 
   useEffect(() => {
@@ -35,55 +37,37 @@ function Categorias({ closeSidebar, setOverlayActive }) {
   }
 
   function handleOpenAddModal() {
-    if (closeSidebar) {
-      closeSidebar()
-    }
-    if (setOverlayActive) {
-      setOverlayActive(true)
-    }
+    if (closeSidebar) closeSidebar()
+    if (setOverlayActive) setOverlayActive(true)
     setShowModalAdd(true)
   }
 
   function handleCloseAddModal() {
-    if (setOverlayActive) {
-      setOverlayActive(false)
-    }
+    if (setOverlayActive) setOverlayActive(false)
     setShowModalAdd(false)
   }
 
   function handleOpenEditModal(categoria) {
-    if (closeSidebar) {
-      closeSidebar()
-    }
-    if (setOverlayActive) {
-      setOverlayActive(true)
-    }
+    if (closeSidebar) closeSidebar()
+    if (setOverlayActive) setOverlayActive(true)
     setCategoriaEditada({ ...categoria })
     setShowModalEdit(true)
   }
 
   function handleCloseEditModal() {
-    if (setOverlayActive) {
-      setOverlayActive(false)
-    }
+    if (setOverlayActive) setOverlayActive(false)
     setShowModalEdit(false)
   }
 
   function handleOpenDeleteModal(categoria) {
-    if (closeSidebar) {
-      closeSidebar()
-    }
-    if (setOverlayActive) {
-      setOverlayActive(true)
-    }
+    if (closeSidebar) closeSidebar()
+    if (setOverlayActive) setOverlayActive(true)
     setCategoriaAEliminar(categoria)
     setShowModalDelete(true)
   }
 
   function handleCloseDeleteModal() {
-    if (setOverlayActive) {
-      setOverlayActive(false)
-    }
+    if (setOverlayActive) setOverlayActive(false)
     setShowModalDelete(false)
   }
 
@@ -131,6 +115,11 @@ function Categorias({ closeSidebar, setOverlayActive }) {
     fetchCategorias()
   }
 
+  function toggleExpandedCategory(catId) {
+    setExpandedCategory(expandedCategory === catId ? null : catId)
+  }
+
+  // Cálculos de resumen
   const totalCategorias = categorias.length
   const mayorGasto = categorias[0] ? categorias[0].nombre : "N/A"
 
@@ -142,36 +131,87 @@ function Categorias({ closeSidebar, setOverlayActive }) {
           Agregar
         </Button>
       </div>
+
       <div className="categorias-content">
+        {/* Lista de Categorías */}
         <div className="categorias-list">
-          {categorias.map(cat => (
-            <div className="categoria-item" key={cat.id} style={{ borderColor: cat.color }}>
-              <div className="categoria-icon" style={{ backgroundColor: cat.color }}>
-                {getIconComponent(cat.icono)}
+          {categorias.map(cat => {
+            const isExpanded = expandedCategory === cat.id
+            return (
+              <div
+                className={`categoria-item ${isExpanded ? "expanded" : ""}`}
+                key={cat.id}
+                style={{ borderColor: cat.color }}
+                onClick={() => toggleExpandedCategory(cat.id)}
+              >
+                <div className="categoria-top">
+                  <div
+                    className="categoria-icon"
+                    style={{ backgroundColor: cat.color }}
+                  >
+                    {getIconComponent(cat.icono)}
+                  </div>
+                  <span className="categoria-nombre">{cat.nombre}</span>
+                </div>
+
+                {isExpanded && (
+                  <div className="categoria-actions-expanded">
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleOpenDeleteModal(cat)
+                      }}
+                    >
+                      <FaTrash />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleOpenEditModal(cat)
+                      }}
+                    >
+                      <FaEdit />
+                    </Button>
+                  </div>
+                )}
               </div>
-              <span className="categoria-nombre">{cat.nombre}</span>
-              <div className="categoria-actions">
-                <Button variant="danger" size="sm" onClick={() => handleOpenDeleteModal(cat)}>
-                  <FaTrash />
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => handleOpenEditModal(cat)}>
-                  <FaEdit />
-                </Button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
+
+        {/* Tarjetas de Resumen */}
         <div className="categorias-summary">
-          <Card>
+          {/* Tarjeta: Total Categorías */}
+          <Card className="summary-card">
             <Card.Body>
-              <Card.Title>Total Categorías</Card.Title>
-              <Card.Text style={{ fontSize: "2rem" }}>{totalCategorias}</Card.Text>
+              {/* Título (parte superior) */}
+              <Card.Title className="summary-title">
+                <span>Total Categorías</span>
+                <FaListUl className="summary-icon" />
+              </Card.Title>
+
+              {/* Valor (parte inferior, centrado) */}
+              <Card.Text className="summary-value">
+                {totalCategorias}
+              </Card.Text>
             </Card.Body>
           </Card>
-          <Card className="mt-3">
+
+          {/* Tarjeta: Mayor Gasto */}
+          <Card className="summary-card">
             <Card.Body>
-              <Card.Title>Mayor Gasto</Card.Title>
-              <Card.Text>
+              {/* Título (parte superior) */}
+              <Card.Title className="summary-title">
+                <span>Mayor Gasto</span>
+                <FaMoneyBillAlt className="summary-icon" />
+              </Card.Title>
+
+              {/* Valor (parte inferior, centrado) */}
+              <Card.Text className="summary-value">
                 <FaArrowUp style={{ marginRight: 5 }} />
                 {mayorGasto}
               </Card.Text>
@@ -179,6 +219,8 @@ function Categorias({ closeSidebar, setOverlayActive }) {
           </Card>
         </div>
       </div>
+
+      {/* Modales */}
       <ModalRegistroCategoria
         show={showModalAdd}
         handleClose={handleCloseAddModal}

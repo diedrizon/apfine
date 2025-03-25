@@ -1,55 +1,64 @@
 import React from "react"
 import { Modal, Button, Form } from "react-bootstrap"
-import {
-  FaHome,
-  FaCar,
-  FaShoppingCart,
-  FaMusic,
-  FaUtensils,
-  FaHeart,
-  FaGift,
-  FaGamepad,
-  FaCoffee,
-  FaBus,
-  FaBook,
-  FaLaptop,
-  FaDog,
-  FaFish,
-  FaRunning,
-  FaTv,
-  FaLightbulb,
-  FaPlane,
-  FaPhone,
-  FaTools
-} from "react-icons/fa"
+import * as FaIcons from "react-icons/fa"
 
 const colorOptions = [
   "#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#2196F3","#03A9F4","#00BCD4",
   "#009688","#4CAF50","#8BC34A","#CDDC39","#FFC107","#FF9800","#FF5722","#795548",
-  "#607D8B"
+  "#607D8B","#9E9E9E","#FFCDD2","#C8E6C9"
 ]
 
 const iconOptions = [
-  { name: "FaHome", component: <FaHome /> },
-  { name: "FaCar", component: <FaCar /> },
-  { name: "FaShoppingCart", component: <FaShoppingCart /> },
-  { name: "FaMusic", component: <FaMusic /> },
-  { name: "FaUtensils", component: <FaUtensils /> },
-  { name: "FaHeart", component: <FaHeart /> },
-  { name: "FaGift", component: <FaGift /> },
-  { name: "FaGamepad", component: <FaGamepad /> },
-  { name: "FaCoffee", component: <FaCoffee /> },
-  { name: "FaBus", component: <FaBus /> },
-  { name: "FaBook", component: <FaBook /> },
-  { name: "FaLaptop", component: <FaLaptop /> },
-  { name: "FaDog", component: <FaDog /> },
-  { name: "FaFish", component: <FaFish /> },
-  { name: "FaRunning", component: <FaRunning /> },
-  { name: "FaTv", component: <FaTv /> },
-  { name: "FaLightbulb", component: <FaLightbulb /> },
-  { name: "FaPlane", component: <FaPlane /> },
-  { name: "FaPhone", component: <FaPhone /> },
-  { name: "FaTools", component: <FaTools /> }
+  { name: "FaHome", component: <FaIcons.FaHome /> },
+  { name: "FaCar", component: <FaIcons.FaCar /> },
+  { name: "FaShoppingCart", component: <FaIcons.FaShoppingCart /> },
+  { name: "FaMusic", component: <FaIcons.FaMusic /> },
+  { name: "FaUtensils", component: <FaIcons.FaUtensils /> },
+  { name: "FaHeart", component: <FaIcons.FaHeart /> },
+  { name: "FaGift", component: <FaIcons.FaGift /> },
+  { name: "FaGamepad", component: <FaIcons.FaGamepad /> },
+  { name: "FaCoffee", component: <FaIcons.FaCoffee /> },
+  { name: "FaBus", component: <FaIcons.FaBus /> },
+  { name: "FaBook", component: <FaIcons.FaBook /> },
+  { name: "FaLaptop", component: <FaIcons.FaLaptop /> },
+  { name: "FaDog", component: <FaIcons.FaDog /> },
+  { name: "FaFish", component: <FaIcons.FaFish /> },
+  { name: "FaRunning", component: <FaIcons.FaRunning /> },
+  { name: "FaTv", component: <FaIcons.FaTv /> },
+  { name: "FaLightbulb", component: <FaIcons.FaLightbulb /> },
+  { name: "FaPlane", component: <FaIcons.FaPlane /> },
+  { name: "FaPhone", component: <FaIcons.FaPhone /> },
+  { name: "FaTools", component: <FaIcons.FaTools /> },
+  { name: "FaBicycle", component: <FaIcons.FaBicycle /> },
+  { name: "FaAppleAlt", component: <FaIcons.FaAppleAlt /> },
+  { name: "FaCamera", component: <FaIcons.FaCamera /> },
+  { name: "FaCloud", component: <FaIcons.FaCloud /> },
+  { name: "FaCocktail", component: <FaIcons.FaCocktail /> },
+  { name: "FaDollarSign", component: <FaIcons.FaDollarSign /> },
+  { name: "FaFeather", component: <FaIcons.FaFeather /> },
+  { name: "FaFutbol", component: <FaIcons.FaFutbol /> },
+  { name: "FaHamburger", component: <FaIcons.FaHamburger /> },
+  { name: "FaIceCream", component: <FaIcons.FaIceCream /> },
+  { name: "FaLeaf", component: <FaIcons.FaLeaf /> },
+  { name: "FaLock", component: <FaIcons.FaLock /> },
+  { name: "FaMagic", component: <FaIcons.FaMagic /> },
+  { name: "FaMoneyBillAlt", component: <FaIcons.FaMoneyBillAlt /> },
+  { name: "FaMotorcycle", component: <FaIcons.FaMotorcycle /> },
+  { name: "FaNewspaper", component: <FaIcons.FaNewspaper /> },
+  { name: "FaPaintBrush", component: <FaIcons.FaPaintBrush /> },
+  { name: "FaPaperPlane", component: <FaIcons.FaPaperPlane /> },
+  { name: "FaPepperHot", component: <FaIcons.FaPepperHot /> },
+  { name: "FaPiggyBank", component: <FaIcons.FaPiggyBank /> },
+  { name: "FaPizzaSlice", component: <FaIcons.FaPizzaSlice /> },
+  { name: "FaSeedling", component: <FaIcons.FaSeedling /> },
+  { name: "FaShoppingBag", component: <FaIcons.FaShoppingBag /> },
+  { name: "FaShoePrints", component: <FaIcons.FaShoePrints /> },
+  { name: "FaSnowflake", component: <FaIcons.FaSnowflake /> },
+  { name: "FaSpa", component: <FaIcons.FaSpa /> },
+  { name: "FaStar", component: <FaIcons.FaStar /> },
+  { name: "FaSubway", component: <FaIcons.FaSubway /> },
+  { name: "FaSun", component: <FaIcons.FaSun /> },
+  { name: "FaWind", component: <FaIcons.FaWind /> }
 ]
 
 function ModalRegistroCategoria({
@@ -63,24 +72,22 @@ function ModalRegistroCategoria({
   function handleSelectColor(color) {
     setCategoriaNueva(prev => ({ ...prev, color }))
   }
-
   function handleSelectIcon(iconName) {
     setCategoriaNueva(prev => ({ ...prev, icono: iconName }))
   }
-
   return (
     <Modal
       show={show}
       onHide={handleClose}
       backdrop="static"
       keyboard={false}
-      style={{ marginTop: "70px", zIndex: 1400 }}
+      centered
+      dialogClassName="custom-modal"
     >
       <Modal.Header closeButton>
         <Modal.Title>Agregar Categoría</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Complete los detalles para crear una nueva categoría</p>
         <Form.Group className="mb-3">
           <Form.Label>Nombre</Form.Label>
           <Form.Control

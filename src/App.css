@@ -18,3 +18,26 @@
     margin-left: 0;
   }
 }
+
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+
+/* App.css o index.css */
+.custom-modal .modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal.show {
+  z-index: 1200 !important;
+}
+
+.modal-backdrop.show {
+  z-index: 1199 !important;
+}
+

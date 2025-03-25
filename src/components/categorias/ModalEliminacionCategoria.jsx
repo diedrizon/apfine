@@ -1,18 +1,19 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import React from "react"
+import { Modal, Button } from "react-bootstrap"
 
-const ModalEliminacionCategoria = ({
+function ModalEliminacionCategoria({
   show,
   handleClose,
   handleDeleteCategoria
-}) => {
+}) {
   return (
     <Modal
       show={show}
       onHide={handleClose}
       backdrop="static"
       keyboard={false}
-      style={{ marginTop: "70px", zIndex: 1400 }}
+      centered
+      dialogClassName="custom-modal"
     >
       <Modal.Header closeButton>
         <Modal.Title>Eliminar Categoría</Modal.Title>
@@ -29,7 +30,7 @@ const ModalEliminacionCategoria = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
 
-export default ModalEliminacionCategoria;
+export default ModalEliminacionCategoria

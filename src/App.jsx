@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./database/authcontext"
 import Encabezado from "./components/Encabezado"
@@ -12,6 +12,13 @@ import "./App.css"
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [overlayActive, setOverlayActive] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   function toggleSidebar() {
     setIsSidebarOpen(!isSidebarOpen)
@@ -30,9 +37,7 @@ function App() {
           {overlayActive && (
             <div
               className="modal-overlay"
-              onClick={() => {
-                setOverlayActive(false)
-              }}
+              onClick={() => setOverlayActive(false)}
               style={{
                 position: "fixed",
                 top: 0,
@@ -42,23 +47,16 @@ function App() {
                 background: "rgba(0,0,0,0.5)",
                 zIndex: 1350
               }}
-            />
+            ></div>
           )}
-          <main className={`main ${isSidebarOpen ? "sidebar-open" : ""}`}>
+          <main className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""}`}>
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
               <Route
                 path="/categorias"
                 element={
-                  <ProtectedRoute
-                    element={
-                      <Categorias
-                        closeSidebar={closeSidebar}
-                        setOverlayActive={setOverlayActive}
-                      />
-                    }
-                  />
+                  <ProtectedRoute element={<Categorias closeSidebar={closeSidebar} setOverlayActive={setOverlayActive} />} />
                 }
               />
             </Routes>
