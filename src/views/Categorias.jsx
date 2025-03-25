@@ -28,7 +28,7 @@ function Categorias({ closeSidebar, setOverlayActive }) {
 
   useEffect(() => {
     fetchCategorias()
-  }, [])
+  },)
 
   async function fetchCategorias() {
     const data = await getDocs(categoriasCollection)
