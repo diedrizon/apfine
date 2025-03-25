@@ -20,33 +20,15 @@ const TablaCategorias = ({ categorias, openEditModal, openDeleteModal }) => {
             <td>{categoria.nombre}</td>
             <td>{categoria.descripcion}</td>
             <td>
-              <div
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  backgroundColor: categoria.color,
-                  borderRadius: "50%",
-                  display: "inline-block",
-                  marginRight: "5px"
-                }}
-              />
+              <div style={{ width: "20px", height: "20px", backgroundColor: categoria.color, borderRadius: "50%", display: "inline-block", marginRight: "5px" }} />
               {categoria.color}
             </td>
             <td>{categoria.icono}</td>
             <td>
-              <Button
-                variant="outline-warning"
-                size="sm"
-                className="me-2"
-                onClick={() => openEditModal(categoria)}
-              >
+              <Button variant="outline-warning" size="sm" className="me-2" onClick={() => openEditModal(categoria)}>
                 <i className="bi bi-pencil"></i>
               </Button>
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => openDeleteModal(categoria)}
-              >
+              <Button variant="outline-danger" size="sm" onClick={() => openDeleteModal(categoria)}>
                 <i className="bi bi-trash"></i>
               </Button>
             </td>

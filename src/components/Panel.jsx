@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../database/authcontext";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../database/authcontext"
 import {
   BiMoney,
   BiCog,
@@ -20,36 +20,36 @@ import {
   BiUser,
   BiBook,
   BiBookOpen
-} from "react-icons/bi";
-import "../styles/Panel.css";
+} from "react-icons/bi"
+import "../styles/Panel.css"
 
 function Panel({ isSidebarOpen, toggleSidebar }) {
-  const [openModule, setOpenModule] = useState(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const { isLoggedIn } = useAuth();
-  const navigate = useNavigate();
+  const [openModule, setOpenModule] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const { isLoggedIn } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     function handleResize() {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 768)
     }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   function toggleModuleName(moduleName) {
-    setOpenModule(openModule === moduleName ? null : moduleName);
+    setOpenModule(openModule === moduleName ? null : moduleName)
   }
 
   function handleNavigate(path) {
-    navigate(path);
+    navigate(path)
     if (isMobile) {
-      toggleSidebar();
+      toggleSidebar()
     }
   }
 
   if (!isLoggedIn) {
-    return null;
+    return null
   }
 
   function renderSubItem(icon, label, onClick) {
@@ -58,7 +58,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
         {icon}
         <span>{label}</span>
       </li>
-    );
+    )
   }
 
   return (
@@ -149,7 +149,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
         </div>
       </aside>
     </>
-  );
+  )
 }
 
-export default Panel;
+export default Panel

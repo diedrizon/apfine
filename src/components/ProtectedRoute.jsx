@@ -4,7 +4,6 @@ import { useAuth } from "../database/authcontext";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useAuth();
-
   return user ? element : <Navigate to="/" replace />;
 };
 

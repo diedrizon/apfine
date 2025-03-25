@@ -7,7 +7,6 @@ const colorOptions = [
   "#009688","#4CAF50","#8BC34A","#CDDC39","#FFC107","#FF9800","#FF5722","#795548",
   "#607D8B","#9E9E9E","#FFCDD2","#C8E6C9"
 ]
-
 const iconOptions = [
   { name: "FaHome", component: <FaIcons.FaHome /> },
   { name: "FaCar", component: <FaIcons.FaCar /> },
@@ -76,14 +75,7 @@ function ModalRegistroCategoria({
     setCategoriaNueva(prev => ({ ...prev, icono: iconName }))
   }
   return (
-    <Modal
-      show={show}
-      onHide={handleClose}
-      backdrop="static"
-      keyboard={false}
-      centered
-      dialogClassName="custom-modal"
-    >
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false} centered dialogClassName="custom-modal">
       <Modal.Header closeButton>
         <Modal.Title>Agregar Categoría</Modal.Title>
       </Modal.Header>
@@ -101,34 +93,21 @@ function ModalRegistroCategoria({
         <Form.Label>Color</Form.Label>
         <div className="color-grid">
           {colorOptions.map(col => (
-            <div
-              key={col}
-              className={`color-circle ${categoriaNueva.color === col ? "selected" : ""}`}
-              style={{ backgroundColor: col }}
-              onClick={() => handleSelectColor(col)}
-            />
+            <div key={col} className={`color-circle ${categoriaNueva.color === col ? "selected" : ""}`} style={{ backgroundColor: col }} onClick={() => handleSelectColor(col)} />
           ))}
         </div>
         <Form.Label className="mt-3">Ícono</Form.Label>
         <div className="icon-grid">
           {iconOptions.map(icon => (
-            <div
-              key={icon.name}
-              className={`icon-item ${categoriaNueva.icono === icon.name ? "selected" : ""}`}
-              onClick={() => handleSelectIcon(icon.name)}
-            >
+            <div key={icon.name} className={`icon-item ${categoriaNueva.icono === icon.name ? "selected" : ""}`} onClick={() => handleSelectIcon(icon.name)}>
               {icon.component}
             </div>
           ))}
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button variant="primary" onClick={handleAddCategoria}>
-          Crear categoría
-        </Button>
+        <Button variant="secondary" onClick={handleClose}>Cancelar</Button>
+        <Button variant="primary" onClick={handleAddCategoria}>Crear categoría</Button>
       </Modal.Footer>
     </Modal>
   )

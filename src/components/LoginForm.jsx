@@ -21,7 +21,6 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
                   required
                 />
               </Form.Group>
-
               <Form.Group className="mb-3" controlId="contraseñaUsuario">
                 <Form.Label>Contraseña</Form.Label>
                 <Form.Control
@@ -32,7 +31,6 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
                   required
                 />
               </Form.Group>
-
               <Button variant="primary" type="submit" className="w-100">
                 Iniciar Sesión
               </Button>

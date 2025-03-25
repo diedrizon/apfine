@@ -4,8 +4,6 @@
   left: -250px;
   width: 250px;
   height: 100vh;
-  background: #101010;
-  color: white;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: left 0.3s ease;
   z-index: 1300;
@@ -13,11 +11,9 @@
   flex-direction: column;
   overflow-y: auto;
 }
-
 .sidebar-open {
   left: 0;
 }
-
 .sidebar-header {
   display: flex;
   justify-content: space-between;
@@ -25,24 +21,19 @@
   padding: 15px;
   border-bottom: 1px solid #333;
 }
-
 .close-sidebar {
   background: none;
   border: none;
   font-size: 18px;
-  color: white;
   cursor: pointer;
+  color: inherit;
 }
-
 .sidebar-body {
   flex: 1;
   padding: 15px;
 }
-
 .new-chat-btn {
   width: 100%;
-  background-color: #228be6;
-  color: white;
   padding: 12px;
   border-radius: 8px;
   border: none;
@@ -54,13 +45,11 @@
   gap: 8px;
   margin-bottom: 15px;
 }
-
 .sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
 .module {
   display: flex;
   align-items: center;
@@ -72,27 +61,23 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .module:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
 }
-
 .module-icon {
   font-size: 18px;
   margin-right: 8px;
+  color: inherit;
 }
-
 .module-text {
   flex: 1;
   font-weight: 500;
 }
-
 .submenu {
   list-style: none;
   padding-left: 20px;
   margin-top: 5px;
 }
-
 .submenu-item {
   display: flex;
   align-items: center;
@@ -103,22 +88,17 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .submenu-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
-
 .sidebar-footer {
   padding: 10px;
   border-top: 1px solid #333;
   text-align: center;
 }
-
 .footer-email {
   font-size: 13px;
-  color: #ccc;
 }
-
 .overlay {
   position: fixed;
   top: 0;
@@ -128,13 +108,21 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: 1290;
 }
-
-@media (max-width: 768px) {
-  .sidebar {
-    left: -250px;
-  }
-  .sidebar-open {
-    left: 0;
-    width: 250px;
-  }
+body.light-mode .sidebar {
+  background: #ffffff;
+  color: #000000;
+  border-right: 1px solid #ccc;
+}
+body.dark-mode .sidebar {
+  background: #000000;
+  color: #ffffff;
+  border-right: 1px solid #444;
+}
+body.light-mode .module,
+body.light-mode .submenu-item {
+  color: #000;
+}
+body.dark-mode .module,
+body.dark-mode .submenu-item {
+  color: #fff;
 }

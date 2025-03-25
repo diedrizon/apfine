@@ -13,12 +13,23 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [overlayActive, setOverlayActive] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768)
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode")
+      document.body.classList.remove("light-mode")
+    } else {
+      document.body.classList.add("light-mode")
+      document.body.classList.remove("dark-mode")
+    }
+  }, [isDarkMode])
 
   function toggleSidebar() {
     setIsSidebarOpen(!isSidebarOpen)
@@ -28,11 +39,20 @@ function App() {
     setIsSidebarOpen(false)
   }
 
+  function toggleTheme() {
+    setIsDarkMode(!isDarkMode)
+  }
+
   return (
     <AuthProvider>
       <Router>
         <div className="App">
-          <Encabezado isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+          <Encabezado
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+            isDarkMode={isDarkMode}
+            toggleTheme={toggleTheme}
+          />
           <Panel isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
           {overlayActive && (
             <div
@@ -47,7 +67,7 @@ function App() {
                 background: "rgba(0,0,0,0.5)",
                 zIndex: 1350
               }}
-            ></div>
+            />
           )}
           <main className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""}`}>
             <Routes>
@@ -56,7 +76,9 @@ function App() {
               <Route
                 path="/categorias"
                 element={
-                  <ProtectedRoute element={<Categorias closeSidebar={closeSidebar} setOverlayActive={setOverlayActive} />} />
+                  <ProtectedRoute
+                    element={<Categorias closeSidebar={closeSidebar} setOverlayActive={setOverlayActive} />}
+                  />
                 }
               />
             </Routes>
