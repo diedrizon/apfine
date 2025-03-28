@@ -24,6 +24,28 @@
   border-bottom: 1px solid #ccc;
 }
 
+.sidebar-header h2 {
+  margin: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 7em;
+  width: auto;
+  vertical-align: middle;
+  margin-top: 0.5em; /* Ajusta este valor según convenga */
+}
+
+.version {
+  font-size: 0.9rem;
+  margin-left: 10px;
+  margin-top: 1em; 
+}
+
 .close-sidebar {
   background: none;
   border: none;

@@ -66,7 +66,10 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
       {isMobile && isSidebarOpen && <div className="overlay" onClick={toggleSidebar}></div>}
       <aside className={`sidebar ${isSidebarOpen ? "sidebar-open" : ""}`}>
         <div className="sidebar-header">
-          <h2>APFINE</h2>
+          <div className="header-left">
+            <img src="/LogoImg.png" alt="APFINE Icon" className="logo" />
+            <span className="version">v1.0</span>
+          </div>
           <button className="close-sidebar" onClick={toggleSidebar}>
             X
           </button>
