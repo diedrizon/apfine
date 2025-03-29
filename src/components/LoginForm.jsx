@@ -16,7 +16,7 @@ const LoginForm = ({
     <Card className="login-card">
       <Card.Body>
         <div className="login-logo text-center mb-4">
-          <img src="/public/LogoImg.png" alt="APFINE Logo" />
+        <img src="/LogoImg.png" alt="APFINE Logo" />
         </div>
 
         {error && <Alert variant="danger">{error}</Alert>}
