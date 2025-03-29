@@ -1,5 +1,6 @@
 import React from "react";
-import { Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
+import { Form, Button, Card, Alert } from "react-bootstrap";
+import { FcGoogle } from "react-icons/fc";
 import "../styles/login.css";
 
 const LoginForm = ({
@@ -12,56 +13,51 @@ const LoginForm = ({
   handleGoogleLogin,
 }) => {
   return (
-    <Row className="w-100 justify-content-center">
-      <Col md={6} lg={5} xl={4}>
-        <Card className="p-4 shadow-lg login-card">
-          <Card.Body>
-            <h3 className="text-center mb-4">Iniciar Sesión</h3>
+    <Card className="login-card">
+      <Card.Body>
+        <div className="login-logo text-center mb-4">
+          <img src="/public/LogoImg.png" alt="APFINE Logo" />
+        </div>
 
-            {error && <Alert variant="danger">{error}</Alert>}
+        {error && <Alert variant="danger">{error}</Alert>}
 
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" controlId="emailUsuario">
-                <Form.Label>Correo Electrónico</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Ingresa tu correo"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </Form.Group>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="emailUsuario">
+            <Form.Label>Correo Electrónico</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Ingresa tu correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
 
-              <Form.Group className="mb-3" controlId="contraseñaUsuario">
-                <Form.Label>Contraseña</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Ingresa tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </Form.Group>
+          <Form.Group className="mb-3" controlId="contraseñaUsuario">
+            <Form.Label>Contraseña</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
 
-              <Button variant="primary" type="submit" className="w-100 mb-3">
-                Iniciar Sesión
-              </Button>
-            </Form>
+          <Button variant="primary" type="submit" className="mb-3 login-btn">
+            Iniciar Sesión
+          </Button>
+        </Form>
 
-            <div className="text-center">
-              <p>O inicia sesión con</p>
-              <Button
-                variant="outline-danger"
-                className="mx-1"
-                onClick={handleGoogleLogin}
-              >
-                Google
-              </Button>
-            </div>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
+        <div className="text-center">
+          <p>O inicia sesión con</p>
+          <Button className="google-btn" onClick={handleGoogleLogin}>
+            <FcGoogle size={22} />
+            Iniciar con Google
+          </Button>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 

@@ -1,50 +1,126 @@
-/* login.css */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f7fa;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
 }
 
 .login-page {
-  width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background-color: #f5f7fa;
+  align-items: flex-start;
+  min-height: 100dvh;
+  padding-top:20px;
 }
 
 .login-card {
+  font-family: 'Orbitron', sans-serif;
+  max-width: 320px;
   width: 100%;
-  max-width: 400px;
+  background-color: rgba(30, 30, 30, 0.9);
+  border: 2px solid #0ff;
+  border-radius: 16px;
+  padding: 1rem 1.2rem 1.2rem;
+  box-shadow: 0 0 20px #0ff, 0 0 30px #0ff4;
+  animation: float 6s ease-in-out infinite;
+  color: #fff;
+}
+
+.login-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.login-logo img {
+  height: 5.5rem;
+  object-fit: contain;
+  margin: 0;
+  display: block;
+}
+
+.login-card form {
+  margin-top: 0.3rem;
+}
+
+.login-card .form-label {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-bottom: 3px;
+}
+
+.login-card .form-control {
+  background-color: #121212;
+  border: 1px solid #0ff4;
   border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  color: #0ff;
+  margin-bottom: 0.6rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.login-card .form-control:focus {
+  border: 1px solid #0ff;
+  box-shadow: 0 0 8px #0ff;
+}
+
+.login-btn {
+  background: linear-gradient(to right, #0ff, #00e0ff);
   border: none;
-  padding: 1.5rem;
-  background-color: #fff;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  font-weight: bold;
+  border-radius: 8px;
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 0.9rem;
+  color: #000;
+  transition: 0.3s;
+  white-space: nowrap;
+  margin-bottom: 0.6rem;
 }
 
-.login-card h3 {
-  text-align: center;
-  margin-bottom: 1rem;
+.login-btn:hover {
+  background: linear-gradient(to right, #00e0ff, #0ff);
+  transform: translateY(-1px);
 }
 
-.login-card .mb-3 {
-  margin-bottom: 1rem !important;
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ff4e4e;
+  background: transparent;
+  color: #ff4e4e;
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 100%;
+  white-space: nowrap;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.google-btn:hover {
+  background-color: #ff4e4e;
+  color: #000;
 }
 
 .text-center p {
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: #555;
+  color: #aaa;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
 }
 
-.mx-1 {
-  margin: 0 5px;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }

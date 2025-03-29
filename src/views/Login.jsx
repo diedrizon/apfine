@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container } from "react-bootstrap";
 import LoginForm from "../components/LoginForm";
 import { appfirebase } from "../database/firebaseconfig";
 import {
@@ -31,12 +30,10 @@ const Login = () => {
     getRedirectResult(auth)
       .then((result) => {
         if (result?.user) {
-          console.log("Google login exitoso:", result.user);
           navigate("/inicio");
         }
       })
-      .catch((error) => {
-        console.error("Error en login con redirect:", error);
+      .catch(() => {
         setError("Error al iniciar sesión con Google.");
       });
   }, [auth, navigate]);
@@ -44,14 +41,12 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log("Usuario autenticado:", userCredential.user);
+      .then(() => {
         localStorage.setItem("adminEmail", email);
         localStorage.setItem("adminPassword", password);
         navigate("/inicio");
       })
-      .catch((error) => {
-        console.error("Error en login con email:", error);
+      .catch(() => {
         setError("Credenciales inválidas.");
       });
   };
@@ -59,20 +54,13 @@ const Login = () => {
   const handleGoogleLogin = () => {
     const provider = new GoogleAuthProvider();
     if (isMobile || !isLocal) {
-      signInWithRedirect(auth, provider).catch((error) => {
-        console.error("Google redirect error:", error);
-        setError("No se pudo iniciar sesión con Google.");
-      });
+      signInWithRedirect(auth, provider).catch(() =>
+        setError("No se pudo iniciar sesión con Google.")
+      );
     } else {
       signInWithPopup(auth, provider)
-        .then((result) => {
-          console.log("Login Google exitoso:", result.user);
-          navigate("/inicio");
-        })
-        .catch((error) => {
-          console.error("Google popup error:", error);
-          setError("No se pudo iniciar sesión con Google.");
-        });
+        .then(() => navigate("/inicio"))
+        .catch(() => setError("No se pudo iniciar sesión con Google."));
     }
   };
 
@@ -83,7 +71,7 @@ const Login = () => {
   }, [user, navigate]);
 
   return (
-    <Container className="d-flex vh-100 justify-content-center align-items-center">
+    <div className="login-page">
       <LoginForm
         email={email}
         password={password}
@@ -93,7 +81,7 @@ const Login = () => {
         handleSubmit={handleSubmit}
         handleGoogleLogin={handleGoogleLogin}
       />
-    </Container>
+    </div>
   );
 };
 
