@@ -24,8 +24,9 @@ const Login = () => {
   const auth = getAuth(appfirebase);
 
   const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-  const isLocal = window.location.hostname === "localhost";
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
+  // Recupera resultado del redirect (importante en producción y móvil)
   useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
@@ -51,19 +52,24 @@ const Login = () => {
       });
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
-    if (isMobile || !isLocal) {
-      signInWithRedirect(auth, provider).catch(() =>
-        setError("No se pudo iniciar sesión con Google.")
-      );
-    } else {
-      signInWithPopup(auth, provider)
-        .then(() => navigate("/inicio"))
-        .catch(() => setError("No se pudo iniciar sesión con Google."));
+    try {
+      if (isMobile || !isLocal) {
+        await signInWithRedirect(auth, provider);
+      } else {
+        const result = await signInWithPopup(auth, provider);
+        if (result?.user) {
+          navigate("/inicio");
+        }
+      }
+    } catch (error) {
+      console.error("Error Google:", error.code, error.message);
+      setError("No se pudo iniciar sesión con Google.");
     }
   };
 
+  // Redirige si ya está logueado
   useEffect(() => {
     if (user) {
       navigate("/inicio");
