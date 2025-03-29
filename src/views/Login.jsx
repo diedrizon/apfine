@@ -5,13 +5,10 @@ import { appfirebase } from "../database/firebaseconfig";
 import {
   getAuth,
   signInWithEmailAndPassword,
-  signInWithRedirect,
   signInWithPopup,
-  getRedirectResult,
   GoogleAuthProvider,
 } from "firebase/auth";
 import { useAuth } from "../database/authcontext";
-
 import "../styles/login.css";
 
 const Login = () => {
@@ -23,53 +20,32 @@ const Login = () => {
   const navigate = useNavigate();
   const auth = getAuth(appfirebase);
 
-  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-
-  // Recupera resultado del redirect (importante en producción y móvil)
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          navigate("/inicio");
-        }
-      })
-      .catch(() => {
-        setError("Error al iniciar sesión con Google.");
-      });
-  }, [auth, navigate]);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        localStorage.setItem("adminEmail", email);
-        localStorage.setItem("adminPassword", password);
-        navigate("/inicio");
-      })
-      .catch(() => {
-        setError("Credenciales inválidas.");
-      });
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem("adminEmail", email);
+      localStorage.setItem("adminPassword", password);
+      navigate("/inicio");
+    } catch {
+      setError("Credenciales inválidas.");
+    }
+    
   };
 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      if (isMobile || !isLocal) {
-        await signInWithRedirect(auth, provider);
-      } else {
-        const result = await signInWithPopup(auth, provider);
-        if (result?.user) {
-          navigate("/inicio");
-        }
+      const result = await signInWithPopup(auth, provider);
+      if (result.user) {
+        navigate("/inicio");
       }
-    } catch (error) {
-      console.error("Error Google:", error.code, error.message);
+    } catch (err) {
+      console.error("Error con Google:", err.message);
       setError("No se pudo iniciar sesión con Google.");
     }
   };
 
-  // Redirige si ya está logueado
   useEffect(() => {
     if (user) {
       navigate("/inicio");
