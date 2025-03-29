@@ -53,13 +53,25 @@ const LoginForm = ({
             <div className="text-center">
               <p>O inicia sesión con</p>
               <div className="d-flex justify-content-between">
-                <Button variant="outline-danger" className="mx-1" onClick={handleGoogleLogin}>
+                <Button
+                  variant="outline-danger"
+                  className="mx-1"
+                  onClick={handleGoogleLogin}
+                >
                   Google
                 </Button>
-                <Button variant="outline-dark" className="mx-1" onClick={handleGithubLogin}>
+                <Button
+                  variant="outline-dark"
+                  className="mx-1"
+                  onClick={handleGithubLogin}
+                >
                   GitHub
                 </Button>
-                <Button variant="outline-primary" className="mx-1" onClick={handleFacebookLogin}>
+                <Button
+                  variant="outline-primary"
+                  className="mx-1"
+                  onClick={handleFacebookLogin}
+                >
                   Facebook
                 </Button>
               </div>

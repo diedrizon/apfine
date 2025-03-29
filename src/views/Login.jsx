@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import LoginForm from "../components/LoginForm";
@@ -6,14 +6,17 @@ import { appfirebase } from "../database/firebaseconfig";
 import {
   getAuth,
   signInWithEmailAndPassword,
+  signInWithRedirect,
   signInWithPopup,
+  getRedirectResult,
   GoogleAuthProvider,
   GithubAuthProvider,
   FacebookAuthProvider,
 } from "firebase/auth";
 import { useAuth } from "../database/authcontext";
 
-import "../styles/login.css"; 
+import "../styles/login.css";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,68 +26,97 @@ const Login = () => {
   const navigate = useNavigate();
   const auth = getAuth(appfirebase);
 
-  // Login con correo y contraseña (mantiene la lógica original)
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  const isLocal = window.location.hostname === "localhost";
+
+  // 🔄 Manejar login social después del redirect
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          console.log("Login con redirect exitoso:", result.user);
+          navigate("/inicio");
+        }
+      })
+      .catch((error) => {
+        console.error("Error al recuperar login redirect:", error);
+        setError("Error al iniciar sesión. Intenta nuevamente.");
+      });
+  }, [auth, navigate]);
+
+  // 🔐 Login con correo y contraseña
   const handleSubmit = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log("Usuario autenticado:", userCredential.user);
-        // Guardar las credenciales en localStorage
         localStorage.setItem("adminEmail", email);
         localStorage.setItem("adminPassword", password);
         navigate("/inicio");
       })
       .catch((error) => {
+        console.error("Error en login con email:", error);
         setError("Error de autenticación. Verifica tus credenciales.");
-        console.error(error);
       });
   };
 
-  // Funciones para login social con popup
+  // 🌐 Login con Google
   const handleGoogleLogin = () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log("Google login successful:", result.user);
-        // Puedes guardar datos adicionales en localStorage si lo requieres
-        navigate("/inicio");
-      })
-      .catch((error) => {
-        console.error("Error en el login con Google:", error);
+    if (isMobile || !isLocal) {
+      signInWithRedirect(auth, provider).catch((error) => {
+        console.error("Error en login Google (redirect):", error);
         setError("Error en el login con Google.");
       });
+    } else {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log("Login Google exitoso:", result.user);
+          navigate("/inicio");
+        })
+        .catch((error) => {
+          console.error("Error en login Google (popup):", error);
+          setError("Error en el login con Google.");
+        });
+    }
   };
 
+  // 🐙 Login con GitHub
   const handleGithubLogin = () => {
     const provider = new GithubAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log("GitHub login successful:", result.user);
-        navigate("/inicio");
-      })
-      .catch((error) => {
-        console.error("Error en el login con GitHub:", error);
-        setError("Error en el login con GitHub.");
-      });
+    signInWithRedirect(auth, provider).catch((error) => {
+      console.error("Error en login GitHub (redirect):", error);
+      setError("Error en el login con GitHub.");
+    });
   };
 
+  // 📘 Login con Facebook
   const handleFacebookLogin = () => {
     const provider = new FacebookAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log("Facebook login successful:", result.user);
-        navigate("/inicio");
-      })
-      .catch((error) => {
-        console.error("Error en el login con Facebook:", error);
+    if (isMobile || !isLocal) {
+      signInWithRedirect(auth, provider).catch((error) => {
+        console.error("Error en login Facebook (redirect):", error);
         setError("Error en el login con Facebook.");
       });
+    } else {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log("Login Facebook exitoso:", result.user);
+          navigate("/inicio");
+        })
+        .catch((error) => {
+          console.error("Error en login Facebook (popup):", error);
+          setError("Error en el login con Facebook.");
+        });
+    }
   };
 
-  // Si el usuario ya está autenticado, redirigir automáticamente
-  if (user) {
-    navigate("/inicio");
-  }
+  // Si ya está logueado, redirigir automáticamente
+  useEffect(() => {
+    if (user) {
+      navigate("/inicio");
+    }
+  }, [user, navigate]);
 
   return (
     <Container className="d-flex vh-100 justify-content-center align-items-center">
