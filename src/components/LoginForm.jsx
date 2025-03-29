@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
-import "../styles/login.css"; 
+import "../styles/login.css";
+
 const LoginForm = ({
   email,
   password,
@@ -9,8 +10,6 @@ const LoginForm = ({
   setPassword,
   handleSubmit,
   handleGoogleLogin,
-  handleGithubLogin,
-  handleFacebookLogin,
 }) => {
   return (
     <Row className="w-100 justify-content-center">
@@ -49,32 +48,15 @@ const LoginForm = ({
               </Button>
             </Form>
 
-            {/* Botones de login social */}
             <div className="text-center">
               <p>O inicia sesión con</p>
-              <div className="d-flex justify-content-between">
-                <Button
-                  variant="outline-danger"
-                  className="mx-1"
-                  onClick={handleGoogleLogin}
-                >
-                  Google
-                </Button>
-                <Button
-                  variant="outline-dark"
-                  className="mx-1"
-                  onClick={handleGithubLogin}
-                >
-                  GitHub
-                </Button>
-                <Button
-                  variant="outline-primary"
-                  className="mx-1"
-                  onClick={handleFacebookLogin}
-                >
-                  Facebook
-                </Button>
-              </div>
+              <Button
+                variant="outline-danger"
+                className="mx-1"
+                onClick={handleGoogleLogin}
+              >
+                Google
+              </Button>
             </div>
           </Card.Body>
         </Card>
