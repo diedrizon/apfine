@@ -26,10 +26,7 @@ function App() {
     if (savedTheme) {
       return savedTheme === "dark";
     } else {
-      return (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      );
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
   });
 
@@ -56,7 +53,7 @@ function App() {
   }
 
   function toggleTheme() {
-    setIsDarkMode((prev) => !prev);
+    setIsDarkMode(prev => !prev);
   }
 
   return (
@@ -64,21 +61,13 @@ function App() {
       <Router>
         <RouteChangeTracker />
         <div className="App">
-          <Encabezado
-            isSidebarOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            isDarkMode={isDarkMode}
-            toggleTheme={toggleTheme}
-          />
+          <Encabezado isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           <Panel isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
           <main className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""}`}>
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
-              <Route
-                path="/categorias"
-                element={<ProtectedRoute element={<Categorias closeSidebar={toggleSidebar} />} />}
-              />
+              <Route path="/categorias" element={<ProtectedRoute element={<Categorias />} />} />
             </Routes>
           </main>
         </div>

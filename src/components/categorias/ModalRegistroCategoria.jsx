@@ -3,9 +3,9 @@ import { Modal, Button, Form } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 
 const colorOptions = [
-  "#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#2196F3","#03A9F4","#00BCD4",
-  "#009688","#4CAF50","#8BC34A","#CDDC39","#FFC107","#FF9800","#FF5722","#795548",
-  "#607D8B","#9E9E9E","#FFCDD2","#C8E6C9"
+  "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
+  "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFC107", "#FF9800", "#FF5722", "#795548",
+  "#607D8B", "#9E9E9E", "#FFCDD2", "#C8E6C9"
 ];
 const iconOptions = [
   { name: "FaHome", component: <FaIcons.FaHome /> },
@@ -60,14 +60,7 @@ const iconOptions = [
   { name: "FaWind", component: <FaIcons.FaWind /> }
 ];
 
-function ModalRegistroCategoria({
-  show,
-  handleClose,
-  categoriaNueva,
-  setCategoriaNueva,
-  handleChangeNueva,
-  handleAddCategoria
-}) {
+function ModalRegistroCategoria({ show, handleClose, categoriaNueva, setCategoriaNueva, handleChangeNueva, handleAddCategoria }) {
   function handleSelectColor(color) {
     setCategoriaNueva(prev => ({ ...prev, color }));
   }
@@ -82,13 +75,7 @@ function ModalRegistroCategoria({
       <Modal.Body>
         <Form.Group className="mb-3">
           <Form.Label>Nombre</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Nombre de la categoría"
-            name="nombre"
-            value={categoriaNueva.nombre}
-            onChange={handleChangeNueva}
-          />
+          <Form.Control type="text" placeholder="Nombre de la categoría" name="nombre" value={categoriaNueva.nombre} onChange={handleChangeNueva} />
         </Form.Group>
         <Form.Label>Color</Form.Label>
         <div className="color-grid">

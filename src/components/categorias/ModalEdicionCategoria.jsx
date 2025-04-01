@@ -60,14 +60,7 @@ const iconOptions = [
   { name: "FaWind", component: <FaIcons.FaWind /> }
 ];
 
-function ModalEdicionCategoria({
-  show,
-  handleClose,
-  categoriaEditada,
-  setCategoriaEditada,
-  handleChangeEditada,
-  handleEditCategoria
-}) {
+function ModalEdicionCategoria({ show, handleClose, categoriaEditada, setCategoriaEditada, handleChangeEditada, handleEditCategoria }) {
   if (!categoriaEditada) return null;
   function handleSelectColor(color) {
     setCategoriaEditada(prev => ({ ...prev, color }));
@@ -83,13 +76,7 @@ function ModalEdicionCategoria({
       <Modal.Body>
         <Form.Group className="mb-3">
           <Form.Label>Nombre</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Nombre de la categoría"
-            name="nombre"
-            value={categoriaEditada.nombre}
-            onChange={handleChangeEditada}
-          />
+          <Form.Control type="text" placeholder="Nombre de la categoría" name="nombre" value={categoriaEditada.nombre} onChange={handleChangeEditada} />
         </Form.Group>
         <Form.Label>Color</Form.Label>
         <div className="color-grid">
@@ -108,9 +95,7 @@ function ModalEdicionCategoria({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>Cancelar</Button>
-        <Button variant="primary" onClick={handleEditCategoria}>
-          Guardar cambios
-        </Button>
+        <Button variant="primary" onClick={handleEditCategoria}>Guardar cambios</Button>
       </Modal.Footer>
     </Modal>
   );

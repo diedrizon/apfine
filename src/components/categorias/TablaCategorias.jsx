@@ -15,7 +15,7 @@ const TablaCategorias = ({ categorias, openEditModal, openDeleteModal }) => {
         </tr>
       </thead>
       <tbody>
-        {categorias.map((categoria) => (
+        {categorias.map(categoria => (
           <tr key={categoria.id}>
             <td>{categoria.nombre}</td>
             <td>{categoria.descripcion}</td>

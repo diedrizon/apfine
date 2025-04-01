@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../database/firebaseconfig";
+import { db, auth } from "../database/firebaseconfig";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { Container, Button, Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
-import { FaArrowUp, FaTrash, FaEdit, FaListUl, FaMoneyBillAlt } from "react-icons/fa";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
 import ModalMensaje from "../components/ModalMensaje";
 import "../styles/Categorias.css";
+import { onAuthStateChanged } from "firebase/auth";
 import ReactGA from "react-ga4";
 
 function getIconComponent(iconName) {
@@ -27,21 +27,30 @@ function Categorias() {
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [showModalMensaje, setShowModalMensaje] = useState(false);
   const [mensaje, setMensaje] = useState("");
-
+  const [usuarioId, setUsuarioId] = useState(null);
   const categoriasCollection = collection(db, "categorias");
 
   useEffect(() => {
-    fetchCategorias();
-  },);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUsuarioId(user.uid);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (usuarioId) {
+      fetchCategorias();
+    }
+  }, [usuarioId]);
 
   async function fetchCategorias() {
     const data = await getDocs(categoriasCollection);
-    const fetched = data.docs.map(docu => ({ ...docu.data(), id: docu.id }));
+    const fetched = data.docs.map(docu => ({ ...docu.data(), id: docu.id })).filter(cat => cat.usuarioId === usuarioId);
     setCategorias(fetched);
   }
 
   function handleOpenAddModal() {
-    // Quitar la llamada a closeSidebar
     setShowModalAdd(true);
   }
 
@@ -50,7 +59,6 @@ function Categorias() {
   }
 
   function handleOpenEditModal(categoria) {
-    // Quitar la llamada a closeSidebar
     setCategoriaEditada({ ...categoria });
     setShowModalEdit(true);
   }
@@ -60,7 +68,6 @@ function Categorias() {
   }
 
   function handleOpenDeleteModal(categoria) {
-    // Quitar la llamada a closeSidebar
     setCategoriaAEliminar(categoria);
     setShowModalDelete(true);
   }
@@ -80,11 +87,23 @@ function Categorias() {
   }
 
   async function handleAddCategoria() {
-    if (!categoriaNueva.nombre || !categoriaNueva.color || !categoriaNueva.icono) {
-      alert("Completa todos los campos");
+    if (!categoriaNueva.nombre) {
+      setMensaje("Te hace falta llenar el campo Nombre");
+      setShowModalMensaje(true);
       return;
     }
-    await addDoc(categoriasCollection, categoriaNueva);
+    if (!categoriaNueva.color) {
+      setMensaje("Te hace falta llenar el campo Color");
+      setShowModalMensaje(true);
+      return;
+    }
+    if (!categoriaNueva.icono) {
+      setMensaje("Te hace falta llenar el campo Ícono");
+      setShowModalMensaje(true);
+      return;
+    }
+    const nuevaCategoria = { ...categoriaNueva, usuarioId };
+    await addDoc(categoriasCollection, nuevaCategoria);
     ReactGA.event({
       category: "Categoría",
       action: "Categoría agregada",
@@ -98,8 +117,19 @@ function Categorias() {
   }
 
   async function handleEditCategoria() {
-    if (!categoriaEditada.nombre || !categoriaEditada.color || !categoriaEditada.icono) {
-      alert("Completa todos los campos");
+    if (!categoriaEditada.nombre) {
+      setMensaje("Te hace falta llenar el campo Nombre");
+      setShowModalMensaje(true);
+      return;
+    }
+    if (!categoriaEditada.color) {
+      setMensaje("Te hace falta llenar el campo Color");
+      setShowModalMensaje(true);
+      return;
+    }
+    if (!categoriaEditada.icono) {
+      setMensaje("Te hace falta llenar el campo Ícono");
+      setShowModalMensaje(true);
       return;
     }
     const ref = doc(db, "categorias", categoriaEditada.id);
@@ -145,49 +175,22 @@ function Categorias() {
     <Container fluid className="categorias-container">
       <div className="categorias-header">
         <h5>Lista de Categorías</h5>
-        <Button variant="primary" onClick={handleOpenAddModal}>
-          Agregar
-        </Button>
+        <Button variant="primary" onClick={handleOpenAddModal}>Agregar</Button>
       </div>
       <div className="categorias-content">
         <div className="categorias-list">
           {categorias.map(cat => {
             const isExpanded = expandedCategory === cat.id;
             return (
-              <div
-                className={`categoria-item ${isExpanded ? "expanded" : ""}`}
-                key={cat.id}
-                style={{ borderColor: cat.color }}
-                onClick={() => toggleExpandedCategory(cat)}
-              >
+              <div className={`categoria-item ${isExpanded ? "expanded" : ""}`} key={cat.id} style={{ borderColor: cat.color }} onClick={() => toggleExpandedCategory(cat)}>
                 <div className="categoria-top">
-                  <div className="categoria-icon" style={{ backgroundColor: cat.color }}>
-                    {getIconComponent(cat.icono)}
-                  </div>
+                  <div className="categoria-icon" style={{ backgroundColor: cat.color }}>{getIconComponent(cat.icono)}</div>
                   <span className="categoria-nombre">{cat.nombre}</span>
                 </div>
                 {isExpanded && (
                   <div className="categoria-actions-expanded">
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleOpenDeleteModal(cat);
-                      }}
-                    >
-                      <FaTrash />
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleOpenEditModal(cat);
-                      }}
-                    >
-                      <FaEdit />
-                    </Button>
+                    <Button variant="danger" size="sm" onClick={e => { e.stopPropagation(); handleOpenDeleteModal(cat); }}><FaIcons.FaTrash /></Button>
+                    <Button variant="secondary" size="sm" onClick={e => { e.stopPropagation(); handleOpenEditModal(cat); }}><FaIcons.FaEdit /></Button>
                   </div>
                 )}
               </div>
@@ -199,53 +202,29 @@ function Categorias() {
             <Card.Body>
               <Card.Title className="summary-title">
                 <span>Total Categorías</span>
-                <FaListUl className="summary-icon" />
+                <FaIcons.FaListUl className="summary-icon" />
               </Card.Title>
-              <Card.Text className="summary-value">
-                {totalCategorias}
-              </Card.Text>
+              <Card.Text className="summary-value">{totalCategorias}</Card.Text>
             </Card.Body>
           </Card>
           <Card className="summary-card">
             <Card.Body>
               <Card.Title className="summary-title">
                 <span>Mayor Gasto</span>
-                <FaMoneyBillAlt className="summary-icon" />
+                <FaIcons.FaMoneyBillAlt className="summary-icon" />
               </Card.Title>
               <Card.Text className="summary-value">
-                <FaArrowUp style={{ marginRight: 5 }} />
+                <FaIcons.FaArrowUp style={{ marginRight: 5 }} />
                 {mayorGasto}
               </Card.Text>
             </Card.Body>
           </Card>
         </div>
       </div>
-      <ModalRegistroCategoria
-        show={showModalAdd}
-        handleClose={handleCloseAddModal}
-        categoriaNueva={categoriaNueva}
-        setCategoriaNueva={setCategoriaNueva}
-        handleChangeNueva={handleChangeNueva}
-        handleAddCategoria={handleAddCategoria}
-      />
-      <ModalEdicionCategoria
-        show={showModalEdit}
-        handleClose={handleCloseEditModal}
-        categoriaEditada={categoriaEditada}
-        setCategoriaEditada={setCategoriaEditada}
-        handleChangeEditada={handleChangeEditada}
-        handleEditCategoria={handleEditCategoria}
-      />
-      <ModalEliminacionCategoria
-        show={showModalDelete}
-        handleClose={handleCloseDeleteModal}
-        handleDeleteCategoria={handleDeleteCategoria}
-      />
-      <ModalMensaje
-        show={showModalMensaje}
-        handleClose={() => setShowModalMensaje(false)}
-        message={mensaje}
-      />
+      <ModalRegistroCategoria show={showModalAdd} handleClose={handleCloseAddModal} categoriaNueva={categoriaNueva} setCategoriaNueva={setCategoriaNueva} handleChangeNueva={handleChangeNueva} handleAddCategoria={handleAddCategoria} />
+      <ModalEdicionCategoria show={showModalEdit} handleClose={handleCloseEditModal} categoriaEditada={categoriaEditada} setCategoriaEditada={setCategoriaEditada} handleChangeEditada={handleChangeEditada} handleEditCategoria={handleEditCategoria} />
+      <ModalEliminacionCategoria show={showModalDelete} handleClose={handleCloseDeleteModal} handleDeleteCategoria={handleDeleteCategoria} />
+      <ModalMensaje show={showModalMensaje} handleClose={() => setShowModalMensaje(false)} message={mensaje} />
     </Container>
   );
 }
