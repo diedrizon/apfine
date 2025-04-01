@@ -16,7 +16,7 @@ function getIconComponent(iconName) {
   return IconComponent ? <IconComponent /> : <FaIcons.FaQuestion />;
 }
 
-function Categorias({ closeSidebar, setOverlayActive }) {
+function Categorias() {
   const [categorias, setCategorias] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -25,7 +25,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
   const [categoriaEditada, setCategoriaEditada] = useState(null);
   const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
   const [expandedCategory, setExpandedCategory] = useState(null);
-  // Estados para el modal de mensaje
   const [showModalMensaje, setShowModalMensaje] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -42,37 +41,31 @@ function Categorias({ closeSidebar, setOverlayActive }) {
   }
 
   function handleOpenAddModal() {
-    if (closeSidebar) closeSidebar();
-    if (setOverlayActive) setOverlayActive(true);
+    // Quitar la llamada a closeSidebar
     setShowModalAdd(true);
   }
 
   function handleCloseAddModal() {
-    if (setOverlayActive) setOverlayActive(false);
     setShowModalAdd(false);
   }
 
   function handleOpenEditModal(categoria) {
-    if (closeSidebar) closeSidebar();
-    if (setOverlayActive) setOverlayActive(true);
+    // Quitar la llamada a closeSidebar
     setCategoriaEditada({ ...categoria });
     setShowModalEdit(true);
   }
 
   function handleCloseEditModal() {
-    if (setOverlayActive) setOverlayActive(false);
     setShowModalEdit(false);
   }
 
   function handleOpenDeleteModal(categoria) {
-    if (closeSidebar) closeSidebar();
-    if (setOverlayActive) setOverlayActive(true);
+    // Quitar la llamada a closeSidebar
     setCategoriaAEliminar(categoria);
     setShowModalDelete(true);
   }
 
   function handleCloseDeleteModal() {
-    if (setOverlayActive) setOverlayActive(false);
     setShowModalDelete(false);
   }
 
@@ -97,7 +90,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
       action: "Categoría agregada",
       label: categoriaNueva.nombre || "Sin nombre"
     });
-    // Mostrar mensaje de éxito
     setMensaje(`La categoría "${categoriaNueva.nombre}" se creó exitosamente.`);
     setShowModalMensaje(true);
     setCategoriaNueva({ nombre: "", color: "", icono: "" });
@@ -146,7 +138,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
     setExpandedCategory(expandedCategory === categoria.id ? null : categoria.id);
   }
 
-  // Cálculos de resumen
   const totalCategorias = categorias.length;
   const mayorGasto = categorias[0] ? categorias[0].nombre : "N/A";
 
@@ -158,9 +149,7 @@ function Categorias({ closeSidebar, setOverlayActive }) {
           Agregar
         </Button>
       </div>
-
       <div className="categorias-content">
-        {/* Lista de Categorías */}
         <div className="categorias-list">
           {categorias.map(cat => {
             const isExpanded = expandedCategory === cat.id;
@@ -177,7 +166,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
                   </div>
                   <span className="categoria-nombre">{cat.nombre}</span>
                 </div>
-
                 {isExpanded && (
                   <div className="categoria-actions-expanded">
                     <Button
@@ -206,8 +194,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
             );
           })}
         </div>
-
-        {/* Tarjetas de Resumen */}
         <div className="categorias-summary">
           <Card className="summary-card">
             <Card.Body>
@@ -220,7 +206,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
               </Card.Text>
             </Card.Body>
           </Card>
-
           <Card className="summary-card">
             <Card.Body>
               <Card.Title className="summary-title">
@@ -235,8 +220,6 @@ function Categorias({ closeSidebar, setOverlayActive }) {
           </Card>
         </div>
       </div>
-
-      {/* Modales */}
       <ModalRegistroCategoria
         show={showModalAdd}
         handleClose={handleCloseAddModal}
