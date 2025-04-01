@@ -1,6 +1,6 @@
-import React from "react"
-import { Table, Button } from "react-bootstrap"
-import "bootstrap-icons/font/bootstrap-icons.css"
+import React from "react";
+import { Table, Button } from "react-bootstrap";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const TablaCategorias = ({ categorias, openEditModal, openDeleteModal }) => {
   return (
@@ -36,7 +36,7 @@ const TablaCategorias = ({ categorias, openEditModal, openDeleteModal }) => {
         ))}
       </tbody>
     </Table>
-  )
-}
+  );
+};
 
-export default TablaCategorias
+export default TablaCategorias;

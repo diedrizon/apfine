@@ -1,5 +1,5 @@
-import React from "react"
-import { Modal, Button } from "react-bootstrap"
+import React from "react";
+import { Modal, Button } from "react-bootstrap";
 
 function ModalEliminacionCategoria({ show, handleClose, handleDeleteCategoria }) {
   return (
@@ -15,7 +15,7 @@ function ModalEliminacionCategoria({ show, handleClose, handleDeleteCategoria })
         <Button variant="danger" onClick={handleDeleteCategoria}>Eliminar</Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }
 
-export default ModalEliminacionCategoria
+export default ModalEliminacionCategoria;

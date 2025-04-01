@@ -1,12 +1,12 @@
-import React from "react"
-import { Modal, Button, Form } from "react-bootstrap"
-import * as FaIcons from "react-icons/fa"
+import React from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import * as FaIcons from "react-icons/fa";
 
 const colorOptions = [
   "#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#2196F3","#03A9F4","#00BCD4",
   "#009688","#4CAF50","#8BC34A","#CDDC39","#FFC107","#FF9800","#FF5722","#795548",
   "#607D8B","#9E9E9E","#FFCDD2","#C8E6C9"
-]
+];
 const iconOptions = [
   { name: "FaHome", component: <FaIcons.FaHome /> },
   { name: "FaCar", component: <FaIcons.FaCar /> },
@@ -58,7 +58,7 @@ const iconOptions = [
   { name: "FaSubway", component: <FaIcons.FaSubway /> },
   { name: "FaSun", component: <FaIcons.FaSun /> },
   { name: "FaWind", component: <FaIcons.FaWind /> }
-]
+];
 
 function ModalRegistroCategoria({
   show,
@@ -69,10 +69,10 @@ function ModalRegistroCategoria({
   handleAddCategoria
 }) {
   function handleSelectColor(color) {
-    setCategoriaNueva(prev => ({ ...prev, color }))
+    setCategoriaNueva(prev => ({ ...prev, color }));
   }
   function handleSelectIcon(iconName) {
-    setCategoriaNueva(prev => ({ ...prev, icono: iconName }))
+    setCategoriaNueva(prev => ({ ...prev, icono: iconName }));
   }
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false} centered dialogClassName="custom-modal">
@@ -110,7 +110,7 @@ function ModalRegistroCategoria({
         <Button variant="primary" onClick={handleAddCategoria}>Crear categoría</Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }
 
-export default ModalRegistroCategoria
+export default ModalRegistroCategoria;
