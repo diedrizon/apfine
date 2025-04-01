@@ -2,26 +2,26 @@
 /* ESTILOS GENERALES DE LA APP */
 /* ===================== */
 .App {
-  display: flex; /* Define un diseño flexible para la aplicación */
-  flex-direction: column; /* Organiza los elementos en una columna */
-  min-height: 100vh; /* Asegura que la altura mínima sea igual a la altura de la ventana */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .main {
-  margin-top: 60px; /* Espaciado superior para evitar superposición con el encabezado */
-  transition: margin-left 0.3s ease; /* Transición suave para el margen izquierdo */
-  margin-left: 0; /* Margen inicial a la izquierda */
+  margin-top: 60px;
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
 }
 
 @media (min-width: 769px) {
   .main.sidebar-open {
-    margin-left: 250px; /* Ajusta el margen izquierdo cuando la barra lateral está abierta en pantallas grandes */
+    margin-left: 250px;
   }
 }
 
 @media (max-width: 768px) {
   .main.sidebar-open {
-    margin-left: 0; /* Mantiene el margen izquierdo en 0 para pantallas pequeñas */
+    margin-left: 0;
   }
 }
 
@@ -29,75 +29,83 @@
 /* ESTILOS PARA MODALES PERSONALIZADOS */
 /* ===================== */
 .custom-modal .modal-content {
-  max-height: 80vh; /* Limita la altura máxima del contenido del modal */
-  overflow-y: auto; /* Habilita el desplazamiento vertical si el contenido excede la altura */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal.show {
-  z-index: 1200 !important; /* Asegura que el modal esté por encima de otros elementos */
+  z-index: 1200 !important;
 }
 
 .modal-backdrop.show {
-  z-index: 1199 !important; /* Ajusta la capa de fondo del modal */
+  z-index: 1199 !important;
 }
 
 /* ===================== */
 /* ESTILOS REUTILIZABLES PARA EL MODAL DE MENSAJE */
 /* ===================== */
 
-/* Variables globales para modo claro (por defecto) */
 :root {
-  --modal-bg-color: #f7f7f7; /* Fondo del modal */
-  --modal-text-color: #333; /* Color del texto */
-  --modal-header-bg: #e0e0e0; /* Fondo del encabezado */
-  --modal-footer-bg: #e0e0e0; /* Fondo del pie */
-  --modal-btn-bg: #555; /* Fondo del botón primario */
-  --modal-btn-bg-hover: #444; /* Fondo del botón primario al pasar el cursor */
-  --modal-border-radius: 8px; /* Bordes redondeados */
-  --modal-padding: 20px; /* Espaciado interno */
+  --modal-bg-color: #f7f7f7;
+  --modal-text-color: #333;
+  --modal-header-bg: #e0e0e0;
+  --modal-footer-bg: #e0e0e0;
+  --modal-btn-bg: #555;
+  --modal-btn-bg-hover: #444;
+  --modal-border-radius: 8px;
+  --modal-padding: 20px;
 }
 
-/* Ajuste para modo oscuro */
 body.dark-mode {
-  --modal-bg-color: #444; /* Fondo del modal en modo oscuro */
-  --modal-text-color: #fff; /* Texto blanco para contraste */
-  --modal-header-bg: #333; /* Fondo del encabezado en modo oscuro */
-  --modal-footer-bg: #333; /* Fondo del pie en modo oscuro */
-  --modal-btn-bg: #888; /* Fondo del botón primario en modo oscuro */
-  --modal-btn-bg-hover: #aaa; /* Hover del botón primario en modo oscuro */
+  --modal-bg-color: #444;
+  --modal-text-color: #fff;
+  --modal-header-bg: #333;
+  --modal-footer-bg: #333;
+  --modal-btn-bg: #888;
+  --modal-btn-bg-hover: #aaa;
 }
 
-/* Estilos del modal reutilizable */
 .modal-mensaje .modal-content {
-  background-color: var(--modal-bg-color); /* Usa el color de fondo según el tema */
-  color: var(--modal-text-color); /* Usa el color de texto según el tema */
-  border-radius: var(--modal-border-radius); /* Aplica bordes redondeados */
-  padding: var(--modal-padding); /* Aplica espaciado interno */
+  background-color: var(--modal-bg-color);
+  color: var(--modal-text-color);
+  border-radius: var(--modal-border-radius);
+  padding: var(--modal-padding);
 }
 
 .modal-mensaje .modal-header {
-  background-color: var(--modal-header-bg); /* Fondo del encabezado */
-  border-bottom: none; /* Elimina el borde inferior */
+  background-color: var(--modal-header-bg);
+  border-bottom: none;
 }
 
 .modal-mensaje .modal-footer {
-  background-color: var(--modal-footer-bg); /* Fondo del pie */
-  border-top: none; /* Elimina el borde superior */
+  background-color: var(--modal-footer-bg);
+  border-top: none;
 }
 
 .modal-mensaje .btn-primary {
-  background-color: var(--modal-btn-bg); /* Fondo del botón primario */
-  border-color: var(--modal-btn-bg); /* Borde del botón primario */
+  background-color: var(--modal-btn-bg);
+  border-color: var(--modal-btn-bg);
 }
 
 .modal-mensaje .btn-primary:hover {
-  background-color: var(--modal-btn-bg-hover); /* Fondo del botón al pasar el cursor */
-  border-color: var(--modal-btn-bg-hover); /* Borde del botón al pasar el cursor */
+  background-color: var(--modal-btn-bg-hover);
+  border-color: var(--modal-btn-bg-hover);
 }
 
-/* Ajuste responsivo para el modal */
 @media (max-width: 768px) {
   .modal-mensaje .modal-content {
-    padding: 15px; /* Reduce el espaciado interno en pantallas pequeñas */
+    padding: 15px;
+  }
+}
+
+/* ===================== */
+/* LANDSCAPE SCROLL SOLO EN ROTACIÓN */
+/* ===================== */
+@media screen and (orientation: landscape) {
+  html, body, #root, .App {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }

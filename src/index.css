@@ -4,27 +4,34 @@ html,
   margin: 0;
   padding: 0;
   height: 100%;
+  overflow: hidden;
 }
+
 body.light-mode {
   background-color: #ffffff;
   color: #000000;
 }
+
 body.dark-mode {
   background-color: #000000;
   color: #ffffff;
 }
+
 body.light-mode .custom-modal .modal-content {
   background-color: #fff;
   color: #000;
 }
+
 body.dark-mode .custom-modal .modal-content {
   background-color: #333;
   color: #fff;
 }
+
 body.light-mode table {
   background-color: #fff;
   color: #000;
 }
+
 body.dark-mode table {
   background-color: #000;
   color: #fff;
