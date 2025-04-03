@@ -1,0 +1,56 @@
+.ingresos-container {
+    padding: 20px;
+    background-color: var(--background-color, #f8f9fa);
+    color: var(--text-color, #212529);
+  }
+  .ingresos-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .tabla-ingresos {
+    font-size: 0.9rem;
+    margin-top: 20px;
+  }
+  .tabla-ingresos th,
+  .tabla-ingresos td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 10px;
+  }
+  .tabla-ingresos thead {
+    background-color: var(--primary-color, #0d6efd);
+    color: #fff;
+  }
+  .modal .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .modal .modal-header {
+    border-bottom: 1px solid #dee2e6;
+  }
+  .modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .modal .modal-footer {
+    border-top: 1px solid #dee2e6;
+  }
+  .sub-legend {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 3px;
+  }
+  @media (max-width: 768px) {
+    .ingresos-container {
+      padding: 10px;
+    }
+    .tabla-ingresos th,
+    .tabla-ingresos td {
+      padding: 8px;
+    }
+  }
+  

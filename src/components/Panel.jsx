@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "../database/authcontext"
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../database/authcontext";
 import {
   BiMoney,
   BiCog,
@@ -19,51 +19,46 @@ import {
   BiBell,
   BiUser,
   BiBook,
-  BiBookOpen
-} from "react-icons/bi"
-import "../styles/Panel.css"
-
+  BiBookOpen,
+} from "react-icons/bi";
+import "../styles/Panel.css";
 function Panel({ isSidebarOpen, toggleSidebar }) {
-  const [openModule, setOpenModule] = useState(null)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
-  const { isLoggedIn } = useAuth()
-  const navigate = useNavigate()
-
+  const [openModule, setOpenModule] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
     function handleResize() {
-      setIsMobile(window.innerWidth < 768)
+      setIsMobile(window.innerWidth < 768);
     }
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
-
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   function toggleModuleName(moduleName) {
-    setOpenModule(openModule === moduleName ? null : moduleName)
+    setOpenModule(openModule === moduleName ? null : moduleName);
   }
-
   function handleNavigate(path) {
-    navigate(path)
+    navigate(path);
     if (isMobile) {
-      toggleSidebar()
+      toggleSidebar();
     }
   }
-
   if (!isLoggedIn) {
-    return null
+    return null;
   }
-
   function renderSubItem(icon, label, onClick) {
     return (
       <li className="submenu-item" onClick={onClick}>
         {icon}
         <span>{label}</span>
       </li>
-    )
+    );
   }
-
   return (
     <>
-      {isMobile && isSidebarOpen && <div className="overlay" onClick={toggleSidebar}></div>}
+      {isMobile && isSidebarOpen && (
+        <div className="overlay" onClick={toggleSidebar}></div>
+      )}
       <aside className={`sidebar ${isSidebarOpen ? "sidebar-open" : ""}`}>
         <div className="sidebar-header">
           <div className="header-left">
@@ -82,48 +77,82 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             <li className="module" onClick={() => toggleModuleName("finanzas")}>
               <BiMoney className="module-icon" />
               <span className="module-text">Finanzas</span>
-              {openModule === "finanzas" ? <BiChevronDown /> : <BiChevronRight />}
+              {openModule === "finanzas" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
             </li>
             {openModule === "finanzas" && (
               <ul className="submenu">
-                {renderSubItem(<BiDollar />, "Ingresos", () => {})}
+                {renderSubItem(<BiDollar />, "Ingresos", () =>
+                  handleNavigate("/ingresos")
+                )}
                 {renderSubItem(<BiListCheck />, "Gastos", () => {})}
                 {renderSubItem(<BiCube />, "Gastos fijos", () => {})}
-                {renderSubItem(<BiFolder />, "Categorías", () => handleNavigate("/categorias"))}
+                {renderSubItem(<BiFolder />, "Categorías", () =>
+                  handleNavigate("/categorias")
+                )}
                 {renderSubItem(<BiTargetLock />, "Metas", () => {})}
                 {renderSubItem(<BiBulb />, "Recomendaciones", () => {})}
               </ul>
             )}
-            <li className="module" onClick={() => toggleModuleName("produccion")}>
+            <li
+              className="module"
+              onClick={() => toggleModuleName("produccion")}
+            >
               <BiCog className="module-icon" />
               <span className="module-text">Producción</span>
-              {openModule === "produccion" ? <BiChevronDown /> : <BiChevronRight />}
+              {openModule === "produccion" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
             </li>
             {openModule === "produccion" && (
               <ul className="submenu">
                 {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => {})}
                 {renderSubItem(<BiCube />, "Materias primas", () => {})}
                 {renderSubItem(<BiPackage />, "Inventario", () => {})}
-                {renderSubItem(<BiClipboard />, "Órdenes de producción", () => {})}
+                {renderSubItem(
+                  <BiClipboard />,
+                  "Órdenes de producción",
+                  () => {}
+                )}
               </ul>
             )}
             <li className="module" onClick={() => toggleModuleName("reportes")}>
               <BiBarChartAlt2 className="module-icon" />
               <span className="module-text">Reportes</span>
-              {openModule === "reportes" ? <BiChevronDown /> : <BiChevronRight />}
+              {openModule === "reportes" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
             </li>
             {openModule === "reportes" && (
               <ul className="submenu">
                 {renderSubItem(<BiPackage />, "Dashboard", () => {})}
-                {renderSubItem(<BiBarChartAlt2 />, "Datos / Reportes", () => {})}
+                {renderSubItem(
+                  <BiBarChartAlt2 />,
+                  "Datos / Reportes",
+                  () => {}
+                )}
                 {renderSubItem(<BiCube />, "Exportar", () => {})}
                 {renderSubItem(<BiBell />, "Alertas", () => {})}
               </ul>
             )}
-            <li className="module" onClick={() => toggleModuleName("comunidad")}>
+            <li
+              className="module"
+              onClick={() => toggleModuleName("comunidad")}
+            >
               <BiWorld className="module-icon" />
               <span className="module-text">Comunidad y Educación</span>
-              {openModule === "comunidad" ? <BiChevronDown /> : <BiChevronRight />}
+              {openModule === "comunidad" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
             </li>
             {openModule === "comunidad" && (
               <ul className="submenu">
@@ -142,7 +171,11 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
                 {renderSubItem(<BiTargetLock />, "Roles y permisos", () => {})}
                 {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
-                {renderSubItem(<BiCog />, "Monitoreo / Configuración", () => {})}
+                {renderSubItem(
+                  <BiCog />,
+                  "Monitoreo / Configuración",
+                  () => {}
+                )}
               </ul>
             )}
           </ul>
@@ -152,7 +185,6 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
         </div>
       </aside>
     </>
-  )
+  );
 }
-
-export default Panel
+export default Panel;
