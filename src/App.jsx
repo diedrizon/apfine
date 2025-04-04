@@ -10,11 +10,13 @@ import Encabezado from "./components/Encabezado";
 import Panel from "./components/Panel";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./views/Login";
+import LandingPage from "./views/LandingPage";
 import Inicio from "./views/Inicio";
 import Categorias from "./views/Categorias";
 import Ingresos from "./views/Ingresos";
 import "./App.css";
 import ReactGA from "react-ga4";
+
 const RouteChangeTracker = () => {
   const location = useLocation();
   useEffect(() => {
@@ -22,7 +24,9 @@ const RouteChangeTracker = () => {
   }, [location]);
   return null;
 };
-function App() {
+
+function AppContent() {
+  const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -36,6 +40,7 @@ function App() {
       );
     }
   });
+
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark-mode");
@@ -47,22 +52,26 @@ function App() {
       localStorage.setItem("theme", "light");
     }
   }, [isDarkMode]);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   function toggleSidebar() {
     setIsSidebarOpen(!isSidebarOpen);
   }
+
   function toggleTheme() {
     setIsDarkMode((prev) => !prev);
   }
+
   return (
-    <AuthProvider>
-      <Router>
-        <RouteChangeTracker />
-        <div className="App">
+    <div className="App">
+      {/* Mostrar Encabezado y Panel solo si NO estamos en la landing page (ruta "/") */}
+      {location.pathname !== "/" && (
+        <>
           <Encabezado
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
@@ -70,30 +79,42 @@ function App() {
             toggleTheme={toggleTheme}
           />
           <Panel isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-          <main
-            className={`main ${
-              isSidebarOpen && !isMobile ? "sidebar-open" : ""
-            }`}
-          >
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route
-                path="/inicio"
-                element={<ProtectedRoute element={<Inicio />} />}
-              />
-              <Route
-                path="/categorias"
-                element={<ProtectedRoute element={<Categorias />} />}
-              />
-              <Route
-                path="/ingresos"
-                element={<ProtectedRoute element={<Ingresos />} />}
-              />
-            </Routes>
-          </main>
-        </div>
+        </>
+      )}
+      <main className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""}`}>
+        <Routes>
+          {/* Ruta pública: Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+          {/* Ruta para Login */}
+          <Route path="/login" element={<Login />} />
+          {/* Rutas protegidas */}
+          <Route
+            path="/inicio"
+            element={<ProtectedRoute element={<Inicio />} />}
+          />
+          <Route
+            path="/categorias"
+            element={<ProtectedRoute element={<Categorias />} />}
+          />
+          <Route
+            path="/ingresos"
+            element={<ProtectedRoute element={<Ingresos />} />}
+          />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <RouteChangeTracker />
+        <AppContent />
       </Router>
     </AuthProvider>
   );
 }
+
 export default App;

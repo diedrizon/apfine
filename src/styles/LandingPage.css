@@ -1,0 +1,336 @@
+/* Importar fuente moderna */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Global: no forzamos el fondo en body para respetar el modo */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  scroll-behavior: smooth;
+}
+
+/* Estilos encapsulados para la Landing Page */
+.landing-page {
+  /* Variables locales solo para esta página */
+  --lp-header-text-light: #000;
+  --lp-header-hover-light: #007bff;
+  --lp-header-text-dark: #fff;
+  --lp-header-hover-dark: #0ff;
+  --menu-bg-light: #fff;
+  --menu-bg-dark: #1f1f1f;
+  --menu-border-light: #ddd;
+  --menu-border-dark: #444;
+  --menu-link-bg-light: #f8f9fa;
+  --menu-link-bg-dark: #333;
+  --menu-link-text-light: #333;
+  --menu-link-text-dark: #fff;
+  --menu-link-hover-bg-light: #e2e6ea;
+  --menu-link-hover-bg-dark: #444;
+  --menu-link-hover-text-light: #007bff;
+  --menu-link-hover-text-dark: #0ff;
+}
+
+/* Navbar */
+.landing-page .lp-navbar {
+  background: #ffffffee;
+  padding: 0.2rem 1rem;
+  z-index: 9999;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* En light-mode: textos e íconos en color oscuro */
+.landing-page .lp-brand,
+.landing-page .lp-toggle,
+.landing-page .lp-nav .nav-link {
+  color: var(--lp-header-text-light);
+}
+.landing-page .lp-brand:hover,
+.landing-page .lp-nav .nav-link:hover {
+  color: var(--lp-header-hover-light);
+}
+
+.landing-page .lp-logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+/* Icono y menú toggle */
+.landing-page .lp-toggle {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin-right: 0;
+}
+
+/* Modal del menú (desktop y móvil) */
+.landing-page .lp-modal-menu {
+  background: var(--menu-bg-light);
+  border: 1px solid var(--menu-border-light);
+  border-radius: 8px;
+  padding: 0.2rem;
+  margin-top: 0.2rem;
+}
+
+/* Links del navbar */
+.landing-page .lp-nav .nav-link {
+  font-weight: 500;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+/* Sección Héroe */
+.landing-page .lp-hero {
+  position: relative;
+  background: linear-gradient(135deg, #007bff, #00c3ff);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+  padding-top: 40px;
+}
+
+.landing-page .lp-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  z-index: 1;
+}
+
+.landing-page .lp-hero-content {
+  z-index: 2;
+  position: relative;
+}
+
+.landing-page .lp-hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.landing-page .lp-hero-subtitle {
+  font-size: 1.2rem;
+  margin: 20px 0;
+}
+
+.landing-page .lp-hero-btn {
+  padding: 12px 28px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 50px;
+  background: #fff;
+  color: #007bff;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.landing-page .lp-hero-btn:hover {
+  background: #e3e3e3;
+}
+
+/* Secciones Generales */
+.landing-page .lp-section {
+  padding: 100px 0;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 1s ease;
+}
+.landing-page .lp-section.active,
+.landing-page .reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+.landing-page .lp-section-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+.landing-page .lp-section-text {
+  text-align: center;
+  font-size: 1.1rem;
+  max-width: 750px;
+  margin: 0 auto 40px;
+}
+
+/* Sección "Quiénes Somos" */
+.landing-page .lp-about {
+  background: #f9f9f9;
+}
+.landing-page .lp-section-img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+/* Tarjetas de Servicios */
+.landing-page .lp-services-cards .lp-card {
+  padding: 30px;
+  background: #fff;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: transform 0.3s;
+}
+.landing-page .lp-card:hover {
+  transform: translateY(-5px);
+}
+.landing-page .lp-card h4 {
+  color: #007bff;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* Footer */
+.landing-page .lp-footer {
+  background: #202020;
+  color: #aaa;
+  padding: 15px 0;
+  text-align: center;
+  font-size: 0.75rem;
+}
+.landing-page .lp-footer h5 {
+  color: #fff;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+.landing-page .lp-footer p {
+  margin: 2px 0;
+  font-size: 0.75rem;
+}
+.landing-page .lp-footer-nav {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+.landing-page .lp-footer-nav .nav-link {
+  color: #aaa;
+  margin: 0 5px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.landing-page .lp-footer-nav .nav-link:hover {
+  color: #fff;
+}
+.landing-page .lp-footer-copy {
+  margin-top: 5px;
+  font-size: 0.65rem;
+}
+
+/* Responsive: Móvil */
+@media (max-width: 767px) {
+  .landing-page .lp-hero-title {
+    font-size: 2.2rem;
+  }
+  .landing-page .lp-hero-subtitle {
+    font-size: 1rem;
+  }
+  .landing-page .lp-section {
+    padding: 80px 0;
+  }
+  
+  /* Menú en móvil: se muestra justo debajo del header */
+  .landing-page .lp-navbar .navbar-collapse.show.lp-modal-menu {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: var(--menu-bg-light);
+    border: 1px solid var(--menu-border-light);
+    border-radius: 0 0 8px 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    z-index: 9998;
+  }
+  .landing-page .lp-navbar .lp-nav .nav-link {
+    display: block;
+    margin: 0.5rem auto;
+    width: 80%;
+    padding: 0.75rem;
+    background: var(--menu-link-bg-light);
+    border-radius: 8px;
+    text-align: center;
+    color: var(--menu-link-text-light);
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .landing-page .lp-navbar .lp-nav .nav-link:hover {
+    background: var(--menu-link-hover-bg-light);
+    color: var(--menu-link-hover-text-light);
+  }
+}
+
+/* Dark Mode para la Landing Page */
+body.dark-mode .landing-page .lp-navbar {
+  background: #111111ee;
+}
+body.dark-mode .landing-page .lp-brand,
+body.dark-mode .landing-page .lp-toggle,
+body.dark-mode .landing-page .lp-nav .nav-link {
+  color: var(--lp-header-text-dark);
+}
+body.dark-mode .landing-page .lp-brand:hover,
+body.dark-mode .landing-page .lp-nav .nav-link:hover {
+  color: var(--lp-header-hover-dark);
+}
+body.dark-mode .landing-page .lp-logo {
+  filter: invert(1);
+}
+body.dark-mode .landing-page .lp-hero {
+  background: linear-gradient(135deg, #222, #444);
+}
+body.dark-mode .landing-page .lp-hero-btn {
+  background: #444;
+  color: #fff;
+}
+body.dark-mode .landing-page .lp-hero-btn:hover {
+  background: #555;
+}
+body.dark-mode .landing-page .lp-about {
+  background: #111;
+}
+body.dark-mode .landing-page .lp-services-cards .lp-card {
+  background: #222;
+  box-shadow: 0 3px 10px rgba(255,255,255,0.1);
+}
+body.dark-mode .landing-page .lp-card h4 {
+  color: #0ff;
+}
+body.dark-mode .landing-page .lp-footer {
+  background: #000;
+  color: #ccc;
+}
+body.dark-mode .landing-page .lp-footer h5 {
+  color: #fff;
+}
+body.dark-mode .landing-page .lp-footer-nav .nav-link {
+  color: #ccc;
+}
+body.dark-mode .landing-page .lp-footer-nav .nav-link:hover {
+  color: #fff;
+}
+
+/* Variables para el menú en móvil (Light Mode) */
+.landing-page {
+  --menu-bg-light: #fff;
+  --menu-border-light: #ddd;
+  --menu-link-bg-light: #f8f9fa;
+  --menu-link-text-light: #333;
+  --menu-link-hover-bg-light: #e2e6ea;
+  --menu-link-hover-text-light: #007bff;
+}
+
+/* Variables para el menú en móvil (Dark Mode) */
+body.dark-mode .landing-page {
+  --menu-bg-light: #1f1f1f; /* Se reutiliza la misma variable para el fondo del menú en dark-mode */
+  --menu-border-light: #444;
+  --menu-link-bg-light: #333;
+  --menu-link-text-light: #fff;
+  --menu-link-hover-bg-light: #444;
+  --menu-link-hover-text-light: #0ff;
+}
