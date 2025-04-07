@@ -1,9 +1,9 @@
 /* Importar fuente moderna */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
 /* Global: no forzamos el fondo en body para respetar el modo */
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   margin: 0;
   scroll-behavior: smooth;
 }
@@ -34,10 +34,11 @@ body {
   background: #ffffffee;
   padding: 0.2rem 1rem;
   z-index: 9999;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  /* Línea delgada para separar el encabezado */
+  border-bottom: 1px solid #ccc;
 }
 
-/* En light-mode: textos e íconos en color oscuro */
 .landing-page .lp-brand,
 .landing-page .lp-toggle,
 .landing-page .lp-nav .nav-link {
@@ -80,7 +81,7 @@ body {
 /* Sección Héroe */
 .landing-page .lp-hero {
   position: relative;
-  background: linear-gradient(135deg, #007bff, #00c3ff);
+  background: url("/public/Futuro.png") center center / cover no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -91,13 +92,19 @@ body {
   padding-top: 40px;
 }
 
+@media (min-width: 768px) {
+  .landing-page .lp-hero {
+    background: url("/public/Futuro.png") center center / cover no-repeat;
+  }
+}
+
 .landing-page .lp-hero-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
@@ -114,6 +121,7 @@ body {
 .landing-page .lp-hero-subtitle {
   font-size: 1.2rem;
   margin: 20px 0;
+  color: #fff;
 }
 
 .landing-page .lp-hero-btn {
@@ -158,11 +166,38 @@ body {
 /* Sección "Quiénes Somos" */
 .landing-page .lp-about {
   background: #f9f9f9;
+  /* Puedes ajustar un alto mínimo para igualar el tamaño del contenido */
+  min-height: 400px;
 }
-.landing-page .lp-section-img {
+
+/* Imagen adaptada al tamaño del contenido de texto */
+.landing-page .lp-img-fit-text {
+  max-width: 250px; /* Tamaño visual más proporcionado */
   width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 767px) {
+  .landing-page .lp-img-fit-text {
+    max-width: 150px;
+    margin-top: 20px;
+  }
+}
+
+/* Estilo para la imagen de la sección "Quiénes Somos" */
+.lp-about-img-wrapper {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  height: 100%;
+}
+.lp-section-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
 /* Tarjetas de Servicios */
@@ -171,7 +206,7 @@ body {
   background: #fff;
   border-radius: 10px;
   text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s;
 }
 .landing-page .lp-card:hover {
@@ -182,6 +217,10 @@ body {
   font-weight: 600;
   margin-bottom: 15px;
 }
+.lp-card-icon {
+  margin-bottom: 15px;
+  color: #007bff;
+}
 
 /* Footer */
 .landing-page .lp-footer {
@@ -190,6 +229,8 @@ body {
   padding: 15px 0;
   text-align: center;
   font-size: 0.75rem;
+  /* Línea delgada para separar el footer */
+  border-top: 1px solid #444;
 }
 .landing-page .lp-footer h5 {
   color: #fff;
@@ -231,8 +272,7 @@ body {
   .landing-page .lp-section {
     padding: 80px 0;
   }
-  
-  /* Menú en móvil: se muestra justo debajo del header */
+
   .landing-page .lp-navbar .navbar-collapse.show.lp-modal-menu {
     position: fixed;
     top: 40px;
@@ -243,7 +283,7 @@ body {
     border: 1px solid var(--menu-border-light);
     border-radius: 0 0 8px 8px;
     padding: 1rem;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
     z-index: 9998;
   }
   .landing-page .lp-navbar .lp-nav .nav-link {
@@ -265,7 +305,7 @@ body {
   }
 }
 
-/* Dark Mode para la Landing Page */
+/* Modo Oscuro */
 body.dark-mode .landing-page .lp-navbar {
   background: #111111ee;
 }
@@ -281,9 +321,6 @@ body.dark-mode .landing-page .lp-nav .nav-link:hover {
 body.dark-mode .landing-page .lp-logo {
   filter: invert(1);
 }
-body.dark-mode .landing-page .lp-hero {
-  background: linear-gradient(135deg, #222, #444);
-}
 body.dark-mode .landing-page .lp-hero-btn {
   background: #444;
   color: #fff;
@@ -296,7 +333,7 @@ body.dark-mode .landing-page .lp-about {
 }
 body.dark-mode .landing-page .lp-services-cards .lp-card {
   background: #222;
-  box-shadow: 0 3px 10px rgba(255,255,255,0.1);
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
 }
 body.dark-mode .landing-page .lp-card h4 {
   color: #0ff;
@@ -327,7 +364,7 @@ body.dark-mode .landing-page .lp-footer-nav .nav-link:hover {
 
 /* Variables para el menú en móvil (Dark Mode) */
 body.dark-mode .landing-page {
-  --menu-bg-light: #1f1f1f; /* Se reutiliza la misma variable para el fondo del menú en dark-mode */
+  --menu-bg-light: #1f1f1f;
   --menu-border-light: #444;
   --menu-link-bg-light: #333;
   --menu-link-text-light: #fff;
