@@ -16,6 +16,7 @@ import Categorias from "./views/Categorias";
 import Ingresos from "./views/Ingresos";
 import "./App.css";
 import ReactGA from "react-ga4";
+import Recuperar from "./views/Recuperar";
 
 const RouteChangeTracker = () => {
   const location = useLocation();
@@ -67,10 +68,13 @@ function AppContent() {
     setIsDarkMode((prev) => !prev);
   }
 
+  // Rutas sin encabezado
+  const sinEncabezado = ["/", "/login", "/recuperar"];
+
   return (
     <div className="App">
-      {/* Mostrar Encabezado y Panel solo si NO estamos en la landing page (ruta "/") */}
-      {location.pathname !== "/" && (
+      {/* Ocultar Encabezado y Panel en /, /login, /recuperar */}
+      {!sinEncabezado.includes(location.pathname) && (
         <>
           <Encabezado
             isSidebarOpen={isSidebarOpen}
@@ -81,12 +85,21 @@ function AppContent() {
           <Panel isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </>
       )}
-      <main className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""}`}>
+
+      {/* Agregamos clase "sin-encabezado" si estamos en esas rutas */}
+      <main
+        className={`main ${
+          isSidebarOpen && !isMobile ? "sidebar-open" : ""
+        } ${sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""}`}
+      >
         <Routes>
           {/* Ruta pública: Landing Page */}
           <Route path="/" element={<LandingPage />} />
-          {/* Ruta para Login */}
+          {/* Ruta pública: Login */}
           <Route path="/login" element={<Login />} />
+          {/* Recuperar contraseña (si existe) */}
+          <Route path="/recuperar" element={<Recuperar />} />
+
           {/* Rutas protegidas */}
           <Route
             path="/inicio"

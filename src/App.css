@@ -25,6 +25,11 @@
   }
 }
 
+
+.main.sin-encabezado {
+  margin-top: 0 !important;
+}
+
 /* ===================== */
 /* ESTILOS PARA MODALES PERSONALIZADOS */
 /* ===================== */
