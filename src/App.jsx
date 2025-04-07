@@ -1,3 +1,4 @@
+// App.jsx
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -14,6 +15,7 @@ import LandingPage from "./views/LandingPage";
 import Inicio from "./views/Inicio";
 import Categorias from "./views/Categorias";
 import Ingresos from "./views/Ingresos";
+import Gastos from "./views/Gastos";
 import "./App.css";
 import ReactGA from "react-ga4";
 import Recuperar from "./views/Recuperar";
@@ -88,16 +90,16 @@ function AppContent() {
 
       {/* Agregamos clase "sin-encabezado" si estamos en esas rutas */}
       <main
-        className={`main ${
-          isSidebarOpen && !isMobile ? "sidebar-open" : ""
-        } ${sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""}`}
+        className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""} ${
+          sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
+        }`}
       >
         <Routes>
           {/* Ruta pública: Landing Page */}
           <Route path="/" element={<LandingPage />} />
           {/* Ruta pública: Login */}
           <Route path="/login" element={<Login />} />
-          {/* Recuperar contraseña (si existe) */}
+          {/* Recuperar contraseña */}
           <Route path="/recuperar" element={<Recuperar />} />
 
           {/* Rutas protegidas */}
@@ -112,6 +114,11 @@ function AppContent() {
           <Route
             path="/ingresos"
             element={<ProtectedRoute element={<Ingresos />} />}
+          />
+          {/* Nueva ruta para Gastos */}
+          <Route
+            path="/gastos"
+            element={<ProtectedRoute element={<Gastos />} />}
           />
         </Routes>
       </main>

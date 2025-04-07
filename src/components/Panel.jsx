@@ -88,7 +88,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiDollar />, "Ingresos", () =>
                   handleNavigate("/ingresos")
                 )}
-                {renderSubItem(<BiListCheck />, "Gastos", () => {})}
+                {renderSubItem(<BiListCheck />, "Gastos", () =>
+                  handleNavigate("/gastos")
+                )}
                 {renderSubItem(<BiCube />, "Gastos fijos", () => {})}
                 {renderSubItem(<BiFolder />, "Categorías", () =>
                   handleNavigate("/categorias")
