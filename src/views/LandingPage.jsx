@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Navbar, Nav, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
-// Íconos para las tarjetas de servicios:
-import { FaChartLine, FaBoxes, FaRobot } from "react-icons/fa";
+import { AiFillHome } from "react-icons/ai";
+import { FaUserFriends, FaTools, FaSignInAlt, FaTimes, FaChartLine, FaBoxes, FaRobot } from "react-icons/fa";
 import "../styles/LandingPage.css";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [showMenu, setShowMenu] = useState(false);
 
   const scrollTo = (id) => {
     const element = document.getElementById(id);
@@ -42,19 +43,50 @@ const LandingPage = () => {
               loading="lazy"
             />
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" className="lp-toggle">
-            <HiOutlineMenuAlt1 size={24} />
-          </Navbar.Toggle>
-          <Navbar.Collapse id="basic-navbar-nav" className="lp-modal-menu">
-            <Nav className="ms-auto lp-nav">
+          {/* Menú para pantallas grandes */}
+          <div className="d-none d-lg-block">
+            <Nav className="lp-nav">
               <Nav.Link onClick={() => scrollTo("hero")}>Inicio</Nav.Link>
               <Nav.Link onClick={() => scrollTo("about")}>Quiénes Somos</Nav.Link>
               <Nav.Link onClick={() => scrollTo("services")}>Servicios</Nav.Link>
               <Nav.Link onClick={() => navigate("/login")}>Iniciar Sesión</Nav.Link>
             </Nav>
-          </Navbar.Collapse>
+          </div>
+          {/* Toggle para móvil */}
+          <div className="d-lg-none">
+            <Navbar.Toggle
+              aria-controls="basic-navbar-nav"
+              className="lp-toggle"
+              onClick={() => setShowMenu(true)}
+            >
+              <HiOutlineMenuAlt1 size={24} />
+            </Navbar.Toggle>
+          </div>
         </Container>
       </Navbar>
+
+      {/* Menú Drawer Mobile */}
+      {showMenu && (
+        <div className="lp-drawer-menu">
+          <button className="lp-drawer-close" onClick={() => setShowMenu(false)}>
+            <FaTimes size={20} />
+          </button>
+          <Nav className="lp-drawer-nav">
+            <Nav.Link onClick={() => { scrollTo("hero"); setShowMenu(false); }}>
+              <AiFillHome /> Inicio
+            </Nav.Link>
+            <Nav.Link onClick={() => { scrollTo("about"); setShowMenu(false); }}>
+              <FaUserFriends /> Quiénes Somos
+            </Nav.Link>
+            <Nav.Link onClick={() => { scrollTo("services"); setShowMenu(false); }}>
+              <FaTools /> Servicios
+            </Nav.Link>
+            <Nav.Link onClick={() => { navigate("/login"); setShowMenu(false); }}>
+              <FaSignInAlt /> Iniciar Sesión
+            </Nav.Link>
+          </Nav>
+        </div>
+      )}
 
       {/* Sección Héroe */}
       <section id="hero" className="lp-hero reveal">
