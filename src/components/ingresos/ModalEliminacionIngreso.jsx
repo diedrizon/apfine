@@ -1,28 +1,46 @@
-import React from 'react'
-import { Modal, Button } from 'react-bootstrap'
-import { doc, deleteDoc } from 'firebase/firestore'
-import { db } from '../../database/firebaseconfig'
-const ModalEliminacionIngreso = ({ show, handleClose, ingreso, refreshCallback }) => {
-  const eliminarIngreso = async () => {
-    try {
-      await deleteDoc(doc(db, 'ingresos', ingreso.id))
-      handleClose()
-      refreshCallback()
-    } catch (error) { console.error(error) }
-  }
+// src/components/ingresos/ModalEliminacionIngreso.jsx
+import React from "react";
+import { Modal, Button } from "react-bootstrap";
+
+function ModalEliminacionIngreso({
+  show,
+  handleClose,
+  ingresoAEliminar,
+  handleDeleteIngreso,
+}) {
   return (
-    <Modal show={show} onHide={handleClose} centered backdrop="static">
+    <Modal
+      show={show}
+      onHide={handleClose}
+      centered
+      backdrop="static"
+      keyboard={false}
+      dialogClassName="custom-modal"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Eliminar Ingreso</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        ¿Eliminar ingreso de factura Nº {ingreso && ingreso.numeroFactura}?
+        {ingresoAEliminar ? (
+          <p>
+            ¿Estás seguro de eliminar el ingreso de tipo{" "}
+            <strong>{ingresoAEliminar.tipo_ingreso}</strong> con monto{" "}
+            <strong>C${ingresoAEliminar.monto}</strong>?
+          </p>
+        ) : (
+          <p>No hay ingreso seleccionado.</p>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>Cancelar</Button>
-        <Button variant="danger" onClick={eliminarIngreso}>Eliminar</Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Cancelar
+        </Button>
+        <Button variant="danger" onClick={handleDeleteIngreso}>
+          Eliminar
+        </Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }
-export default ModalEliminacionIngreso
+
+export default ModalEliminacionIngreso;
