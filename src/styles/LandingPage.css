@@ -95,7 +95,7 @@ body {
 /* Sección Héroe */
 .landing-page .lp-hero {
   position: relative;
-  background: url('/Futuro.png') center center / cover no-repeat;
+  background: url('/Futuro.webp') center center / cover no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -108,7 +108,7 @@ body {
 
 @media (min-width: 768px) {
   .landing-page .lp-hero {
-    background: url('/Futuro.png') center center / cover no-repeat;
+    background: url('/Futuro.webp') center center / cover no-repeat;
   }
 }
 

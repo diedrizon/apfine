@@ -16,7 +16,7 @@ const LandingPage = () => {
   };
 
   useEffect(() => {
-    // Observador para efecto de aparición
+    // Observador para efecto de aparición en secciones
     const elements = document.querySelectorAll(".landing-page .reveal");
     const observer = new IntersectionObserver(
       (entries) => {
@@ -116,7 +116,7 @@ const LandingPage = () => {
             </Col>
             <Col md={6} className="d-flex align-items-center justify-content-center">
               <img
-                src="/mujer.png"
+                src="/mujer.webp"
                 alt="Nosotros"
                 className="lp-img-fit-text"
                 loading="lazy"

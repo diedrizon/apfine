@@ -12,6 +12,15 @@
   
   <link rel="icon" type="image/x-icon" href="/Apfine.ico" />
 
+  <!-- Preload de la imagen principal para mejorar el LCP -->
+  <link rel="preload" as="image" href="/Futuro.webp" />
+
+  <!-- Preconnect y Preload de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
   <!-- Datos estructurados para Google (Schema.org) -->
   <script type="application/ld+json">
   {
@@ -29,26 +38,26 @@
   }
   </script>
 
-  <!-- Google tag (gtag.js) -->
+  <!-- Google Tag Manager / Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C96V9W5K3Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+    function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-C96V9W5K3Y');
   </script>
 
-<!-- Hotjar Tracking Code for APFINE | Finanzas Eficientes para Emprendedores en Nicaragua -->
-<script>
-  (function(h,o,t,j,a,r){
-      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-      h._hjSettings={hjid:5363717,hjsv:6};
-      a=o.getElementsByTagName('head')[0];
-      r=o.createElement('script');r.async=1;
-      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-      a.appendChild(r);
-  })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-</script>
+  <!-- Hotjar Tracking Code para APFINE -->
+  <script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:5363717,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
 </head>
 
 <body>
