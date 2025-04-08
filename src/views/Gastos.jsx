@@ -16,7 +16,7 @@ import ModalRegistroGasto from "../components/gastos/ModalRegistroGasto";
 import ModalEdicionGasto from "../components/gastos/ModalEdicionGasto";
 import ModalEliminacionGasto from "../components/gastos/ModalEliminacionGasto";
 import ModalDetalleGasto from "../components/gastos/ModalDetalleGasto";
-import ModalMensaje from "../components/ModalMensaje"; // si ya lo tienes en tu proyecto
+import ModalMensaje from "../components/ModalMensaje";
 
 import "../styles/Gastos.css";
 
@@ -35,6 +35,7 @@ function getIconGasto(tipo_gasto) {
 function Gastos() {
   const [userId, setUserId] = useState(null);
   const [gastos, setGastos] = useState([]);
+  const [categorias, setCategorias] = useState([]); // Nuevo estado para categorías
 
   // Modales
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -55,8 +56,9 @@ function Gastos() {
   // Para expandir tarjetas
   const [expandedId, setExpandedId] = useState(null);
 
-  // Referencia a la colección "gastos"
+  // Referencia a las colecciones "gastos" y "categorias"
   const gastosCollection = collection(db, "gastos");
+  const categoriasCollection = collection(db, "categorias");
 
   // Detectar el user.uid
   useEffect(() => {
@@ -65,10 +67,13 @@ function Gastos() {
     });
   }, []);
 
-  // Cargar gastos
+  // Cargar gastos y categorías cuando tengamos el userId
   useEffect(() => {
-    if (userId) fetchGastos();
-  },);
+    if (userId) {
+      fetchGastos();
+      fetchCategorias();
+    }
+  }, );
 
   async function fetchGastos() {
     try {
@@ -79,6 +84,25 @@ function Gastos() {
       }));
       const filtered = all.filter((g) => g.userId === userId);
       setGastos(filtered);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function fetchCategorias() {
+    try {
+      const snapshot = await getDocs(categoriasCollection);
+      const allCategorias = snapshot.docs.map((docu) => ({
+        ...docu.data(),
+        id: docu.id,
+      }));
+      // Filtramos las categorías para gastos: solo se toman las que sean "Gasto" o "Ambos"
+      const userCategorias = allCategorias.filter(
+        (cat) =>
+          cat.usuarioId === userId &&
+          (cat.aplicacion === "Gasto" || cat.aplicacion === "Ambos")
+      );
+      setCategorias(userCategorias);
     } catch (error) {
       console.error(error);
     }
@@ -129,7 +153,6 @@ function Gastos() {
   // CRUD
   async function handleAddGasto(nuevo) {
     try {
-      // Insertar con userId
       await addDoc(gastosCollection, { ...nuevo, userId });
       setMensaje("Gasto registrado con éxito.");
       setShowModalMensaje(true);
@@ -272,6 +295,8 @@ function Gastos() {
           handleAddGasto={handleAddGasto}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
+          // Se pasan las categorías filtradas para Gastos
+          categorias={categorias}
         />
       )}
 
@@ -285,6 +310,8 @@ function Gastos() {
           handleEditGasto={handleEditGasto}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
+          // Se pasan las categorías filtradas para Gastos
+          categorias={categorias}
         />
       )}
 
@@ -307,7 +334,7 @@ function Gastos() {
         />
       )}
 
-      {/* Modal mensaje */}
+      {/* Modal Mensaje */}
       <ModalMensaje
         show={showModalMensaje}
         handleClose={() => setShowModalMensaje(false)}

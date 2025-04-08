@@ -1,5 +1,5 @@
 // src/components/ingresos/ModalEdicionIngreso.jsx
-import React, { useState } from "react";
+import React from "react";
 import {
   Modal,
   Button,
@@ -18,8 +18,10 @@ function ModalEdicionIngreso({
   handleEditIngreso,
   setMensaje,
   setShowModalMensaje,
+  // Se recibe la lista de categorías para edición
+  categorias,
 }) {
-  const [fileComprobante, setFileComprobante] = useState(null);
+  const [fileComprobante, setFileComprobante] = React.useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -35,7 +37,6 @@ function ModalEdicionIngreso({
   if (!ingresoEditado) return null;
 
   function validar() {
-    // fecha no futura
     const hoy = new Date();
     const fecha = new Date(ingresoEditado.fecha_ingreso);
     if (fecha > hoy) {
@@ -43,14 +44,12 @@ function ModalEdicionIngreso({
       setShowModalMensaje(true);
       return false;
     }
-    // monto
     const montoNum = parseFloat(ingresoEditado.monto);
     if (isNaN(montoNum) || montoNum < 1 || montoNum > 1000000) {
       setMensaje("El monto debe estar entre 1 y 1,000,000.");
       setShowModalMensaje(true);
       return false;
     }
-    // tipo_ingreso y categoria
     if (!ingresoEditado.tipo_ingreso) {
       setMensaje("Debes elegir un tipo de ingreso.");
       setShowModalMensaje(true);
@@ -61,21 +60,16 @@ function ModalEdicionIngreso({
       setShowModalMensaje(true);
       return false;
     }
-    // fuente y descripcion
     if (ingresoEditado.fuente && ingresoEditado.fuente.length > 80) {
       setMensaje("La fuente no puede exceder 80 caracteres.");
       setShowModalMensaje(true);
       return false;
     }
-    if (
-      ingresoEditado.descripcion &&
-      ingresoEditado.descripcion.length > 100
-    ) {
+    if (ingresoEditado.descripcion && ingresoEditado.descripcion.length > 100) {
       setMensaje("La descripción no puede exceder 100 caracteres.");
       setShowModalMensaje(true);
       return false;
     }
-    // archivo
     if (fileComprobante && fileComprobante.size > 5 * 1024 * 1024) {
       setMensaje("El archivo no debe superar los 5 MB.");
       setShowModalMensaje(true);
@@ -175,10 +169,11 @@ function ModalEdicionIngreso({
                 required
               >
                 <option value="">Seleccione</option>
-                <option value="Agro">Agro</option>
-                <option value="Comercio">Comercio</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Artesanía">Artesanía</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.nombre}>
+                    {cat.nombre}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>

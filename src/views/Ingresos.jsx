@@ -1,4 +1,3 @@
-// src/views/Ingresos.jsx
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../database/firebaseconfig"; 
 import {
@@ -17,7 +16,7 @@ import ModalRegistroIngreso from "../components/ingresos/ModalRegistroIngreso";
 import ModalEdicionIngreso from "../components/ingresos/ModalEdicionIngreso";
 import ModalEliminacionIngreso from "../components/ingresos/ModalEliminacionIngreso";
 import ModalDetalleIngreso from "../components/ingresos/ModalDetalleIngreso";
-import ModalMensaje from "../components/ModalMensaje"; // asumes que ya lo tienes
+import ModalMensaje from "../components/ModalMensaje"; 
 
 import "../styles/Ingresos.css";
 
@@ -37,6 +36,7 @@ function getIconComponent(tipo_ingreso) {
 function Ingresos() {
   const [userId, setUserId] = useState(null);
   const [ingresos, setIngresos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
 
   // Modales
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -57,8 +57,9 @@ function Ingresos() {
   // Para expandir tarjetas
   const [expandedId, setExpandedId] = useState(null);
 
-  // Referencia a la colección "ingresos"
+  // Referencia a las colecciones
   const ingresosCollection = collection(db, "ingresos");
+  const categoriasCollection = collection(db, "categorias");
 
   // Detectar user.uid
   useEffect(() => {
@@ -71,6 +72,7 @@ function Ingresos() {
   useEffect(() => {
     if (userId) {
       fetchIngresos();
+      fetchCategorias();
     }
   },);
 
@@ -84,6 +86,24 @@ function Ingresos() {
       // Filtrar por userId
       const filtered = all.filter((ing) => ing.userId === userId);
       setIngresos(filtered);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function fetchCategorias() {
+    try {
+      const snapshot = await getDocs(categoriasCollection);
+      const allCategorias = snapshot.docs.map((docu) => ({
+        ...docu.data(),
+        id: docu.id,
+      }));
+      // Filtrar por usuario y obtener solo las categorías de Ingresos o Ambas
+      const userCategorias = allCategorias.filter(
+        (cat) => cat.usuarioId === userId &&
+                 (cat.aplicacion === "Ingreso" || cat.aplicacion === "Ambos")
+      );
+      setCategorias(userCategorias);
     } catch (error) {
       console.error(error);
     }
@@ -274,6 +294,8 @@ function Ingresos() {
           handleAddIngreso={handleAddIngreso}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
+          // Se pasan las categorías filtradas
+          categorias={categorias}
         />
       )}
 
@@ -287,6 +309,8 @@ function Ingresos() {
           handleEditIngreso={handleEditIngreso}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
+          // Se pasan las categorías filtradas para edición
+          categorias={categorias}
         />
       )}
 

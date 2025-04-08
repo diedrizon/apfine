@@ -1,3 +1,4 @@
+// src/components/gastos/ModalEdicionGasto.jsx
 import React, { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -11,6 +12,8 @@ function ModalEdicionGasto({
   handleEditGasto,
   setMensaje,
   setShowModalMensaje,
+  // Recibimos las categorías filtradas para Gastos
+  categorias,
 }) {
   const [fileComprobante, setFileComprobante] = useState(null);
 
@@ -28,7 +31,6 @@ function ModalEdicionGasto({
   }
 
   function validar() {
-    // fecha no futura
     const hoy = new Date();
     const fecha = new Date(gastoEditado.fecha_gasto);
     if (fecha > hoy) {
@@ -36,38 +38,38 @@ function ModalEdicionGasto({
       setShowModalMensaje(true);
       return false;
     }
-    // monto
     const montoNum = parseFloat(gastoEditado.monto);
     if (isNaN(montoNum) || montoNum < 1 || montoNum > 1000000) {
       setMensaje("El monto debe estar entre 1 y 1,000,000.");
       setShowModalMensaje(true);
       return false;
     }
-    // tipo_gasto
     if (!gastoEditado.tipo_gasto) {
       setMensaje("Debes seleccionar el tipo de gasto.");
       setShowModalMensaje(true);
       return false;
     }
-    // categoria
     if (!gastoEditado.categoria) {
       setMensaje("Debes seleccionar la categoría.");
       setShowModalMensaje(true);
       return false;
     }
-    // proveedor
-    if (gastoEditado.proveedor && gastoEditado.proveedor.length > 50) {
+    if (
+      gastoEditado.proveedor &&
+      gastoEditado.proveedor.length > 50
+    ) {
       setMensaje("El proveedor no debe exceder 50 caracteres.");
       setShowModalMensaje(true);
       return false;
     }
-    // descripcion
-    if (gastoEditado.descripcion && gastoEditado.descripcion.length > 100) {
+    if (
+      gastoEditado.descripcion &&
+      gastoEditado.descripcion.length > 100
+    ) {
       setMensaje("La descripción no debe exceder 100 caracteres.");
       setShowModalMensaje(true);
       return false;
     }
-    // archivo 2MB
     if (fileComprobante && fileComprobante.size > 5 * 1024 * 1024) {
       setMensaje("El archivo no debe superar los 5 MB.");
       setShowModalMensaje(true);
@@ -125,7 +127,7 @@ function ModalEdicionGasto({
               />
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Monto *</Col>
             <Col md={8}>
@@ -138,7 +140,7 @@ function ModalEdicionGasto({
               />
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Tipo de Gasto *</Col>
             <Col md={8}>
@@ -154,7 +156,7 @@ function ModalEdicionGasto({
               </Form.Select>
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Categoría *</Col>
             <Col md={8}>
@@ -165,14 +167,15 @@ function ModalEdicionGasto({
                 required
               >
                 <option value="">Seleccione</option>
-                <option value="Transporte">Transporte</option>
-                <option value="Servicios Básicos">Servicios Básicos</option>
-                <option value="Insumos">Insumos</option>
-                <option value="Renta">Renta</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.nombre}>
+                    {cat.nombre}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Proveedor</Col>
             <Col md={8}>
@@ -185,7 +188,7 @@ function ModalEdicionGasto({
               />
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Medio de Pago</Col>
             <Col md={8}>
@@ -201,7 +204,7 @@ function ModalEdicionGasto({
               </Form.Select>
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Descripción</Col>
             <Col md={8}>
@@ -214,7 +217,7 @@ function ModalEdicionGasto({
               />
             </Col>
           </Row>
-
+  
           <Row className="mb-3">
             <Col md={4}>Comprobante</Col>
             <Col md={8}>
@@ -238,6 +241,7 @@ function ModalEdicionGasto({
             </Col>
           </Row>
         </Modal.Body>
+  
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar

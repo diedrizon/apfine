@@ -18,6 +18,8 @@ function ModalRegistroIngreso({
   handleAddIngreso,
   setMensaje,
   setShowModalMensaje,
+  // Se recibe la lista de categorías desde la vista de Ingresos
+  categorias,
 }) {
   // Estado local para el archivo
   const [fileComprobante, setFileComprobante] = useState(null);
@@ -37,7 +39,6 @@ function ModalRegistroIngreso({
 
   // Validar formulario
   function validar() {
-    // 1) fecha_ingreso no futura
     const hoy = new Date();
     const fecha = new Date(ingresoNuevo.fecha_ingreso);
     if (fecha > hoy) {
@@ -45,38 +46,32 @@ function ModalRegistroIngreso({
       setShowModalMensaje(true);
       return false;
     }
-    // 2) monto
     const montoNum = parseFloat(ingresoNuevo.monto);
     if (isNaN(montoNum) || montoNum < 1 || montoNum > 1000000) {
       setMensaje("El monto debe estar entre 1 y 1,000,000.");
       setShowModalMensaje(true);
       return false;
     }
-    // 3) tipo_ingreso
     if (!ingresoNuevo.tipo_ingreso) {
       setMensaje("Debes elegir un tipo de ingreso.");
       setShowModalMensaje(true);
       return false;
     }
-    // 4) categoria
     if (!ingresoNuevo.categoria) {
       setMensaje("Debes elegir una categoría.");
       setShowModalMensaje(true);
       return false;
     }
-    // 5) fuente longitud
     if (ingresoNuevo.fuente && ingresoNuevo.fuente.length > 80) {
       setMensaje("La fuente no puede exceder 80 caracteres.");
       setShowModalMensaje(true);
       return false;
     }
-    // 6) descripcion longitud
     if (ingresoNuevo.descripcion && ingresoNuevo.descripcion.length > 100) {
       setMensaje("La descripción no puede exceder 100 caracteres.");
       setShowModalMensaje(true);
       return false;
     }
-    // 7) Archivo
     if (fileComprobante && fileComprobante.size > 5 * 1024 * 1024) {
       setMensaje("El archivo no debe superar los 5 MB.");
       setShowModalMensaje(true);
@@ -91,7 +86,6 @@ function ModalRegistroIngreso({
 
     let urlArchivo = "";
     if (fileComprobante) {
-      // Subir a Storage
       try {
         const ext = fileComprobante.name.split(".").pop();
         const fileName = `comprobante_${Date.now()}.${ext}`;
@@ -106,7 +100,6 @@ function ModalRegistroIngreso({
       }
     }
 
-    // Llamar a la función principal
     handleAddIngreso({ ...ingresoNuevo, comprobanteURL: urlArchivo });
   }
 
@@ -187,10 +180,11 @@ function ModalRegistroIngreso({
                 required
               >
                 <option value="">Seleccione</option>
-                <option value="Agro">Agro</option>
-                <option value="Comercio">Comercio</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Artesanía">Artesanía</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.nombre}>
+                    {cat.nombre}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
