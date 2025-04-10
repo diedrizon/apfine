@@ -1,0 +1,198 @@
+.recomendador-container {
+  width: 100%;
+  padding: 2rem 2%;
+  box-sizing: border-box;
+}
+
+/* === BOTÓN PRINCIPAL === */
+.recomendador-boton {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.2rem;
+}
+.recomendador-boton:hover {
+  background-color: #084cdf;
+  transform: scale(1.03);
+}
+.recomendador-boton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* === MENSAJE ESTADO === */
+.estado-recomendacion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* === LISTA DE RECOMENDACIONES === */
+.recomendaciones-lista {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  margin-top: 2rem;
+}
+.recomendacion-tarjeta {
+  padding: 1.5rem;
+  background-color: var(--reco-bg);
+  border-left: 4px solid #0d6efd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  animation: fadeInUp 0.5s ease forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+}
+.recomendacion-tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+.recomendacion-titulo {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0d6efd;
+  margin-bottom: 0.5rem;
+  gap: 0.6rem;
+}
+.recomendacion-texto {
+  font-size: 1rem;
+  color: var(--reco-text);
+  line-height: 1.5;
+}
+
+/* === TARJETAS HISTORIAL MEJORADAS === */
+.historial-item {
+  background-color: var(--historial-bg);
+  padding: 1.2rem 1.5rem;
+  border-radius: 14px;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+.historial-fecha {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--historial-fecha);
+}
+.historial-lista {
+  padding-left: 0.8rem;
+  color: var(--historial-texto);
+  list-style: none;
+}
+.historial-lista li {
+  position: relative;
+  margin-bottom: 0.6rem;
+  padding-left: 1.8rem;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+.historial-icono {
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  display: inline-flex;
+}
+
+/* === FILTROS DE HISTORIAL === */
+.historial-recomendaciones {
+  margin-top: 2.8rem;
+}
+.historial-recomendaciones h3 {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+  color: var(--historial-titulo);
+}
+.filtros-historial {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.filtros-historial select {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: var(--select-bg);
+  color: var(--select-text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border 0.2s ease;
+}
+.filtros-historial select:focus {
+  border-color: #0d6efd;
+  outline: none;
+}
+
+/* === ANIMACIÓN === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === MODO CLARO === */
+body.light-mode {
+  --reco-bg: #f9fafb;
+  --reco-text: #333;
+  --historial-bg: #f1f5f9;
+  --historial-texto: #444;
+  --historial-titulo: #222;
+  --historial-fecha: #555;
+  --select-bg: #fff;
+  --select-text: #333;
+}
+
+/* === MODO OSCURO === */
+body.dark-mode {
+  --reco-bg: #1f1f1f;
+  --reco-text: #e6e6e6;
+  --historial-bg: #2a2a2a;
+  --historial-texto: #dddddd;
+  --historial-titulo: #f3f3f3;
+  --historial-fecha: #cccccc;
+  --select-bg: #333;
+  --select-text: #f9f9f9;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .recomendador-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .recomendador-boton {
+    width: 100%;
+  }
+
+  .filtros-historial {
+    flex-direction: column;
+  }
+}
