@@ -96,7 +96,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                   handleNavigate("/categorias")
                 )}
                 {renderSubItem(<BiTargetLock />, "Metas", () => {})}
-                {renderSubItem(<BiBulb />, "Recomendaciones", () => {})}
+                {renderSubItem(<BiBulb />, "Recomendaciones", () =>
+                  handleNavigate("/recomendaciones")
+                )}
               </ul>
             )}
             <li

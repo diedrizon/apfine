@@ -19,6 +19,7 @@ import Gastos from "./views/Gastos";
 import "./App.css";
 import ReactGA from "react-ga4";
 import Recuperar from "./views/Recuperar";
+import Recomendaciones from "./views/Recomendaciones";
 
 const RouteChangeTracker = () => {
   const location = useLocation();
@@ -119,6 +120,11 @@ function AppContent() {
           <Route
             path="/gastos"
             element={<ProtectedRoute element={<Gastos />} />}
+          />
+
+          <Route
+            path="/recomendaciones"
+            element={<ProtectedRoute element={<Recomendaciones />} />}
           />
         </Routes>
       </main>
