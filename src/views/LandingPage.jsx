@@ -37,7 +37,7 @@ const LandingPage = () => {
         <Container>
           <Navbar.Brand className="lp-brand" onClick={() => scrollTo("hero")}>
             <img
-              src="/LogoImg.png"
+              src="/logovertical.webp"
               alt="Logo"
               className="lp-logo"
               loading="lazy"
@@ -115,12 +115,20 @@ const LandingPage = () => {
               </p>
             </Col>
             <Col md={6} className="d-flex align-items-center justify-content-center">
-              <img
-                src="/mujer.webp"
-                alt="Nosotros"
-                className="lp-img-fit-text"
-                loading="lazy"
-              />
+              <div className="lp-img-switch">
+                <img
+                  src="/mujerazul_1.webp"
+                  alt="Nosotros Light"
+                  className="lp-img-fit-text lp-img-light"
+                  loading="lazy"
+                />
+                <img
+                  src="/mujerverde_1.webp"
+                  alt="Nosotros Dark"
+                  className="lp-img-fit-text lp-img-dark"
+                  loading="lazy"
+                />
+              </div>
             </Col>
           </Row>
         </Container>

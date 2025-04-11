@@ -1,7 +1,7 @@
-/* Importar fuente moderna */
+/* Importar fuente moderna desde Google Fonts (usa localmente si prefieres) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* Global: no forzamos el fondo en body para respetar el modo */
+/* Global: No forzamos el fondo en body para respetar el modo */
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
@@ -10,23 +10,91 @@ body {
 
 /* Estilos encapsulados para la Landing Page */
 .landing-page {
-  /* Variables locales solo para esta página */
-  --lp-header-text-light: #000;
-  --lp-header-hover-light: #007bff;
-  --lp-header-text-dark: #fff;
-  --lp-header-hover-dark: #0ff;
+  /* Variables para MODO CLARO */
+  --button-primary: #0033CC;
+  --button-hover-primary: #0026A3;
+  --button-secondary-bg: #E5F3ED;
+  --button-secondary-text: #0033CC;
+  --button-disabled: #D1D5DB;
+
+  --icon-active: #0033CC;
+  --icon-success: #39D65C;
+  --icon-warning: #FACC15;
+  --icon-error: #FF4D4F;
+  --icon-inactive: #9CA3AF;
+
+  --text-title: #0033CC;
+  --text-general: #1F2937;
+  --text-secondary: #6B7280;
+  --text-positive: #39D65C;
+  --text-error: #FF4D4F;
+
+  --card-bg: #FFFFFF;
+  --card-border: #E5E7EB;
+  --card-title: #0033CC;
+  --card-key: #39D65C;
+
+  --alert-success-bg: #E6F8EF;
+  --alert-success-text: #39D65C;
+  --alert-warning-bg: #FEF9C3;
+  --alert-warning-text: #FACC15;
+  --alert-error-bg: #FFE4E6;
+  --alert-error-text: #FF4D4F;
+  --alert-info-bg: #E0F2FE;
+  --alert-info-text: #3B82F6;
+
+  /* Variables heredadas para el header y menú */
+  --lp-header-text-light: var(--text-title);
+  --lp-header-hover-light: var(--button-hover-primary);
   --menu-bg-light: #fff;
-  --menu-bg-dark: #1f1f1f;
   --menu-border-light: #ddd;
-  --menu-border-dark: #444;
   --menu-link-bg-light: #f8f9fa;
-  --menu-link-bg-dark: #333;
   --menu-link-text-light: #333;
-  --menu-link-text-dark: #fff;
   --menu-link-hover-bg-light: #e2e6ea;
+  --menu-link-hover-text-light: var(--button-hover-primary);
+}
+
+/* Variables para el MODO OSCURO */
+body.dark-mode .landing-page {
+  --button-primary: #39D65C;
+  --button-hover-primary: #2EB14F;
+  --button-secondary-bg: #223322;
+  --button-secondary-text: #FFFFFF;
+  --button-disabled: #374151;
+
+  --icon-active: #39D65C;
+  --icon-warning: #FACC15;
+  --icon-error: #FF4D4F;
+  --icon-inactive: #6B7280;
+
+  --text-title: #FFFFFF;
+  --text-general: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --text-positive: #39D65C;
+  --text-error: #FF4D4F;
+
+  --card-bg: #1C1F2A;
+  --card-border: #2C2F3A;
+  --card-title: #FFFFFF;
+  --card-key: #39D65C;
+
+  --alert-success-bg: #223D30;
+  --alert-success-text: #39D65C;
+  --alert-warning-bg: #3F3B1B;
+  --alert-warning-text: #FACC15;
+  --alert-error-bg: #3F1F1F;
+  --alert-error-text: #FF4D4F;
+  --alert-info-bg: #1E3A5F;
+  --alert-info-text: #3B82F6;
+
+  --lp-header-text-dark: var(--text-title);
+  --lp-header-hover-dark: var(--button-hover-primary);
+  --menu-bg-dark: #1f1f1f;
+  --menu-border-dark: #444;
+  --menu-link-bg-dark: #333;
+  --menu-link-text-dark: #fff;
   --menu-link-hover-bg-dark: #444;
-  --menu-link-hover-text-light: #007bff;
-  --menu-link-hover-text-dark: #0ff;
+  --menu-link-hover-text-dark: var(--button-hover-primary);
 }
 
 /* Navbar: se reduce la altura, se fija y se centra el contenido */
@@ -37,25 +105,29 @@ body {
   display: flex;
   align-items: center;
   z-index: 9999;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   border-bottom: 1px solid #ccc;
 }
 
 .landing-page .lp-brand,
 .landing-page .lp-toggle,
 .landing-page .lp-nav .nav-link {
-  color: var(--lp-header-text-light);
+  color: var(--text-title);
 }
 .landing-page .lp-brand:hover,
 .landing-page .lp-nav .nav-link:hover {
-  color: var(--lp-header-hover-light);
+  color: var(--button-hover-primary);
 }
 
-/* Logo: en desktop se muestra más grande */
+/* Logo: en desktop se muestra más grande y sin filtro en modo light */
 .landing-page .lp-logo {
-  height: 80px;
+  height: auto;
+  max-height: 100px; /* 👈 Controla el alto visual real */
+  transform: scale(1.2); /* 👈 Lo hace visualmente más grande */
+  transform-origin: left center;
   margin-right: 10px;
   object-fit: contain;
+  filter: none;
 }
 
 /* Icono y menú toggle */
@@ -86,10 +158,21 @@ body {
 }
 
 /* Links del navbar */
-.landing-page .lp-nav .nav-link {
-  font-weight: 500;
-  margin: 0 10px;
-  cursor: pointer;
+/* Se aplican bordes redondeados al hacer hover en todos, excepto "Iniciar Sesión" (último) que tiene borde permanente */
+.landing-page .lp-nav .nav-link:not(:last-child):hover {
+  border: 2px solid var(--button-hover-primary);
+  border-radius: 50px;
+}
+.landing-page .lp-nav .nav-link:last-child {
+  border: 2px solid var(--button-primary);
+  border-radius: 50px;
+}
+
+/* Ajuste para dispositivo grande: se incrementa el margen horizontal entre los botones */
+@media (min-width: 992px) {
+  .landing-page .lp-nav .nav-link {
+    margin: 0 15px;
+  }
 }
 
 /* Sección Héroe */
@@ -118,7 +201,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
@@ -127,29 +210,28 @@ body {
   position: relative;
 }
 
+/* Títulos y botones en la sección héroe */
 .landing-page .lp-hero-title {
   font-size: 3rem;
   font-weight: 700;
 }
-
 .landing-page .lp-hero-subtitle {
   font-size: 1.2rem;
   margin: 20px 0;
   color: #fff;
 }
-
 .landing-page .lp-hero-btn {
   padding: 12px 28px;
   font-size: 1rem;
   border: none;
   border-radius: 50px;
-  background: #fff;
-  color: #007bff;
+  background: var(--button-primary);
+  color: #fff;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 .landing-page .lp-hero-btn:hover {
-  background: #e3e3e3;
+  background: var(--button-hover-primary);
 }
 
 /* Secciones Generales */
@@ -198,6 +280,22 @@ body {
   }
 }
 
+/* Contenedor para el switch de imágenes (modo claro/oscuro) */
+/* Se fuerza un min-height para que el contenedor tenga la misma altura visual que la imagen original */
+.lp-img-switch {
+  width: 100%;
+  max-width: 250px;
+  min-height: 400px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.lp-img-switch img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 /* Estilo para la imagen de la sección "Quiénes Somos" */
 .lp-about-img-wrapper {
   padding: 0;
@@ -210,29 +308,46 @@ body {
   height: 100%;
   object-fit: cover;
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Reglas para el switch de imágenes (modo claro/oscuro) */
+.lp-img-light {
+  display: block;
+}
+.lp-img-dark {
+  display: none;
+}
+
+body.dark-mode .lp-img-light {
+  display: none;
+}
+
+body.dark-mode .lp-img-dark {
+  display: block;
 }
 
 /* Tarjetas de Servicios */
 .landing-page .lp-services-cards .lp-card {
   padding: 30px;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 10px;
   text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s;
+  border: 1px solid var(--card-border);
 }
 .landing-page .lp-card:hover {
   transform: translateY(-5px);
 }
 .landing-page .lp-card h4 {
-  color: #007bff;
+  color: var(--card-title);
   font-weight: 600;
   margin-bottom: 15px;
 }
 .lp-card-icon {
   margin-bottom: 15px;
-  color: #007bff;
+  color: var(--icon-active);
 }
 
 /* Footer */
@@ -319,24 +434,27 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* Ítems con iconos en el drawer */
+  /* Ítems con iconos en el drawer: se aumenta el margin-bottom para dar espacio entre botones */
   .landing-page .lp-drawer-nav .nav-link {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 0.8rem 1rem;
-    border-radius: 8px;
+    border-radius: 50px;
     color: var(--menu-link-text-light);
     font-weight: 600;
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     background-color: var(--menu-link-bg-light);
     transition: all 0.3s ease;
   }
-
   .landing-page .lp-drawer-nav .nav-link:hover {
     background-color: var(--menu-link-hover-bg-light);
     color: var(--menu-link-hover-text-light);
+  }
+  .landing-page .lp-drawer-nav .nav-link:last-child {
+    border: 2px solid var(--button-primary);
+    border-radius: 50px;
   }
 
   /* Centrado vertical del logo en móvil */
@@ -347,7 +465,7 @@ body {
   }
   .landing-page .lp-logo {
     height: 65px;
-    margin-top: -5px; /* Ajusta este valor según necesites */
+    margin-top: -5px;
   }
 }
 
@@ -377,9 +495,10 @@ body.dark-mode .landing-page .lp-brand:hover,
 body.dark-mode .landing-page .lp-nav .nav-link:hover {
   color: var(--lp-header-hover-dark);
 }
-body.dark-mode .landing-page .lp-logo {
+/* Se comenta la regla para que el logo no se invierta en dark mode */
+/* body.dark-mode .landing-page .lp-logo {
   filter: invert(1);
-}
+} */
 body.dark-mode .landing-page .lp-hero-btn {
   background: #444;
   color: #fff;
@@ -391,11 +510,11 @@ body.dark-mode .landing-page .lp-about {
   background: #111;
 }
 body.dark-mode .landing-page .lp-services-cards .lp-card {
-  background: #222;
-  box-shadow: 0 3px 10px rgba(255,255,255,0.1);
+  background: var(--card-bg);
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
 }
 body.dark-mode .landing-page .lp-card h4 {
-  color: #0ff;
+  color: var(--card-title);
 }
 body.dark-mode .landing-page .lp-footer {
   background: #000;
@@ -418,7 +537,7 @@ body.dark-mode .landing-page .lp-footer-nav .nav-link:hover {
   --menu-link-bg-light: #f8f9fa;
   --menu-link-text-light: #333;
   --menu-link-hover-bg-light: #e2e6ea;
-  --menu-link-hover-text-light: #007bff;
+  --menu-link-hover-text-light: var(--button-hover-primary);
 }
 
 /* Variables para el menú en móvil (Dark Mode) */
@@ -428,5 +547,7 @@ body.dark-mode .landing-page {
   --menu-link-bg-light: #333;
   --menu-link-text-light: #fff;
   --menu-link-hover-bg-light: #444;
-  --menu-link-hover-text-light: #0ff;
+  --menu-link-hover-text-light: var(--button-hover-primary);
 }
+
+
