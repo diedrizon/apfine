@@ -158,7 +158,6 @@ body.dark-mode .landing-page {
 }
 
 /* Links del navbar */
-/* Se aplican bordes redondeados al hacer hover en todos, excepto "Iniciar Sesión" (último) que tiene borde permanente */
 .landing-page .lp-nav .nav-link:not(:last-child):hover {
   border: 2px solid var(--button-hover-primary);
   border-radius: 50px;
@@ -434,7 +433,7 @@ body.dark-mode .lp-img-dark {
     margin-bottom: 1rem;
   }
 
-  /* Ítems con iconos en el drawer: se aumenta el margin-bottom para dar espacio entre botones */
+  /* Ítems con iconos en el drawer: se aumenta el margin-bottom */
   .landing-page .lp-drawer-nav .nav-link {
     display: flex;
     align-items: center;
@@ -466,6 +465,37 @@ body.dark-mode .lp-img-dark {
   .landing-page .lp-logo {
     height: 65px;
     margin-top: -5px;
+  }
+  
+  /* --- NUEVAS REGLAS para la sección "Quiénes Somos" en móvil --- */
+  .lp-about .lp-img-switch {
+    min-height: auto;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 25px;  /* Separación extra entre imagen y texto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .lp-about .lp-img-fit-text {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .lp-about .row {
+    flex-direction: column-reverse !important;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .lp-about .lp-section-title,
+  .lp-about .lp-section-text {
+    text-align: center;
+    padding: 0 15px;
   }
 }
 
@@ -549,5 +579,3 @@ body.dark-mode .landing-page {
   --menu-link-hover-bg-light: #444;
   --menu-link-hover-text-light: var(--button-hover-primary);
 }
-
-
