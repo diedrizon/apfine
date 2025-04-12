@@ -579,3 +579,31 @@ body.dark-mode .landing-page {
   --menu-link-hover-bg-light: #444;
   --menu-link-hover-text-light: var(--button-hover-primary);
 }
+
+/* Solución para evitar desbordes y deformaciones cuando un móvil usa "Sitio para computadora" */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.landing-page .lp-hero-content,
+.landing-page .lp-section,
+.landing-page .lp-footer {
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+@media (max-width: 800px) {
+  .landing-page .lp-hero-title {
+    font-size: 2.4rem;
+  }
+  .landing-page .lp-hero-subtitle {
+    font-size: 1.1rem;
+  }
+  .landing-page .lp-hero-btn {
+    font-size: 0.9rem;
+    padding: 10px 22px;
+  }
+}
