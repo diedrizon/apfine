@@ -37,7 +37,7 @@ const LoginForm = ({
     <Card className="login-card">
       {/* Cabecera: logo + botón X */}
       <div className="login-header">
-        <img src="/LogoImg.png" alt="APFINE Logo" className="logo-top-left" />
+        <img src="/Horizontal.png" alt="APFINE Logo" className="logo-top-left" />
         <IoClose className="close-icon" onClick={handleClose} />
       </div>
 
