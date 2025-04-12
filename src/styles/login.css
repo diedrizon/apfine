@@ -1,39 +1,97 @@
-/* Estilo limpio y moderno tipo Kick */
+/* VARIABLES PARA MODO CLARO */
+body.light-mode {
+  --primary: #0033CC;
+  --primary-hover: #0026A3;
+  --secondary-bg: #E5F3ED;
+  --secondary-text: #0033CC;
+  --disabled: #D1D5DB;
+  --icon-active: #0033CC;
+  --icon-success: #39D65C;
+  --icon-warning: #FACC15;
+  --icon-error: #FF4D4F;
+  --icon-inactive: #9CA3AF;
+  --text-title: #0033CC;
+  --text-normal: #1F2937;
+  --text-secondary: #6B7280;
+  --text-positive: #39D65C;
+  --text-error: #FF4D4F;
+  --card-bg: #FFFFFF;
+  --card-border: #E5E7EB;
+  --alert-success-bg: #E6F8EF;
+  --alert-success-text: #39D65C;
+  --alert-warning-bg: #FEF9C3;
+  --alert-warning-text: #FACC15;
+  --alert-error-bg: #FFE4E6;
+  --alert-error-text: #FF4D4F;
+  --alert-info-bg: #E0F2FE;
+  --alert-info-text: #3B82F6;
+  --bg-body: #f5f5f5;
+}
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+/* VARIABLES PARA MODO OSCURO */
+body.dark-mode {
+  --primary: #39D65C;
+  --primary-hover: #2EB14F;
+  --secondary-bg: #223322;
+  --secondary-text: #FFFFFF;
+  --disabled: #374151;
+  --icon-active: #39D65C;
+  --icon-warning: #FACC15;
+  --icon-error: #FF4D4F;
+  --icon-inactive: #6B7280;
+  --text-title: #FFFFFF;
+  --text-normal: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --text-positive: #39D65C;
+  --text-error: #FF4D4F;
+  --card-bg: #1C1F2A;
+  --card-border: #2C2F3A;
+  --alert-success-bg: #223D30;
+  --alert-success-text: #39D65C;
+  --alert-warning-bg: #3F3B1B;
+  --alert-warning-text: #FACC15;
+  --alert-error-bg: #3F1F1F;
+  --alert-error-text: #FF4D4F;
+  --alert-info-bg: #1E3A5F;
+  --alert-info-text: #3B82F6;
+  --bg-body: #000;
+}
+
+/* ================= ESTILOS LOGIN ================= */
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #000;
   font-family: 'Inter', sans-serif;
   overflow: hidden;
+  background-color: var(--bg-body);
 }
 
-/* CENTRADO DE LA PÁGINA DE LOGIN */
+/* Login Container */
 .login-page {
   display: flex;
   justify-content: center;
-  align-items: center; /* Centrado vertical */
+  align-items: center;
   min-height: 100vh;
-  background-color: #000;
-  padding: 2rem 1rem; /* ✅ espacio arriba y abajo */
+  padding: 2rem 1rem;
   box-sizing: border-box;
+  background-color: var(--bg-body);
 }
 
-/* TARJETA DEL FORMULARIO */
+/* Card Login */
 .login-card {
   width: 100%;
   max-width: 360px;
-  background-color: #1a1a1a;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
-  color: #fff;
+  color: var(--text-normal);
   padding: 0.5rem 1rem 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 255, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   margin: 0 auto;
 }
 
-/* CABECERA: LOGO + CIERRE */
+/* Header */
 .login-header {
   display: flex;
   justify-content: space-between;
@@ -46,40 +104,35 @@ body {
 }
 
 .close-icon {
-  color: #fff;
+  color: var(--text-title);
   font-size: 1.5rem;
   cursor: pointer;
 }
 
-/* FORMULARIO */
-.login-card form {
-  margin-top: 0.5rem;
-}
-
+/* Form */
 .login-card .form-label {
-  color: #ccc;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 4px;
 }
 
 .login-card .form-control {
-  background-color: #2a2a2a;
-  border: 1px solid #444;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
   font-size: 0.9rem;
-  color: #fff;
+  color: var(--text-normal);
   margin-bottom: 1rem;
   transition: border 0.3s;
 }
 
 .login-card .form-control:focus {
   outline: none;
-  border: 1px solid #00ff00;
-  box-shadow: none;
+  border: 1px solid var(--primary);
 }
 
-/* CONTRASEÑA CON OJITO */
+/* Ojo */
 .input-with-eye {
   position: relative;
 }
@@ -89,17 +142,17 @@ body {
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
-  color: #888;
+  color: var(--icon-inactive);
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .input-with-eye .eye-icon:hover {
-  color: #fff;
+  color: var(--text-title);
 }
 
-/* BOTÓN PRINCIPAL */
+/* Botón */
 .login-btn {
   width: 100%;
   padding: 0.6rem;
@@ -107,23 +160,22 @@ body {
   font-weight: 600;
   border: none;
   border-radius: 8px;
-  color: #000;
-  background: linear-gradient(90deg, #00ff00 0%, #85ff69 100%);
-  transition: transform 0.2s;
+  color: #fff;
+  background-color: var(--primary);
+  transition: all 0.2s;
   margin-bottom: 1rem;
-  white-space: nowrap;
 }
 
 .login-btn:hover {
-  transform: scale(1.02);
+  background-color: var(--primary-hover);
 }
 
-/* SEPARADOR: O INICIA SESIÓN CON */
+/* Separador */
 .separator {
   display: flex;
   align-items: center;
   margin: 1rem 0;
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -132,15 +184,15 @@ body {
   content: "";
   flex: 1;
   height: 1px;
-  background-color: #444;
+  background-color: var(--card-border);
   margin: 0 10px;
 }
 
-/* BOTÓN GOOGLE */
+/* Botón Google */
 .google-btn-icon {
-  border: 1px solid #444;
-  background: #1a1a1a;
-  color: #00ff00;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--primary);
   border-radius: 50%;
   width: 48px;
   height: 48px;
@@ -151,11 +203,11 @@ body {
 }
 
 .google-btn-icon:hover {
-  background-color: #00ff00;
-  color: #000;
+  background-color: var(--primary);
+  color: #fff;
 }
 
-/* TOGGLE INICIAR SESIÓN / REGISTRARSE */
+/* Toggle */
 .toggle-buttons {
   display: flex;
   justify-content: center;
@@ -166,25 +218,25 @@ body {
 
 .toggle-option {
   cursor: pointer;
-  color: #888;
+  color: var(--text-secondary);
   padding-bottom: 3px;
   border-bottom: 2px solid transparent;
   transition: color 0.3s, border-bottom 0.3s;
 }
 
 .toggle-option:hover {
-  color: #fff;
+  color: var(--text-title);
 }
 
 .toggle-option.active {
-  color: #fff;
-  border-bottom: 2px solid #00ff00;
+  color: var(--text-title);
+  border-bottom: 2px solid var(--primary);
 }
 
-/* ENLACE DE RECUPERAR CONTRASEÑA */
+/* Recuperar */
 .recover-link {
   cursor: pointer;
-  color: #00ff00;
+  color: var(--primary);
   font-size: 0.85rem;
   text-decoration: underline;
   text-align: center;
@@ -192,5 +244,5 @@ body {
 }
 
 .recover-link:hover {
-  color: #85ff69;
+  color: var(--primary-hover);
 }
