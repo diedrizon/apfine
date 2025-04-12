@@ -22,11 +22,13 @@ import {
   BiBookOpen,
 } from "react-icons/bi";
 import "../styles/Panel.css";
+
 function Panel({ isSidebarOpen, toggleSidebar }) {
   const [openModule, setOpenModule] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
     function handleResize() {
       setIsMobile(window.innerWidth < 768);
@@ -34,26 +36,29 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   function toggleModuleName(moduleName) {
     setOpenModule(openModule === moduleName ? null : moduleName);
   }
+
   function handleNavigate(path) {
     navigate(path);
     if (isMobile) {
       toggleSidebar();
     }
   }
-  if (!isLoggedIn) {
-    return null;
-  }
+
+  if (!isLoggedIn) return null;
+
   function renderSubItem(icon, label, onClick) {
     return (
       <li className="submenu-item" onClick={onClick}>
-        {icon}
+        <span className="submenu-icon">{icon}</span>
         <span>{label}</span>
       </li>
     );
   }
+
   return (
     <>
       {isMobile && isSidebarOpen && (
@@ -62,17 +67,22 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
       <aside className={`sidebar ${isSidebarOpen ? "sidebar-open" : ""}`}>
         <div className="sidebar-header">
           <div className="header-left">
-            <img src="/LogoImg.png" alt="APFINE Icon" className="logo" />
-            <span className="version">v1.0</span>
+            <img src="/Icono.png" alt="Logo APFINE" className="logo-icon" />
+            <div className="logo-text-group">
+              <span className="logo-text">APFINE</span>
+              <span className="version">v1.0</span>
+            </div>
           </div>
           <button className="close-sidebar" onClick={toggleSidebar}>
             X
           </button>
         </div>
+
         <div className="sidebar-body">
           <button className="new-chat-btn">
             <BiBarChartAlt2 /> Nuevo chat
           </button>
+
           <ul className="sidebar-menu">
             <li className="module" onClick={() => toggleModuleName("finanzas")}>
               <BiMoney className="module-icon" />
@@ -101,6 +111,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 )}
               </ul>
             )}
+
             <li
               className="module"
               onClick={() => toggleModuleName("produccion")}
@@ -125,6 +136,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 )}
               </ul>
             )}
+
             <li className="module" onClick={() => toggleModuleName("reportes")}>
               <BiBarChartAlt2 className="module-icon" />
               <span className="module-text">Reportes</span>
@@ -146,6 +158,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiBell />, "Alertas", () => {})}
               </ul>
             )}
+
             <li
               className="module"
               onClick={() => toggleModuleName("comunidad")}
@@ -165,6 +178,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiBookOpen />, "Tutoriales / Quiz", () => {})}
               </ul>
             )}
+
             <li className="module" onClick={() => toggleModuleName("admin")}>
               <BiCog className="module-icon" />
               <span className="module-text">Administración</span>
@@ -184,6 +198,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             )}
           </ul>
         </div>
+
         <div className="sidebar-footer">
           <span className="footer-email">diedrinzonfargas@gmail.com</span>
         </div>
@@ -191,4 +206,5 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
     </>
   );
 }
+
 export default Panel;
