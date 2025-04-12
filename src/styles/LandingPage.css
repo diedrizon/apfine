@@ -1,9 +1,9 @@
 /* Importar fuente moderna desde Google Fonts (usa localmente si prefieres) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
 /* Global: No forzamos el fondo en body para respetar el modo */
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   margin: 0;
   scroll-behavior: smooth;
 }
@@ -11,37 +11,37 @@ body {
 /* Estilos encapsulados para la Landing Page */
 .landing-page {
   /* Variables para MODO CLARO */
-  --button-primary: #0033CC;
-  --button-hover-primary: #0026A3;
-  --button-secondary-bg: #E5F3ED;
-  --button-secondary-text: #0033CC;
-  --button-disabled: #D1D5DB;
+  --button-primary: #0033cc;
+  --button-hover-primary: #0026a3;
+  --button-secondary-bg: #e5f3ed;
+  --button-secondary-text: #0033cc;
+  --button-disabled: #d1d5db;
 
-  --icon-active: #0033CC;
-  --icon-success: #39D65C;
-  --icon-warning: #FACC15;
-  --icon-error: #FF4D4F;
-  --icon-inactive: #9CA3AF;
+  --icon-active: #0033cc;
+  --icon-success: #39d65c;
+  --icon-warning: #facc15;
+  --icon-error: #ff4d4f;
+  --icon-inactive: #9ca3af;
 
-  --text-title: #0033CC;
-  --text-general: #1F2937;
-  --text-secondary: #6B7280;
-  --text-positive: #39D65C;
-  --text-error: #FF4D4F;
+  --text-title: #0033cc;
+  --text-general: #1f2937;
+  --text-secondary: #6b7280;
+  --text-positive: #39d65c;
+  --text-error: #ff4d4f;
 
-  --card-bg: #FFFFFF;
-  --card-border: #E5E7EB;
-  --card-title: #0033CC;
-  --card-key: #39D65C;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-title: #0033cc;
+  --card-key: #39d65c;
 
-  --alert-success-bg: #E6F8EF;
-  --alert-success-text: #39D65C;
-  --alert-warning-bg: #FEF9C3;
-  --alert-warning-text: #FACC15;
-  --alert-error-bg: #FFE4E6;
-  --alert-error-text: #FF4D4F;
-  --alert-info-bg: #E0F2FE;
-  --alert-info-text: #3B82F6;
+  --alert-success-bg: #e6f8ef;
+  --alert-success-text: #39d65c;
+  --alert-warning-bg: #fef9c3;
+  --alert-warning-text: #facc15;
+  --alert-error-bg: #ffe4e6;
+  --alert-error-text: #ff4d4f;
+  --alert-info-bg: #e0f2fe;
+  --alert-info-text: #3b82f6;
 
   /* Variables heredadas para el header y menú */
   --lp-header-text-light: var(--text-title);
@@ -56,36 +56,36 @@ body {
 
 /* Variables para el MODO OSCURO */
 body.dark-mode .landing-page {
-  --button-primary: #39D65C;
-  --button-hover-primary: #2EB14F;
+  --button-primary: #39d65c;
+  --button-hover-primary: #2eb14f;
   --button-secondary-bg: #223322;
-  --button-secondary-text: #FFFFFF;
+  --button-secondary-text: #ffffff;
   --button-disabled: #374151;
 
-  --icon-active: #39D65C;
-  --icon-warning: #FACC15;
-  --icon-error: #FF4D4F;
-  --icon-inactive: #6B7280;
+  --icon-active: #39d65c;
+  --icon-warning: #facc15;
+  --icon-error: #ff4d4f;
+  --icon-inactive: #6b7280;
 
-  --text-title: #FFFFFF;
-  --text-general: #E5E7EB;
-  --text-secondary: #9CA3AF;
-  --text-positive: #39D65C;
-  --text-error: #FF4D4F;
+  --text-title: #ffffff;
+  --text-general: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-positive: #39d65c;
+  --text-error: #ff4d4f;
 
-  --card-bg: #1C1F2A;
-  --card-border: #2C2F3A;
-  --card-title: #FFFFFF;
-  --card-key: #39D65C;
+  --card-bg: #1c1f2a;
+  --card-border: #2c2f3a;
+  --card-title: #ffffff;
+  --card-key: #39d65c;
 
-  --alert-success-bg: #223D30;
-  --alert-success-text: #39D65C;
-  --alert-warning-bg: #3F3B1B;
-  --alert-warning-text: #FACC15;
-  --alert-error-bg: #3F1F1F;
-  --alert-error-text: #FF4D4F;
-  --alert-info-bg: #1E3A5F;
-  --alert-info-text: #3B82F6;
+  --alert-success-bg: #223d30;
+  --alert-success-text: #39d65c;
+  --alert-warning-bg: #3f3b1b;
+  --alert-warning-text: #facc15;
+  --alert-error-bg: #3f1f1f;
+  --alert-error-text: #ff4d4f;
+  --alert-info-bg: #1e3a5f;
+  --alert-info-text: #3b82f6;
 
   --lp-header-text-dark: var(--text-title);
   --lp-header-hover-dark: var(--button-hover-primary);
@@ -122,8 +122,8 @@ body.dark-mode .landing-page {
 /* Logo: en desktop se muestra más grande y sin filtro en modo light */
 .landing-page .lp-logo {
   height: auto;
-  max-height: 100px; /* 👈 Controla el alto visual real */
-  transform: scale(1.2); /* 👈 Lo hace visualmente más grande */
+  max-height: 100px;
+  transform: scale(1.2);
   transform-origin: left center;
   margin-right: 10px;
   object-fit: contain;
@@ -177,7 +177,7 @@ body.dark-mode .landing-page {
 /* Sección Héroe */
 .landing-page .lp-hero {
   position: relative;
-  background: url('/Futuro.webp') center center / cover no-repeat;
+  background: url("/Futuro.webp") center center / cover no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -190,7 +190,7 @@ body.dark-mode .landing-page {
 
 @media (min-width: 768px) {
   .landing-page .lp-hero {
-    background: url('/Futuro.webp') center center / cover no-repeat;
+    background: url("/Futuro.webp") center center / cover no-repeat;
   }
 }
 
@@ -280,11 +280,10 @@ body.dark-mode .landing-page {
 }
 
 /* Contenedor para el switch de imágenes (modo claro/oscuro) */
-/* Se fuerza un min-height para que el contenedor tenga la misma altura visual que la imagen original */
 .lp-img-switch {
   width: 100%;
   max-width: 250px;
-  min-height: 400px; 
+  min-height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -398,8 +397,7 @@ body.dark-mode .lp-img-dark {
   .landing-page .lp-section {
     padding: 80px 0;
   }
-
-  /* Menú drawer móvil: se muestra desde la derecha */
+  /* Menú drawer móvil */
   .landing-page .lp-drawer-menu {
     position: fixed;
     top: 0;
@@ -415,14 +413,16 @@ body.dark-mode .lp-img-dark {
     flex-direction: column;
     animation: slideInRight 0.3s ease;
   }
-
-  /* Animación de entrada */
   @keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
-
-  /* Botón para cerrar el drawer */
   .landing-page .lp-drawer-close {
     align-self: flex-end;
     background: none;
@@ -432,8 +432,6 @@ body.dark-mode .lp-img-dark {
     cursor: pointer;
     margin-bottom: 1rem;
   }
-
-  /* Ítems con iconos en el drawer: se aumenta el margin-bottom */
   .landing-page .lp-drawer-nav .nav-link {
     display: flex;
     align-items: center;
@@ -455,8 +453,6 @@ body.dark-mode .lp-img-dark {
     border: 2px solid var(--button-primary);
     border-radius: 50px;
   }
-
-  /* Centrado vertical del logo en móvil */
   .landing-page .lp-navbar {
     height: 60px;
     display: flex;
@@ -466,32 +462,27 @@ body.dark-mode .lp-img-dark {
     height: 65px;
     margin-top: -5px;
   }
-  
-  /* --- NUEVAS REGLAS para la sección "Quiénes Somos" en móvil --- */
   .lp-about .lp-img-switch {
     min-height: auto;
     height: auto;
     margin-top: 20px;
-    margin-bottom: 25px;  /* Separación extra entre imagen y texto */
+    margin-bottom: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
   }
-  
   .lp-about .lp-img-fit-text {
     max-width: 220px;
     width: 100%;
     height: auto;
     object-fit: contain;
   }
-  
   .lp-about .row {
     flex-direction: column-reverse !important;
     text-align: center;
     margin-top: 20px;
   }
-  
   .lp-about .lp-section-title,
   .lp-about .lp-section-text {
     text-align: center;
@@ -499,7 +490,7 @@ body.dark-mode .lp-img-dark {
   }
 }
 
-/* Ajustes para pantallas grandes */
+/* Pantallas grandes */
 @media (min-width: 992px) {
   .landing-page .lp-navbar .container {
     max-width: 1400px;
@@ -525,10 +516,6 @@ body.dark-mode .landing-page .lp-brand:hover,
 body.dark-mode .landing-page .lp-nav .nav-link:hover {
   color: var(--lp-header-hover-dark);
 }
-/* Se comenta la regla para que el logo no se invierta en dark mode */
-/* body.dark-mode .landing-page .lp-logo {
-  filter: invert(1);
-} */
 body.dark-mode .landing-page .lp-hero-btn {
   background: #444;
   color: #fff;
@@ -580,8 +567,9 @@ body.dark-mode .landing-page {
   --menu-link-hover-text-light: var(--button-hover-primary);
 }
 
-/* Solución para evitar desbordes y deformaciones cuando un móvil usa "Sitio para computadora" */
-html, body {
+/* Evitar desbordes */
+html,
+body {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -606,4 +594,138 @@ html, body {
     font-size: 0.9rem;
     padding: 10px 22px;
   }
+}
+
+/* ==================================================== */
+/*    SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN          */
+/* ==================================================== */
+
+.landing-page .lp-benefits-faq {
+  background: var(--card-bg);
+  padding: 100px 0;
+  text-align: center;
+  color: var(--text-general);
+}
+
+.landing-page .lp-benefits-faq .lp-section-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 30px;
+}
+
+.landing-page .lp-benefits-faq h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-title);
+}
+
+.landing-page .lp-benefits-faq p {
+  font-size: 1.1rem;
+  max-width: 750px;
+  margin: 0 auto 20px;
+  color: var(--text-general);
+}
+
+/* Modo Oscuro en la sección merge */
+body.dark-mode .landing-page .lp-benefits-faq {
+  background: var(--card-bg);
+  color: var(--text-general);
+}
+body.dark-mode .landing-page .lp-benefits-faq h3,
+body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
+  color: var(--text-title);
+}
+
+/* Responsive en la sección merge */
+@media (max-width: 768px) {
+  .landing-page .lp-benefits-faq {
+    padding: 80px 15px;
+  }
+  .landing-page .lp-benefits-faq p {
+    font-size: 1rem;
+    padding: 0 10px;
+  }
+}
+/* === SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN === */
+/* === SECCIÓN: BENEFICIOS E INFORMACIÓN === */
+.lp-benefits-faq {
+  background: var(--card-bg);
+  padding: 100px 0;
+}
+
+/* Tarjeta individual (Beneficios o FAQ) */
+.lp-card-info {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 30px 25px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+  height: 100%;
+  text-align: left; /* 👈 Alineación general a la izquierda */
+}
+
+.lp-card-info:hover {
+  transform: translateY(-5px);
+}
+
+.lp-card-info h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-title);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+  text-align: center;
+}
+
+/* === BENEFICIOS === */
+.lp-check-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.lp-check-list li {
+  position: relative;
+  padding-left: 20px; /* 👈 Menor espacio a la izquierda */
+  font-size: 1.1rem;
+  color: var(--text-general);
+  margin-bottom: 10px; /* 👈 Menor separación entre ítems */
+}
+
+.lp-check-list li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  color: var(--icon-success);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* === FAQ === */
+.lp-faq-item {
+  margin-bottom: 20px;
+}
+
+.lp-faq-item strong {
+  font-size: 1.1rem;
+  color: var(--text-title);
+  display: block;
+  margin-top: 10px;
+}
+
+.lp-faq-item p {
+  font-size: 1rem;
+  color: var(--text-general);
+  margin-top: 5px;
+  line-height: 1.5;
+  text-align: justify; /* 👈 Alineación mejorada */
 }
