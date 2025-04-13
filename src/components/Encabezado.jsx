@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Encabezado.css";
 import { useAuth } from "../database/authcontext";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
@@ -9,6 +9,14 @@ import { BiSun, BiMoon } from "react-icons/bi";
 const Encabezado = ({ isSidebarOpen, toggleSidebar, isDarkMode, toggleTheme }) => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const ocultarHeaderEn = ["/", "/login", "/recuperar"];
+  const esRuta404 = location.pathname && ![
+    "/", "/login", "/recuperar", "/inicio", "/categorias", "/ingresos", "/gastos", "/recomendaciones"
+  ].includes(location.pathname);
+
+  if (ocultarHeaderEn.includes(location.pathname) || esRuta404) return null;
 
   const handleLogout = async () => {
     if (isSidebarOpen) toggleSidebar();

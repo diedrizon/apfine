@@ -16,10 +16,11 @@ import Inicio from "./views/Inicio";
 import Categorias from "./views/Categorias";
 import Ingresos from "./views/Ingresos";
 import Gastos from "./views/Gastos";
-import "./App.css";
-import ReactGA from "react-ga4";
 import Recuperar from "./views/Recuperar";
 import Recomendaciones from "./views/Recomendaciones";
+import NotFound from "./views/NotFound";
+import "./App.css";
+import ReactGA from "react-ga4";
 
 const RouteChangeTracker = () => {
   const location = useLocation();
@@ -35,14 +36,9 @@ function AppContent() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      return savedTheme === "dark";
-    } else {
-      return (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      );
-    }
+    return savedTheme
+      ? savedTheme === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
@@ -63,20 +59,14 @@ function AppContent() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  function toggleSidebar() {
-    setIsSidebarOpen(!isSidebarOpen);
-  }
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
-  function toggleTheme() {
-    setIsDarkMode((prev) => !prev);
-  }
-
-  // Rutas sin encabezado
-  const sinEncabezado = ["/", "/login", "/recuperar"];
+  // Rutas que no muestran encabezado ni panel
+  const sinEncabezado = ["/", "/login", "/recuperar", "/404"];
 
   return (
     <div className="App">
-      {/* Ocultar Encabezado y Panel en /, /login, /recuperar */}
       {!sinEncabezado.includes(location.pathname) && (
         <>
           <Encabezado
@@ -89,21 +79,18 @@ function AppContent() {
         </>
       )}
 
-      {/* Agregamos clase "sin-encabezado" si estamos en esas rutas */}
       <main
         className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""} ${
           sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
         }`}
       >
         <Routes>
-          {/* Ruta pública: Landing Page */}
+          {/* Públicas */}
           <Route path="/" element={<LandingPage />} />
-          {/* Ruta pública: Login */}
           <Route path="/login" element={<Login />} />
-          {/* Recuperar contraseña */}
           <Route path="/recuperar" element={<Recuperar />} />
 
-          {/* Rutas protegidas */}
+          {/* Protegidas */}
           <Route
             path="/inicio"
             element={<ProtectedRoute element={<Inicio />} />}
@@ -116,16 +103,18 @@ function AppContent() {
             path="/ingresos"
             element={<ProtectedRoute element={<Ingresos />} />}
           />
-          {/* Nueva ruta para Gastos */}
           <Route
             path="/gastos"
             element={<ProtectedRoute element={<Gastos />} />}
           />
-
           <Route
             path="/recomendaciones"
             element={<ProtectedRoute element={<Recomendaciones />} />}
           />
+
+          {/* Página no encontrada */}
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
@@ -142,5 +131,6 @@ function App() {
     </AuthProvider>
   );
 }
+console.log("Ubicación actual:", location.pathname);
 
 export default App;
