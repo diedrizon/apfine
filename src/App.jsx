@@ -131,6 +131,5 @@ function App() {
     </AuthProvider>
   );
 }
-console.log("Ubicación actual:", location.pathname);
 
 export default App;
