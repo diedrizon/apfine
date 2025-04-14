@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { appfirebase } from "../database/firebaseconfig";
 import "../styles/login.css";
+import { IoCloseSharp } from "react-icons/io5";
 
 const Recuperar = () => {
   const [email, setEmail] = useState("");
@@ -19,10 +20,14 @@ const Recuperar = () => {
     setError("");
     try {
       await sendPasswordResetEmail(auth, email);
-      setMsg("Se envió un correo de recuperación. Revisa tu bandeja de entrada.");
+      setMsg(
+        "Se envió un correo de recuperación. Revisa tu bandeja de entrada."
+      );
     } catch (err) {
       console.error("Error al enviar correo de recuperación:", err);
-      setError("No se pudo enviar el correo. Verifica que el email esté registrado.");
+      setError(
+        "No se pudo enviar el correo. Verifica que el email esté registrado."
+      );
     }
   };
 
@@ -35,10 +40,14 @@ const Recuperar = () => {
     <div className="login-page">
       <Card className="login-card">
         <div className="login-header">
-          <h5 style={{ color: "#fff", margin: 0 }}>Recuperar Contraseña</h5>
-          <Button variant="link" onClick={handleClose} style={{ color: "#fff", fontSize: "1.3rem" }}>
-            X
-          </Button>
+          <h5 className="login-title">Recuperar Contraseña</h5>
+          <button
+            onClick={handleClose}
+            className="close-btn"
+            aria-label="Cerrar"
+          >
+            <IoCloseSharp className="close-icon" />
+          </button>
         </div>
         <Card.Body>
           {msg && <Alert variant="success">{msg}</Alert>}
