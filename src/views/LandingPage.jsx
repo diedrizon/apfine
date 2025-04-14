@@ -12,6 +12,9 @@ import {
   FaBoxes,
   FaRobot,
   FaQuestionCircle,
+  FaClipboardList,
+  FaBullseye,
+  FaUsers,
 } from "react-icons/fa";
 import "../styles/LandingPage.css";
 
@@ -189,33 +192,69 @@ const LandingPage = () => {
         <Container>
           <h2 className="lp-section-title text-center">Servicios Destacados</h2>
           <Row className="lp-services-cards">
-            <Col md={4}>
-              <div className="lp-card">
-                <FaChartLine size={40} className="lp-card-icon" />
-                <h4>Finanzas Inteligentes</h4>
-                <p>
+            {/* TARJETAS DE ARRIBA (originales sin cambios) */}
+            <Col xs={6} md={4} className="mb-4">
+              <div className="lp-card compact-card">
+                <FaChartLine className="lp-card-icon-top" />
+                <h4 className="lp-card-title">Finanzas Inteligentes</h4>
+                <p className="lp-card-text">
                   Administra ingresos, egresos y presupuesto mensual con
                   reportes automáticos.
                 </p>
               </div>
             </Col>
-            <Col md={4}>
-              <div className="lp-card">
-                <FaBoxes size={40} className="lp-card-icon" />
-                <h4>Gestión de Inventario</h4>
-                <p>
+
+            <Col xs={6} md={4} className="mb-4">
+              <div className="lp-card compact-card">
+                <FaBoxes className="lp-card-icon-top" />
+                <h4 className="lp-card-title">Gestión de Inventario</h4>
+                <p className="lp-card-text">
                   Controla productos y compras con alertas automáticas por
                   niveles bajos.
                 </p>
               </div>
             </Col>
-            <Col md={4}>
-              <div className="lp-card">
-                <FaRobot size={40} className="lp-card-icon" />
-                <h4>Recomendaciones con IA</h4>
-                <p>
-                  La inteligencia artificial te sugiere cómo reducir gastos y
-                  aumentar ganancias.
+
+            <Col xs={6} md={4} className="mb-4">
+              <div className="lp-card compact-card">
+                <FaRobot className="lp-card-icon-top" />
+                <h4 className="lp-card-title">Recomendaciones con IA</h4>
+                <p className="lp-card-text">
+                  La IA te sugiere cómo reducir gastos y mejorar ganancias.
+                </p>
+              </div>
+            </Col>
+
+            {/* TARJETAS DE ABAJO (texto corregido y balanceado) */}
+            <Col xs={6} md={4} className="mb-4">
+              <div className="lp-card compact-card">
+                <FaClipboardList className="lp-card-icon-top" />
+                <h4 className="lp-card-title">Órdenes de Producción</h4>
+                <p className="lp-card-text">
+                  Organizá y hacé seguimiento de pedidos, controlando el consumo
+                  de materias primas por orden de producción.
+                </p>
+              </div>
+            </Col>
+
+            <Col xs={6} md={4} className="mb-4">
+              <div className="lp-card compact-card">
+                <FaBullseye className="lp-card-icon-top" />
+                <h4 className="lp-card-title">Metas Financieras</h4>
+                <p className="lp-card-text">
+                  Establecé metas de ahorro o inversión, y visualizá tu progreso
+                  con indicadores claros y recordatorios.
+                </p>
+              </div>
+            </Col>
+
+            <Col xs={6} md={4} className="mb-4">
+              <div className="lp-card compact-card">
+                <FaUsers className="lp-card-icon-top" />
+                <h4 className="lp-card-title">Módulo Comunitario</h4>
+                <p className="lp-card-text">
+                  Conectate con otros emprendedores, compartí ideas,
+                  experiencias y fortalecé tu red profesional.
                 </p>
               </div>
             </Col>

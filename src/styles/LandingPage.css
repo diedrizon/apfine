@@ -722,10 +722,55 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
   margin-top: 10px;
 }
 
-.lp-faq-item p {
+/* Tarjetas más compactas con encabezado alineado */
+.landing-page .lp-card.compact-card {
+  padding: 14px 12px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  height: 180px; /* antes era 195px */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.landing-page .lp-card.compact-card:hover {
+  transform: translateY(-4px);
+}
+
+.lp-card-icon-top {
+  font-size: 22px;
+  color: var(--icon-active);
+  margin-bottom: 6px;
+}
+
+.lp-card-title {
   font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-title);
+  margin-bottom: 8px;
+}
+
+.lp-card-text {
+  font-size: 0.88rem;
+  line-height: 1.3;
   color: var(--text-general);
-  margin-top: 5px;
-  line-height: 1.5;
-  text-align: justify; /* 👈 Alineación mejorada */
+  text-align: justify;
+  margin: 0;
+  max-height: 78px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+
+@media (max-width: 767px) {
+  .landing-page .lp-services-cards .lp-card {
+    margin-bottom: 20px;
+  }
 }
