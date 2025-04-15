@@ -774,3 +774,19 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
     margin-bottom: 20px;
   }
 }
+
+@media (max-width: 767px) {
+  .landing-page .lp-card.compact-card {
+    height: 220px; /* más alta en móvil */
+    overflow-y: auto; /* si el texto excede, permite scroll */
+    padding: 14px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .landing-page .lp-card-text {
+    max-height: none;
+    overflow: visible;
+    text-overflow: unset;
+    display: block;
+  }
+}
