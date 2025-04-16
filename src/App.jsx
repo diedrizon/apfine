@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -19,6 +18,8 @@ import Gastos from "./views/Gastos";
 import Recuperar from "./views/Recuperar";
 import Recomendaciones from "./views/Recomendaciones";
 import NotFound from "./views/NotFound";
+import Privacidad from "./views/Privacidad";
+import Terminos from "./views/Terminos";
 import "./App.css";
 import ReactGA from "react-ga4";
 
@@ -63,7 +64,14 @@ function AppContent() {
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
   // Rutas que no muestran encabezado ni panel
-  const sinEncabezado = ["/", "/login", "/recuperar", "/404"];
+  const sinEncabezado = [
+    "/",
+    "/login",
+    "/recuperar",
+    "/privacidad",
+    "/terminos-condiciones",
+    "/404",
+  ];
 
   return (
     <div className="App">
@@ -85,12 +93,14 @@ function AppContent() {
         }`}
       >
         <Routes>
-          {/* Públicas */}
+          {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar" element={<Recuperar />} />
+          <Route path="/privacidad" element={<Privacidad />} />
+          <Route path="/terminos-condiciones" element={<Terminos />} />
 
-          {/* Protegidas */}
+          {/* Rutas protegidas */}
           <Route
             path="/inicio"
             element={<ProtectedRoute element={<Inicio />} />}

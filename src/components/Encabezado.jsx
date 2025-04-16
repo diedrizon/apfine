@@ -11,7 +11,7 @@ const Encabezado = ({ isSidebarOpen, toggleSidebar, isDarkMode, toggleTheme }) =
   const navigate = useNavigate();
   const location = useLocation();
 
-  const ocultarHeaderEn = ["/", "/login", "/recuperar"];
+  const ocultarHeaderEn = ["/", "/login", "/recuperar", "/privacidad", "/terminos-condiciones"];
   const esRuta404 = location.pathname && ![
     "/", "/login", "/recuperar", "/inicio", "/categorias", "/ingresos", "/gastos", "/recomendaciones"
   ].includes(location.pathname);

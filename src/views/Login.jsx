@@ -17,12 +17,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
+  const [esperandoAceptacion, setEsperandoAceptacion] = useState(false);
 
   const { user } = useAuth();
   const navigate = useNavigate();
   const auth = getAuth(appfirebase);
 
-  // Maneja el inicio de sesión con email y password
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -36,7 +36,6 @@ const Login = () => {
     }
   };
 
-  // Maneja el registro de usuario con email y password
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -62,13 +61,13 @@ const Login = () => {
     }
   };
 
-  // Maneja el login con Google
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
       if (result.user) {
-        navigate("/inicio");
+        setEsperandoAceptacion(true);
+        localStorage.setItem("pendienteAceptarGoogle", "true");
       }
     } catch (err) {
       console.error("Error con Google:", err.message);
@@ -76,12 +75,16 @@ const Login = () => {
     }
   };
 
-  // Si el usuario ya está logueado, redirigir
+  const handleAceptarGoogle = () => {
+    localStorage.removeItem("pendienteAceptarGoogle");
+    navigate("/inicio");
+  };
+
   useEffect(() => {
-    if (user) {
+    if (user && !esperandoAceptacion) {
       navigate("/inicio");
     }
-  }, [user, navigate]);
+  }, [user, esperandoAceptacion, navigate]);
 
   return (
     <div className="login-page">
@@ -96,6 +99,8 @@ const Login = () => {
         handleSubmit={handleSubmit}
         handleRegister={handleRegister}
         handleGoogleLogin={handleGoogleLogin}
+        esperandoAceptacion={esperandoAceptacion}
+        handleAceptarGoogle={handleAceptarGoogle}
       />
     </div>
   );

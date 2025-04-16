@@ -272,3 +272,89 @@ body {
 .close-icon:hover {
   color: var(--primary);
 }
+
+.checkbox-legal-bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  padding: 0 1rem;
+  margin-top: 2rem;
+  text-align: left;
+  flex-wrap: wrap;
+}
+
+.checkbox-legal-bottom label {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.checkbox-legal-bottom a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.checkbox-legal-bottom a:hover {
+  color: var(--primary-hover);
+}
+
+/* Checkbox personalizado por modo */
+.checkbox-legal-bottom .form-check-input {
+  appearance: none;
+  border: 2px solid var(--primary);
+  background-color: transparent;
+  border-radius: 4px;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.15rem;
+  position: relative;
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-legal-bottom .form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkbox-legal-bottom .form-check-input:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 3px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Foco accesible */
+.checkbox-legal-bottom .form-check-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.2);
+}
+
+.checkbox-warning {
+  width: 100%;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-error);
+  padding-left: 1.6rem;
+}
+
+/* Animación de sacudida */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.4s ease;
+}

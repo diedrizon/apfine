@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc";
 import { IoClose } from "react-icons/io5";
@@ -17,32 +17,51 @@ const LoginForm = ({
   handleSubmit,
   handleRegister,
   handleGoogleLogin,
+  esperandoAceptacion,
+  handleAceptarGoogle,
 }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const navigate = useNavigate();
-
-  // Mostrar/ocultar password
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [aceptado, setAceptado] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showGoogleWarning, setShowGoogleWarning] = useState(false);
 
-  const handleClose = () => {
-    navigate("/");
-  };
+  const navigate = useNavigate();
 
-  const goToRecover = () => {
-    navigate("/recuperar");
+  const handleClose = () => navigate("/");
+  const goToRecover = () => navigate("/recuperar");
+
+  useEffect(() => {
+    const pendiente = localStorage.getItem("pendienteAceptarGoogle") === "true";
+    if (esperandoAceptacion && pendiente) {
+      setShowGoogleWarning(true);
+    }
+  }, [esperandoAceptacion]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (!aceptado) {
+      const wrapper = document.getElementById("checkbox-wrapper");
+      setShowWarning(true);
+      wrapper?.classList.add("shake");
+      setTimeout(() => {
+        wrapper?.classList.remove("shake");
+      }, 600);
+      return;
+    }
+    setShowWarning(false);
+    isLogin ? handleSubmit(e) : handleRegister(e);
   };
 
   return (
     <Card className="login-card">
-      {/* Cabecera: logo + botón X */}
       <div className="login-header">
         <img src="/Horizontal.png" alt="APFINE Logo" className="logo-top-left" />
         <IoClose className="close-icon" onClick={handleClose} />
       </div>
 
       <Card.Body>
-        {/* Toggle */}
         <div className="toggle-buttons mb-3">
           <span
             className={`toggle-option ${isLogin ? "active" : ""}`}
@@ -58,11 +77,9 @@ const LoginForm = ({
           </span>
         </div>
 
-        {/* Error Firebase */}
         {error && <Alert variant="danger">{error}</Alert>}
 
-        {/* Formulario */}
-        <Form onSubmit={isLogin ? handleSubmit : handleRegister}>
+        <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Correo Electrónico</Form.Label>
             <Form.Control
@@ -74,7 +91,6 @@ const LoginForm = ({
             />
           </Form.Group>
 
-          {/* Contraseña con ojito */}
           <Form.Group className="mb-3">
             <Form.Label>Contraseña</Form.Label>
             <div className="input-with-eye">
@@ -94,7 +110,6 @@ const LoginForm = ({
             </div>
           </Form.Group>
 
-          {/* Confirmar contraseña si estamos registrando */}
           {!isLogin && (
             <Form.Group className="mb-3">
               <Form.Label>Confirmar Contraseña</Form.Label>
@@ -121,7 +136,6 @@ const LoginForm = ({
           </Button>
         </Form>
 
-        {/* Link recuperar contraseña */}
         {isLogin && (
           <div className="text-center mb-2">
             <span className="recover-link" onClick={goToRecover}>
@@ -130,17 +144,67 @@ const LoginForm = ({
           </div>
         )}
 
-        {/* Separador: O INICIA SESIÓN CON */}
         <div className="separator">
           <span>O inicia sesión con</span>
         </div>
 
-        {/* Botón Google (solo ícono) */}
         <div className="text-center">
           <Button className="google-btn-icon" onClick={handleGoogleLogin}>
             <FcGoogle size={24} />
           </Button>
         </div>
+
+        {!esperandoAceptacion && (
+          <div
+            id="checkbox-wrapper"
+            className="text-center mt-4 checkbox-legal-bottom"
+          >
+            <Form.Check
+              type="checkbox"
+              id="acepta-politica"
+              checked={aceptado}
+              onChange={(e) => {
+                setAceptado(e.target.checked);
+                if (e.target.checked) setShowWarning(false);
+              }}
+              label={
+                <>
+                  He leído y acepto los{" "}
+                  <a href="/terminos-condiciones" target="_blank">Términos</a> y la{" "}
+                  <a href="/privacidad" target="_blank">Política de Privacidad</a>.
+                </>
+              }
+            />
+            {showWarning && (
+              <div className="checkbox-warning">Debes aceptar para continuar.</div>
+            )}
+          </div>
+        )}
+
+        {esperandoAceptacion && (
+          <div className="text-center mt-4 checkbox-legal-bottom" id="checkbox-wrapper">
+            <Form.Check
+              type="checkbox"
+              id="acepta-google"
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setShowGoogleWarning(false);
+                  handleAceptarGoogle();
+                }
+              }}
+              label={
+                <>
+                  He leído y acepto los{" "}
+                  <a href="/terminos-condiciones" target="_blank">Términos</a> y la{" "}
+                  <a href="/privacidad" target="_blank">Política de Privacidad</a>.
+                </>
+              }
+            />
+            {showGoogleWarning && (
+              <div className="checkbox-warning">Debes aceptar para continuar.</div>
+            )}
+          </div>
+        )}
       </Card.Body>
     </Card>
   );

@@ -1,0 +1,71 @@
+.politica-container {
+    max-width: 900px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    color: var(--text-normal);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    line-height: 1.7;
+    font-size: 1rem;
+  }
+  
+  .politica-container h1 {
+    color: var(--text-title);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .politica-container h3 {
+    margin-top: 2rem;
+    color: var(--text-title);
+    font-size: 1.25rem;
+  }
+  
+  .politica-container p,
+  .politica-container li {
+    color: var(--text-normal);
+  }
+  
+  .politica-container ul {
+    padding-left: 1.5rem;
+  }
+  
+  .politica-container a {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+  
+  .politica-container a:hover {
+    color: var(--primary-hover);
+  }
+  
+  .checkbox-container {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+  
+  .btn-volver {
+    margin-top: 2rem;
+    background-color: var(--primary);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-volver:disabled {
+    background-color: var(--disabled);
+    cursor: not-allowed;
+  }
+  
