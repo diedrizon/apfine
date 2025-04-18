@@ -7,58 +7,90 @@ import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
 const LoginForm = ({
-  email,
-  password,
-  confirmPassword,
-  error,
-  setEmail,
-  setPassword,
-  setConfirmPassword,
-  handleSubmit,
+  /* flags de control */
+  startInRegister = false,
+  esGoogleNuevo = false,
+
+  /* ---------- LOGIN ---------- */
+  loginEmail,
+  setLoginEmail,
+  loginPass,
+  setLoginPass,
+
+  /* ---------- REGISTRO ---------- */
+  regEmail,
+  setRegEmail,
+  regPass,
+  setRegPass,
+  regConfirm,
+  setRegConfirm,
+  regCedula,
+  setRegCedula,
+  regNombre,
+  setRegNombre,
+  regTel,
+  setRegTel,
+
+  /* handlers principales */
+  handleLogin,
   handleRegister,
   handleGoogleLogin,
+
+  /* legales */
   esperandoAceptacion,
   handleAceptarGoogle,
+
+  /* error global */
+  error,
 }) => {
+  // ✅ Cambia automáticamente a Registrarse si Google es nuevo
   const [isLogin, setIsLogin] = useState(true);
+  useEffect(() => {
+    if (startInRegister) setIsLogin(false);
+  }, [startInRegister]);
+
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [aceptado, setAceptado] = useState(false);
-  const [showWarning, setShowWarning] = useState(false);
-  const [showGoogleWarning, setShowGoogleWarning] = useState(false);
+  const [warn, setWarn] = useState(false);
+  const [warnGoogle, setWarnGoogle] = useState(false);
+  const nav = useNavigate();
 
-  const navigate = useNavigate();
-
-  const handleClose = () => navigate("/");
-  const goToRecover = () => navigate("/recuperar");
+  const cerrar = () => nav("/");
+  const olvidar = () => nav("/recuperar");
 
   useEffect(() => {
-    const pendiente = localStorage.getItem("pendienteAceptarGoogle") === "true";
-    if (esperandoAceptacion && pendiente) {
-      setShowGoogleWarning(true);
+    if (
+      esperandoAceptacion &&
+      localStorage.getItem("pendienteAceptarGoogle") === "true"
+    ) {
+      setWarnGoogle(true);
     }
   }, [esperandoAceptacion]);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (!aceptado) {
-      const wrapper = document.getElementById("checkbox-wrapper");
-      setShowWarning(true);
-      wrapper?.classList.add("shake");
+    if (!aceptado && !esperandoAceptacion) {
+      setWarn(true);
+      document.getElementById("checkbox-wrapper")?.classList.add("shake");
       setTimeout(() => {
-        wrapper?.classList.remove("shake");
+        document.getElementById("checkbox-wrapper")?.classList.remove("shake");
       }, 600);
       return;
     }
-    setShowWarning(false);
-    isLogin ? handleSubmit(e) : handleRegister(e);
+    setWarn(false);
+    isLogin ? handleLogin(e) : handleRegister(e);
   };
 
   return (
     <Card className="login-card">
       <div className="login-header">
-        <img src="/Horizontal.png" alt="APFINE Logo" className="logo-top-left" />
-        <IoClose className="close-icon" onClick={handleClose} />
+        <img
+          src="/Horizontal.png"
+          alt="APFINE Logo"
+          className="logo-top-left"
+        />
+        <IoClose className="close-icon" onClick={cerrar} />
       </div>
 
       <Card.Body>
@@ -80,55 +112,129 @@ const LoginForm = ({
         {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={onSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Correo Electrónico</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Ingresa tu correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Contraseña</Form.Label>
-            <div className="input-with-eye">
-              <Form.Control
-                type={showPass ? "text" : "password"}
-                placeholder="Ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span
-                className="eye-icon"
-                onClick={() => setShowPass(!showPass)}
-              >
-                {showPass ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-              </span>
-            </div>
-          </Form.Group>
-
-          {!isLogin && (
-            <Form.Group className="mb-3">
-              <Form.Label>Confirmar Contraseña</Form.Label>
-              <div className="input-with-eye">
+          {isLogin && (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label>Correo electrónico</Form.Label>
                 <Form.Control
-                  type={showConfirm ? "text" : "password"}
-                  placeholder="Confirma tu contraseña"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
                   required
                 />
-                <span
-                  className="eye-icon"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
-                  {showConfirm ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                </span>
-              </div>
-            </Form.Group>
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Contraseña</Form.Label>
+                <div className="input-with-eye">
+                  <Form.Control
+                    type={showPass ? "text" : "password"}
+                    value={loginPass}
+                    onChange={(e) => setLoginPass(e.target.value)}
+                    required
+                  />
+                  <span
+                    className="eye-icon"
+                    onClick={() => setShowPass(!showPass)}
+                  >
+                    {showPass ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                  </span>
+                </div>
+              </Form.Group>
+            </>
+          )}
+
+          {!isLogin && (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label>Cédula (###-######-#####)</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={regCedula}
+                  onChange={(e) => setRegCedula(e.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Nombre completo</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={regNombre}
+                  onChange={(e) => setRegNombre(e.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Correo electrónico</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={regEmail}
+                  disabled={esGoogleNuevo}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Teléfono</Form.Label>
+                <Form.Control
+                  type="tel"
+                  value={regTel}
+                  onChange={(e) => setRegTel(e.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              {!esGoogleNuevo && (
+                <>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Contraseña</Form.Label>
+                    <div className="input-with-eye">
+                      <Form.Control
+                        type={showPass ? "text" : "password"}
+                        value={regPass}
+                        onChange={(e) => setRegPass(e.target.value)}
+                        required
+                      />
+                      <span
+                        className="eye-icon"
+                        onClick={() => setShowPass(!showPass)}
+                      >
+                        {showPass ? (
+                          <AiOutlineEyeInvisible />
+                        ) : (
+                          <AiOutlineEye />
+                        )}
+                      </span>
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label>Confirmar contraseña</Form.Label>
+                    <div className="input-with-eye">
+                      <Form.Control
+                        type={showConfirm ? "text" : "password"}
+                        value={regConfirm}
+                        onChange={(e) => setRegConfirm(e.target.value)}
+                        required
+                      />
+                      <span
+                        className="eye-icon"
+                        onClick={() => setShowConfirm(!showConfirm)}
+                      >
+                        {showConfirm ? (
+                          <AiOutlineEyeInvisible />
+                        ) : (
+                          <AiOutlineEye />
+                        )}
+                      </span>
+                    </div>
+                  </Form.Group>
+                </>
+              )}
+            </>
           )}
 
           <Button type="submit" className="login-btn">
@@ -138,7 +244,7 @@ const LoginForm = ({
 
         {isLogin && (
           <div className="text-center mb-2">
-            <span className="recover-link" onClick={goToRecover}>
+            <span className="recover-link" onClick={olvidar}>
               ¿Olvidaste tu contraseña?
             </span>
           </div>
@@ -161,47 +267,64 @@ const LoginForm = ({
           >
             <Form.Check
               type="checkbox"
-              id="acepta-politica"
               checked={aceptado}
               onChange={(e) => {
                 setAceptado(e.target.checked);
-                if (e.target.checked) setShowWarning(false);
+                if (e.target.checked) setWarn(false);
               }}
               label={
                 <>
                   He leído y acepto los{" "}
-                  <a href="/terminos-condiciones" target="_blank">Términos</a> y la{" "}
-                  <a href="/privacidad" target="_blank">Política de Privacidad</a>.
+                  <a href="/terminos-condiciones" target="_blank">
+                    Términos
+                  </a>{" "}
+                  y la{" "}
+                  <a href="/privacidad" target="_blank">
+                    Política de Privacidad
+                  </a>
+                  .
                 </>
               }
             />
-            {showWarning && (
-              <div className="checkbox-warning">Debes aceptar para continuar.</div>
+            {warn && (
+              <div className="checkbox-warning">
+                Debes aceptar para continuar.
+              </div>
             )}
           </div>
         )}
 
         {esperandoAceptacion && (
-          <div className="text-center mt-4 checkbox-legal-bottom" id="checkbox-wrapper">
+          <div
+            className="text-center mt-4 checkbox-legal-bottom"
+            id="checkbox-wrapper"
+          >
             <Form.Check
               type="checkbox"
-              id="acepta-google"
               onChange={(e) => {
                 if (e.target.checked) {
-                  setShowGoogleWarning(false);
+                  setWarnGoogle(false);
                   handleAceptarGoogle();
                 }
               }}
               label={
                 <>
                   He leído y acepto los{" "}
-                  <a href="/terminos-condiciones" target="_blank">Términos</a> y la{" "}
-                  <a href="/privacidad" target="_blank">Política de Privacidad</a>.
+                  <a href="/terminos-condiciones" target="_blank">
+                    Términos
+                  </a>{" "}
+                  y la{" "}
+                  <a href="/privacidad" target="_blank">
+                    Política de Privacidad
+                  </a>
+                  .
                 </>
               }
             />
-            {showGoogleWarning && (
-              <div className="checkbox-warning">Debes aceptar para continuar.</div>
+            {warnGoogle && (
+              <div className="checkbox-warning">
+                Debes aceptar para continuar.
+              </div>
             )}
           </div>
         )}

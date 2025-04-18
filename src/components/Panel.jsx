@@ -59,9 +59,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
 
   function handleNavigate(path) {
     navigate(path);
-    if (isMobile) {
-      toggleSidebar();
-    }
+    if (isMobile) toggleSidebar();
   }
 
   if (!isLoggedIn) return null;
@@ -74,6 +72,8 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
       </li>
     );
   }
+
+  const getInitial = (name = "") => name.trim().charAt(0).toUpperCase();
 
   return (
     <>
@@ -100,6 +100,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
           </button>
 
           <ul className="sidebar-menu">
+            {/* Finanzas */}
             <li className="module" onClick={() => toggleModuleName("finanzas")}>
               <BiMoney className="module-icon" />
               <span className="module-text">Finanzas</span>
@@ -128,6 +129,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
               </ul>
             )}
 
+            {/* Producción */}
             <li
               className="module"
               onClick={() => toggleModuleName("produccion")}
@@ -145,10 +147,15 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => {})}
                 {renderSubItem(<BiCube />, "Materias primas", () => {})}
                 {renderSubItem(<BiPackage />, "Inventario", () => {})}
-                {renderSubItem(<BiClipboard />, "Órdenes de producción", () => {})}
+                {renderSubItem(
+                  <BiClipboard />,
+                  "Órdenes de producción",
+                  () => {}
+                )}
               </ul>
             )}
 
+            {/* Reportes */}
             <li className="module" onClick={() => toggleModuleName("reportes")}>
               <BiBarChartAlt2 className="module-icon" />
               <span className="module-text">Reportes</span>
@@ -161,13 +168,21 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             {openModule === "reportes" && (
               <ul className="submenu">
                 {renderSubItem(<BiPackage />, "Dashboard", () => {})}
-                {renderSubItem(<BiBarChartAlt2 />, "Datos / Reportes", () => {})}
+                {renderSubItem(
+                  <BiBarChartAlt2 />,
+                  "Datos / Reportes",
+                  () => {}
+                )}
                 {renderSubItem(<BiCube />, "Exportar", () => {})}
                 {renderSubItem(<BiBell />, "Alertas", () => {})}
               </ul>
             )}
 
-            <li className="module" onClick={() => toggleModuleName("comunidad")}>
+            {/* Comunidad */}
+            <li
+              className="module"
+              onClick={() => toggleModuleName("comunidad")}
+            >
               <BiWorld className="module-icon" />
               <span className="module-text">Comunidad y Educación</span>
               {openModule === "comunidad" ? (
@@ -184,43 +199,42 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
               </ul>
             )}
 
+            {/* Administración */}
             <li className="module" onClick={() => toggleModuleName("admin")}>
               <BiCog className="module-icon" />
               <span className="module-text">Administración</span>
-              {openModule === "admin" ? (
-                <BiChevronDown />
-              ) : (
-                <BiChevronRight />
-              )}
+              {openModule === "admin" ? <BiChevronDown /> : <BiChevronRight />}
             </li>
             {openModule === "admin" && (
               <ul className="submenu">
                 {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
                 {renderSubItem(<BiTargetLock />, "Roles y permisos", () => {})}
                 {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
-                {renderSubItem(<BiCog />, "Monitoreo / Configuración", () => {})}
+                {renderSubItem(
+                  <BiCog />,
+                  "Monitoreo / Configuración",
+                  () => {}
+                )}
               </ul>
             )}
           </ul>
         </div>
 
         <div className="sidebar-footer user-footer">
-  <img
-    src={userPhoto}
-    alt="Foto de perfil"
-    className="user-photo"
-  />
-  <div className="user-info-text">
-    <div className="user-name" title={userName}>
-      {userName}
-    </div>
-    <div className="user-email" title={userEmail}>
-      {userEmail}
-    </div>
-  </div>
-</div>
-
-
+          {userPhoto ? (
+            <img src={userPhoto} alt="Foto de perfil" className="user-photo" />
+          ) : (
+            <div className="user-photo-inicial">{getInitial(userName)}</div>
+          )}
+          <div className="user-info-text">
+            <div className="user-name" title={userName}>
+              {userName}
+            </div>
+            <div className="user-email" title={userEmail}>
+              {userEmail}
+            </div>
+          </div>
+        </div>
       </aside>
     </>
   );

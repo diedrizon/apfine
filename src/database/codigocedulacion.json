@@ -1,0 +1,610 @@
+{
+    "361": {
+      "municipio": "Boaco",
+      "departamento": "Boaco"
+    },
+    "362": {
+      "municipio": "Camoapa",
+      "departamento": "Boaco"
+    },
+    "363": {
+      "municipio": "Santa Lucía",
+      "departamento": "Boaco"
+    },
+    "364": {
+      "municipio": "San José de los Remates",
+      "departamento": "Boaco"
+    },
+    "365": {
+      "municipio": "San Lorenzo",
+      "departamento": "Boaco"
+    },
+    "366": {
+      "municipio": "Teustepe",
+      "departamento": "Boaco"
+    },
+    "041": {
+      "municipio": "Jinotepe",
+      "departamento": "Carazo"
+    },
+    "042": {
+      "municipio": "Diriamba",
+      "departamento": "Carazo"
+    },
+    "043": {
+      "municipio": "San Marcos",
+      "departamento": "Carazo"
+    },
+    "044": {
+      "municipio": "Santa Teresa",
+      "departamento": "Carazo"
+    },
+    "045": {
+      "municipio": "Dolores",
+      "departamento": "Carazo"
+    },
+    "046": {
+      "municipio": "La Paz de Carazo",
+      "departamento": "Carazo"
+    },
+    "047": {
+      "municipio": "El Rosario",
+      "departamento": "Carazo"
+    },
+    "048": {
+      "municipio": "La Conquista",
+      "departamento": "Carazo"
+    },
+    "081": {
+      "municipio": "Chinandega",
+      "departamento": "Chinandega"
+    },
+    "082": {
+      "municipio": "Corinto",
+      "departamento": "Chinandega"
+    },
+    "083": {
+      "municipio": "El Realejo",
+      "departamento": "Chinandega"
+    },
+    "084": {
+      "municipio": "Chichigalpa",
+      "departamento": "Chinandega"
+    },
+    "085": {
+      "municipio": "Posoltega",
+      "departamento": "Chinandega"
+    },
+    "086": {
+      "municipio": "El Viejo",
+      "departamento": "Chinandega"
+    },
+    "087": {
+      "municipio": "Puerto Morazán",
+      "departamento": "Chinandega"
+    },
+    "088": {
+      "municipio": "Somotillo",
+      "departamento": "Chinandega"
+    },
+    "089": {
+      "municipio": "Villa Nueva",
+      "departamento": "Chinandega"
+    },
+    "090": {
+      "municipio": "Santo Tomás del Norte",
+      "departamento": "Chinandega"
+    },
+    "091": {
+      "municipio": "Cinco Pinos",
+      "departamento": "Chinandega"
+    },
+    "092": {
+      "municipio": "San Francisco del Norte",
+      "departamento": "Chinandega"
+    },
+    "093": {
+      "municipio": "San Pedro del Norte",
+      "departamento": "Chinandega"
+    },
+    "121": {
+      "municipio": "Juigalpa",
+      "departamento": "Chontales"
+    },
+    "122": {
+      "municipio": "Acoyapa",
+      "departamento": "Chontales"
+    },
+    "123": {
+      "municipio": "Santo Tomás",
+      "departamento": "Chontales"
+    },
+    "124": {
+      "municipio": "Villa Sandino",
+      "departamento": "Chontales"
+    },
+    "125": {
+      "municipio": "San Pedro de Lóvago",
+      "departamento": "Chontales"
+    },
+    "126": {
+      "municipio": "La Libertad",
+      "departamento": "Chontales"
+    },
+    "127": {
+      "municipio": "Santo Domingo",
+      "departamento": "Chontales"
+    },
+    "128": {
+      "municipio": "Comalapa",
+      "departamento": "Chontales"
+    },
+    "129": {
+      "municipio": "San Francisco de Cuapa",
+      "departamento": "Chontales"
+    },
+    "130": {
+      "municipio": "El Coral",
+      "departamento": "Chontales"
+    },
+    "161": {
+      "municipio": "Estelí",
+      "departamento": "Estelí"
+    },
+    "162": {
+      "municipio": "Pueblo Nuevo",
+      "departamento": "Estelí"
+    },
+    "163": {
+      "municipio": "Condega",
+      "departamento": "Estelí"
+    },
+    "164": {
+      "municipio": "San Juan de Limay",
+      "departamento": "Estelí"
+    },
+    "165": {
+      "municipio": "La Trinidad",
+      "departamento": "Estelí"
+    },
+    "166": {
+      "municipio": "San Nicolás",
+      "departamento": "Estelí"
+    },
+    "201": {
+      "municipio": "Granada",
+      "departamento": "Granada"
+    },
+    "202": {
+      "municipio": "Nandaime",
+      "departamento": "Granada"
+    },
+    "203": {
+      "municipio": "Diriomo",
+      "departamento": "Granada"
+    },
+    "204": {
+      "municipio": "Diriá",
+      "departamento": "Granada"
+    },
+    "241": {
+      "municipio": "Jinotega",
+      "departamento": "Jinotega"
+    },
+    "242": {
+      "municipio": "San Rafael del Norte",
+      "departamento": "Jinotega"
+    },
+    "243": {
+      "municipio": "San Sebastián de Yalí",
+      "departamento": "Jinotega"
+    },
+    "244": {
+      "municipio": "La Concordia",
+      "departamento": "Jinotega"
+    },
+    "245": {
+      "municipio": "San José de Bocay",
+      "departamento": "Jinotega"
+    },
+    "246": {
+      "municipio": "El Cuá",
+      "departamento": "Jinotega"
+    },
+    "247": {
+      "municipio": "Santa María de Pantasma",
+      "departamento": "Jinotega"
+    },
+    "281": {
+      "municipio": "León",
+      "departamento": "León"
+    },
+    "289": {
+      "municipio": "Achuapa",
+      "departamento": "León"
+    },
+    "283": {
+      "municipio": "El Jicaral",
+      "departamento": "León"
+    },
+    "284": {
+      "municipio": "La Paz Centro",
+      "departamento": "León"
+    },
+    "285": {
+      "municipio": "Santa Rosa del Peñón",
+      "departamento": "León"
+    },
+    "286": {
+      "municipio": "Quezalguaque",
+      "departamento": "León"
+    },
+    "287": {
+      "municipio": "Nagarote",
+      "departamento": "León"
+    },
+    "288": {
+      "municipio": "El Sauce",
+      "departamento": "León"
+    },
+    "290": {
+      "municipio": "Telica",
+      "departamento": "León"
+    },
+    "291": {
+      "municipio": "Larreynaga",
+      "departamento": "León"
+    },
+    "321": {
+      "municipio": "Somoto",
+      "departamento": "Madriz"
+    },
+    "322": {
+      "municipio": "Telpaneca",
+      "departamento": "Madriz"
+    },
+    "323": {
+      "municipio": "San Juan de Río Coco",
+      "departamento": "Madriz"
+    },
+    "324": {
+      "municipio": "Palacagüina",
+      "departamento": "Madriz"
+    },
+    "325": {
+      "municipio": "Yalagüina",
+      "departamento": "Madriz"
+    },
+    "326": {
+      "municipio": "Totogalpa",
+      "departamento": "Madriz"
+    },
+    "327": {
+      "municipio": "San Lucas",
+      "departamento": "Madriz"
+    },
+    "328": {
+      "municipio": "Las Sabanas",
+      "departamento": "Madriz"
+    },
+    "329": {
+      "municipio": "San José de Cusmapa",
+      "departamento": "Madriz"
+    },
+    "001": {
+      "municipio": "Managua",
+      "departamento": "Managua"
+    },
+    "002": {
+      "municipio": "San Rafael del Sur",
+      "departamento": "Managua"
+    },
+    "003": {
+      "municipio": "Tipitapa",
+      "departamento": "Managua"
+    },
+    "004": {
+      "municipio": "Villa El Carmen",
+      "departamento": "Managua"
+    },
+    "005": {
+      "municipio": "San Francisco Libre",
+      "departamento": "Managua"
+    },
+    "006": {
+      "municipio": "Mateare",
+      "departamento": "Managua"
+    },
+    "007": {
+      "municipio": "Ticuantepe",
+      "departamento": "Managua"
+    },
+    "008": {
+      "municipio": "Ciudad Sandino",
+      "departamento": "Managua"
+    },
+    "009": {
+      "municipio": "El Crucero",
+      "departamento": "Managua"
+    },
+    "401": {
+      "municipio": "Masaya",
+      "departamento": "Masaya"
+    },
+    "402": {
+      "municipio": "Nindirí",
+      "departamento": "Masaya"
+    },
+    "403": {
+      "municipio": "Tisma",
+      "departamento": "Masaya"
+    },
+    "404": {
+      "municipio": "Catarina",
+      "departamento": "Masaya"
+    },
+    "405": {
+      "municipio": "San Juan de Oriente",
+      "departamento": "Masaya"
+    },
+    "406": {
+      "municipio": "Niquinohomo",
+      "departamento": "Masaya"
+    },
+    "407": {
+      "municipio": "Nandasmo",
+      "departamento": "Masaya"
+    },
+    "408": {
+      "municipio": "Masatepe",
+      "departamento": "Masaya"
+    },
+    "409": {
+      "municipio": "La Concepción",
+      "departamento": "Masaya"
+    },
+    "441": {
+      "municipio": "Matagalpa",
+      "departamento": "Matagalpa"
+    },
+    "442": {
+      "municipio": "San Ramón",
+      "departamento": "Matagalpa"
+    },
+    "443": {
+      "municipio": "Matiguás",
+      "departamento": "Matagalpa"
+    },
+    "444": {
+      "municipio": "Muy Muy",
+      "departamento": "Matagalpa"
+    },
+    "445": {
+      "municipio": "Esquipulas",
+      "departamento": "Matagalpa"
+    },
+    "446": {
+      "municipio": "San Dionisio",
+      "departamento": "Matagalpa"
+    },
+    "447": {
+      "municipio": "San Isidro",
+      "departamento": "Matagalpa"
+    },
+    "448": {
+      "municipio": "Sébaco",
+      "departamento": "Matagalpa"
+    },
+    "449": {
+      "municipio": "Ciudad Darío",
+      "departamento": "Matagalpa"
+    },
+    "450": {
+      "municipio": "Terrabona",
+      "departamento": "Matagalpa"
+    },
+    "451": {
+      "municipio": "Río Blanco",
+      "departamento": "Matagalpa"
+    },
+    "452": {
+      "municipio": "El Tuma - La Dalia",
+      "departamento": "Matagalpa"
+    },
+    "453": {
+      "municipio": "Rancho Grande",
+      "departamento": "Matagalpa"
+    },
+    "481": {
+      "municipio": "Ocotal",
+      "departamento": "Nueva Segovia"
+    },
+    "482": {
+      "municipio": "Santa María",
+      "departamento": "Nueva Segovia"
+    },
+    "483": {
+      "municipio": "Macuelizo",
+      "departamento": "Nueva Segovia"
+    },
+    "484": {
+      "municipio": "Dipilto",
+      "departamento": "Nueva Segovia"
+    },
+    "485": {
+      "municipio": "Ciudad Antigua",
+      "departamento": "Nueva Segovia"
+    },
+    "486": {
+      "municipio": "Mozonte",
+      "departamento": "Nueva Segovia"
+    },
+    "487": {
+      "municipio": "San Fernando",
+      "departamento": "Nueva Segovia"
+    },
+    "488": {
+      "municipio": "El Jícaro",
+      "departamento": "Nueva Segovia"
+    },
+    "489": {
+      "municipio": "Jalapa",
+      "departamento": "Nueva Segovia"
+    },
+    "490": {
+      "municipio": "Murra",
+      "departamento": "Nueva Segovia"
+    },
+    "491": {
+      "municipio": "Quilalí",
+      "departamento": "Nueva Segovia"
+    },
+    "493": {
+      "municipio": "Wiwilí de Nueva Segovia",
+      "departamento": "Nueva Segovia"
+    },
+    "521": {
+      "municipio": "San Carlos",
+      "departamento": "Río San Juan"
+    },
+    "522": {
+      "municipio": "El Castillo",
+      "departamento": "Río San Juan"
+    },
+    "523": {
+      "municipio": "San Miguelito",
+      "departamento": "Río San Juan"
+    },
+    "524": {
+      "municipio": "Morrito",
+      "departamento": "Río San Juan"
+    },
+    "525": {
+      "municipio": "San Juan de Nicaragua",
+      "departamento": "Río San Juan"
+    },
+    "526": {
+      "municipio": "El Almendro",
+      "departamento": "Río San Juan"
+    },
+    "561": {
+      "municipio": "Rivas",
+      "departamento": "Rivas"
+    },
+    "562": {
+      "municipio": "San Jorge",
+      "departamento": "Rivas"
+    },
+    "563": {
+      "municipio": "Buenos Aires",
+      "departamento": "Rivas"
+    },
+    "564": {
+      "municipio": "Potosí",
+      "departamento": "Rivas"
+    },
+    "565": {
+      "municipio": "Belén",
+      "departamento": "Rivas"
+    },
+    "566": {
+      "municipio": "Tola",
+      "departamento": "Rivas"
+    },
+    "567": {
+      "municipio": "San Juan del Sur",
+      "departamento": "Rivas"
+    },
+    "568": {
+      "municipio": "Cárdenas",
+      "departamento": "Rivas"
+    },
+    "569": {
+      "municipio": "Moyogalpa",
+      "departamento": "Rivas"
+    },
+    "570": {
+      "municipio": "Altagracia",
+      "departamento": "Rivas"
+    },
+    "601": {
+      "municipio": "Bluefields",
+      "departamento": "RAAS"
+    },
+    "602": {
+      "municipio": "Corn Island",
+      "departamento": "RAAS"
+    },
+    "603": {
+      "municipio": "El Rama",
+      "departamento": "RAAS"
+    },
+    "604": {
+      "municipio": "Muelle de los Bueyes",
+      "departamento": "RAAS"
+    },
+    "605": {
+      "municipio": "La Cruz de Río Grande",
+      "departamento": "RAAS"
+    },
+    "615": {
+      "municipio": "Paiwas",
+      "departamento": "RAAS"
+    },
+    "616": {
+      "municipio": "Nueva Guinea",
+      "departamento": "RAAS"
+    },
+    "619": {
+      "municipio": "El Tortuguero",
+      "departamento": "RAAS"
+    },
+    "624": {
+      "municipio": "Kukra Hill",
+      "departamento": "RAAS"
+    },
+    "626": {
+      "municipio": "Laguna de Perlas",
+      "departamento": "RAAS"
+    },
+    "627": {
+      "municipio": "Desembocadura de Río Grande",
+      "departamento": "RAAS"
+    },
+    "628": {
+      "municipio": "El Ayote",
+      "departamento": "RAAS"
+    },
+    "607": {
+      "municipio": "Puerto Cabezas",
+      "departamento": "RAAN"
+    },
+    "608": {
+      "municipio": "Waspam",
+      "departamento": "RAAN"
+    },
+    "610": {
+      "municipio": "Siuna",
+      "departamento": "RAAN"
+    },
+    "611": {
+      "municipio": "Bonanza",
+      "departamento": "RAAN"
+    },
+    "612": {
+      "municipio": "Rosita",
+      "departamento": "RAAN"
+    },
+    "606": {
+      "municipio": "Prinzapolka",
+      "departamento": "RAAN"
+    },
+    "613": {
+      "municipio": "Mulukukú",
+      "departamento": "RAAN"
+    },
+    "454": {
+      "municipio": "Waslala",
+      "departamento": "RAAN"
+    }
+  }
