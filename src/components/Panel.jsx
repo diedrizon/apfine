@@ -29,12 +29,28 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
+  const [userPhoto, setUserPhoto] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+
   useEffect(() => {
     function handleResize() {
       setIsMobile(window.innerWidth < 768);
     }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const photo = localStorage.getItem("userPhotoURL");
+    const name = localStorage.getItem("userDisplayName");
+    const email = localStorage.getItem("userEmail");
+
+    if (photo || name || email) {
+      setUserPhoto(photo);
+      setUserName(name);
+      setUserEmail(email);
+    }
   }, []);
 
   function toggleModuleName(moduleName) {
@@ -129,11 +145,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => {})}
                 {renderSubItem(<BiCube />, "Materias primas", () => {})}
                 {renderSubItem(<BiPackage />, "Inventario", () => {})}
-                {renderSubItem(
-                  <BiClipboard />,
-                  "Órdenes de producción",
-                  () => {}
-                )}
+                {renderSubItem(<BiClipboard />, "Órdenes de producción", () => {})}
               </ul>
             )}
 
@@ -149,20 +161,13 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             {openModule === "reportes" && (
               <ul className="submenu">
                 {renderSubItem(<BiPackage />, "Dashboard", () => {})}
-                {renderSubItem(
-                  <BiBarChartAlt2 />,
-                  "Datos / Reportes",
-                  () => {}
-                )}
+                {renderSubItem(<BiBarChartAlt2 />, "Datos / Reportes", () => {})}
                 {renderSubItem(<BiCube />, "Exportar", () => {})}
                 {renderSubItem(<BiBell />, "Alertas", () => {})}
               </ul>
             )}
 
-            <li
-              className="module"
-              onClick={() => toggleModuleName("comunidad")}
-            >
+            <li className="module" onClick={() => toggleModuleName("comunidad")}>
               <BiWorld className="module-icon" />
               <span className="module-text">Comunidad y Educación</span>
               {openModule === "comunidad" ? (
@@ -182,26 +187,40 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             <li className="module" onClick={() => toggleModuleName("admin")}>
               <BiCog className="module-icon" />
               <span className="module-text">Administración</span>
-              {openModule === "admin" ? <BiChevronDown /> : <BiChevronRight />}
+              {openModule === "admin" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
             </li>
             {openModule === "admin" && (
               <ul className="submenu">
                 {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
                 {renderSubItem(<BiTargetLock />, "Roles y permisos", () => {})}
                 {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
-                {renderSubItem(
-                  <BiCog />,
-                  "Monitoreo / Configuración",
-                  () => {}
-                )}
+                {renderSubItem(<BiCog />, "Monitoreo / Configuración", () => {})}
               </ul>
             )}
           </ul>
         </div>
 
-        <div className="sidebar-footer">
-          <span className="footer-email">diedrinzonfargas@gmail.com</span>
-        </div>
+        <div className="sidebar-footer user-footer">
+  <img
+    src={userPhoto}
+    alt="Foto de perfil"
+    className="user-photo"
+  />
+  <div className="user-info-text">
+    <div className="user-name" title={userName}>
+      {userName}
+    </div>
+    <div className="user-email" title={userEmail}>
+      {userEmail}
+    </div>
+  </div>
+</div>
+
+
       </aside>
     </>
   );

@@ -66,8 +66,14 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       if (result.user) {
-        setEsperandoAceptacion(true);
+        const { displayName, email, photoURL } = result.user;
+
+        localStorage.setItem("userDisplayName", displayName || "Usuario");
+        localStorage.setItem("userEmail", email || "correo@ejemplo.com");
+        localStorage.setItem("userPhotoURL", photoURL || "");
         localStorage.setItem("pendienteAceptarGoogle", "true");
+
+        setEsperandoAceptacion(true);
       }
     } catch (err) {
       console.error("Error con Google:", err.message);
