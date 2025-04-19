@@ -9,6 +9,56 @@ import "../styles/login.css";
 const ONLY_DIGITS = /[^0-9]/g;
 const ONLY_LETTERS = /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g;
 
+// ✅ NUEVO formatCedula FUNCIONAL Y CORRECTO
+const formatCedula = (inputValue, cursorPos) => {
+  const clean = inputValue.toUpperCase().replace(/[^0-9A-J]/g, "");
+  const numeros = clean.replace(/[^0-9]/g, "").slice(0, 13);
+  const letra = clean.replace(/[0-9]/g, "").slice(0, 1);
+  let result = "";
+
+  // Reconstruir la cédula formateada
+  if (numeros.length > 0) result += numeros.slice(0, 3);
+  if (numeros.length > 3) result += "-" + numeros.slice(3, 9);
+  if (numeros.length > 9) result += "-" + numeros.slice(9, 13);
+  if (numeros.length === 13 && letra) result += letra;
+
+  // Ajustar cursor
+  const cleanBeforeCursor = inputValue
+    .slice(0, cursorPos)
+    .replace(/[^0-9A-J]/g, "");
+  const rawBeforeCursor = cleanBeforeCursor.replace(/[^0-9]/g, "");
+  let newCursor = rawBeforeCursor.length;
+  if (newCursor > 3) newCursor += 1;
+  if (newCursor > 9) newCursor += 1;
+  if (newCursor > 13) newCursor += 1;
+
+  return { value: result, cursor: newCursor };
+};
+
+// ✅ NUEVO formatTel CON CURSOR ESTABLE
+const formatTel = (inputValue, cursorPos) => {
+  const clean = inputValue.replace(/\D/g, "").slice(0, 8);
+  let result = "";
+
+  if (clean.length > 0) result += clean.slice(0, 4);
+  if (clean.length > 4) result += "-" + clean.slice(4);
+
+  // Calcular posición del cursor
+  const cleanBeforeCursor = inputValue
+    .slice(0, cursorPos)
+    .replace(/\D/g, "");
+  let newCursor = cleanBeforeCursor.length;
+  if (newCursor > 4) newCursor += 1;
+
+  return { value: result, cursor: newCursor };
+};
+
+const validarCorreo = v => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+const validarNombre = v => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,}$/.test(v);
+const validarTelefono = v => /^\d{4}-\d{4}$/.test(v);
+const validarCedula = v => /^\d{3}-\d{6}-\d{4}[A-J]$/.test(v);
+const validarPassword = v => /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{6,}$/.test(v);
+
 const LoginForm = ({
   startInRegister = false,
   esGoogleNuevo = false,
@@ -57,43 +107,7 @@ const LoginForm = ({
     }
   }, [esperandoAceptacion]);
 
-  const formatCedula = (value) => {
-    const clean = value.toUpperCase().replace(/[^0-9A-J]/g, "");
-    const soloNumeros = clean.replace(/[^0-9]/g, "").slice(0, 13);
-    const letraFinal = clean.replace(/[0-9]/g, "").slice(0, 1);
-    let formateado = "";
-    if (soloNumeros.length >= 3) {
-      formateado += soloNumeros.slice(0, 3);
-      if (soloNumeros.length >= 9) {
-        formateado += "-" + soloNumeros.slice(3, 9);
-        formateado += "-" + soloNumeros.slice(9, 13);
-      } else if (soloNumeros.length > 3) {
-        formateado += "-" + soloNumeros.slice(3);
-      }
-    } else {
-      formateado = soloNumeros;
-    }
-    if (soloNumeros.length === 13 && letraFinal) {
-      formateado += letraFinal;
-    }
-    return formateado;
-  };
-
-  const formatTel = (v) => {
-    let digits = v.replace(ONLY_DIGITS, "").slice(0, 8);
-    return digits.length > 4
-      ? `${digits.slice(0, 4)}-${digits.slice(4, 8)}`
-      : digits;
-  };
-
-  const validarCorreo = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
-  const validarNombre = (v) => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,}$/.test(v);
-  const validarTelefono = (v) => /^\d{4}-\d{4}$/.test(v);
-  const validarCedula = (v) => /^\d{3}-\d{6}-\d{4}[A-J]$/.test(v);
-  const validarPassword = (v) =>
-    /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{6,}$/.test(v);
-
-  const onSubmit = (e) => {
+  const onSubmit = e => {
     e.preventDefault();
     if (!aceptado && !esperandoAceptacion) {
       setWarn(true);
@@ -110,7 +124,11 @@ const LoginForm = ({
   return (
     <Card className="login-card">
       <div className="login-header">
-        <img src="/Horizontal.png" alt="APFINE Logo" className="logo-top-left" />
+        <img
+          src="/Horizontal.png"
+          alt="APFINE Logo"
+          className="logo-top-left"
+        />
         <IoClose className="close-icon" onClick={cerrar} />
       </div>
 
@@ -140,7 +158,7 @@ const LoginForm = ({
                 <Form.Control
                   type="email"
                   value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value.trim())}
+                  onChange={e => setLoginEmail(e.target.value.trim())}
                   required
                 />
               </Form.Group>
@@ -151,7 +169,7 @@ const LoginForm = ({
                   <Form.Control
                     type={showPass ? "text" : "password"}
                     value={loginPass}
-                    onChange={(e) =>
+                    onChange={e =>
                       setLoginPass(e.target.value.replace(/\s/g, ""))
                     }
                     required
@@ -175,11 +193,23 @@ const LoginForm = ({
                   type="text"
                   placeholder="001-000203-0001A"
                   value={regCedula}
-                  onFocus={(e) => (e.target.placeholder = "")}
-                  onBlur={(e) => {
-                    if (!e.target.value) e.target.placeholder = "001-010203-0001A";
+                  onFocus={e => (e.target.placeholder = "")}
+                  onBlur={e => {
+                    if (!e.target.value)
+                      e.target.placeholder = "001-010203-0001A";
                   }}
-                  onChange={(e) => setRegCedula(formatCedula(e.target.value))}
+                  onChange={e => {
+                    const input = e.target;
+                    const { value, selectionStart } = input;
+                    const { value: newValue, cursor } = formatCedula(
+                      value,
+                      selectionStart
+                    );
+                    setRegCedula(newValue);
+                    requestAnimationFrame(() =>
+                      input.setSelectionRange(cursor, cursor)
+                    );
+                  }}
                   isInvalid={regCedula && !validarCedula(regCedula)}
                   required
                 />
@@ -195,7 +225,7 @@ const LoginForm = ({
                 <Form.Control
                   type="text"
                   value={regNombre}
-                  onChange={(e) =>
+                  onChange={e =>
                     setRegNombre(e.target.value.replace(ONLY_LETTERS, ""))
                   }
                   isInvalid={regNombre && !validarNombre(regNombre)}
@@ -215,11 +245,12 @@ const LoginForm = ({
                   placeholder="ejemplo@correo.com"
                   value={regEmail}
                   disabled={esGoogleNuevo}
-                  onFocus={(e) => (e.target.placeholder = "")}
-                  onBlur={(e) => {
-                    if (!e.target.value) e.target.placeholder = "ejemplo@correo.com";
+                  onFocus={e => (e.target.placeholder = "")}
+                  onBlur={e => {
+                    if (!e.target.value)
+                      e.target.placeholder = "ejemplo@correo.com";
                   }}
-                  onChange={(e) => setRegEmail(e.target.value.trim())}
+                  onChange={e => setRegEmail(e.target.value.trim())}
                   isInvalid={regEmail && !validarCorreo(regEmail)}
                   required
                 />
@@ -236,15 +267,26 @@ const LoginForm = ({
                   type="text"
                   placeholder="8888-1234"
                   value={regTel}
-                  onFocus={(e) => (e.target.placeholder = "")}
-                  onBlur={(e) => {
+                  onFocus={e => (e.target.placeholder = "")}
+                  onBlur={e => {
                     if (!e.target.value) e.target.placeholder = "8888-1234";
                   }}
-                  onChange={(e) => setRegTel(formatTel(e.target.value))}
+                  onChange={e => {
+                    const input = e.target;
+                    const { value, selectionStart } = input;
+                    const { value: newValue, cursor } = formatTel(
+                      value,
+                      selectionStart
+                    );
+                    setRegTel(newValue);
+                    requestAnimationFrame(() =>
+                      input.setSelectionRange(cursor, cursor)
+                    );
+                  }}
                   isInvalid={regTel && !validarTelefono(regTel)}
                   required
                 />
-                {regTel && !validarTelefono(regTel) && (
+                {regTel && !validarTelefono(regTel) && (  
                   <div className="invalid-feedback visible">
                     Teléfono inválido. Formato correcto: 8888-1234
                   </div>
@@ -260,19 +302,21 @@ const LoginForm = ({
                         type={showPass ? "text" : "password"}
                         placeholder="Ej: MiClave2024"
                         value={regPass}
-                        onFocus={(e) => (e.target.placeholder = "")}
-                        onBlur={(e) => {
-                          if (!e.target.value)
-                            e.target.placeholder = "Ej: MiClave2024";
-                        }}
-                        onChange={(e) =>
+                        onChange={e =>
                           setRegPass(e.target.value.replace(/\s/g, ""))
                         }
                         isInvalid={regPass && !validarPassword(regPass)}
                         required
                       />
-                      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
-                        {showPass ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                      <span
+                        className="eye-icon"
+                        onClick={() => setShowPass(!showPass)}
+                      >
+                        {showPass ? (
+                          <AiOutlineEyeInvisible />
+                        ) : (
+                          <AiOutlineEye />
+                        )}
                       </span>
                     </div>
                     {regPass && !validarPassword(regPass) && (
@@ -289,19 +333,21 @@ const LoginForm = ({
                         type={showConfirm ? "text" : "password"}
                         placeholder="Repite la contraseña"
                         value={regConfirm}
-                        onFocus={(e) => (e.target.placeholder = "")}
-                        onBlur={(e) => {
-                          if (!e.target.value)
-                            e.target.placeholder = "Repite la contraseña";
-                        }}
-                        onChange={(e) =>
+                        onChange={e =>
                           setRegConfirm(e.target.value.replace(/\s/g, ""))
                         }
                         isInvalid={regConfirm && regConfirm !== regPass}
                         required
                       />
-                      <span className="eye-icon" onClick={() => setShowConfirm(!showConfirm)}>
-                        {showConfirm ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                      <span
+                        className="eye-icon"
+                        onClick={() => setShowConfirm(!showConfirm)}
+                      >
+                        {showConfirm ? (
+                          <AiOutlineEyeInvisible />
+                        ) : (
+                          <AiOutlineEye />
+                        )}
                       </span>
                     </div>
                     {regConfirm && regConfirm !== regPass && (
@@ -314,6 +360,7 @@ const LoginForm = ({
               )}
             </>
           )}
+
           <Button type="submit" className="login-btn">
             {isLogin ? "Iniciar Sesión" : "Registrarse"}
           </Button>
@@ -345,7 +392,7 @@ const LoginForm = ({
             <Form.Check
               type="checkbox"
               checked={aceptado}
-              onChange={(e) => {
+              onChange={e => {
                 setAceptado(e.target.checked);
                 if (e.target.checked) setWarn(false);
               }}
@@ -363,11 +410,7 @@ const LoginForm = ({
                 </>
               }
             />
-            {warn && (
-              <div className="checkbox-warning">
-                Debes aceptar para continuar.
-              </div>
-            )}
+            {warn && <div className="checkbox-warning">Debes aceptar para continuar.</div>}
           </div>
         )}
 
@@ -378,7 +421,7 @@ const LoginForm = ({
           >
             <Form.Check
               type="checkbox"
-              onChange={(e) => {
+              onChange={e => {
                 if (e.target.checked) {
                   setWarnGoogle(false);
                   handleAceptarGoogle();
@@ -398,11 +441,7 @@ const LoginForm = ({
                 </>
               }
             />
-            {warnGoogle && (
-              <div className="checkbox-warning">
-                Debes aceptar para continuar.
-              </div>
-            )}
+            {warnGoogle && <div className="checkbox-warning">Debes aceptar para continuar.</div>}
           </div>
         )}
       </Card.Body>
