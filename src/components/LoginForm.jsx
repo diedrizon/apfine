@@ -7,17 +7,12 @@ import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
 const LoginForm = ({
-  /* flags de control */
   startInRegister = false,
   esGoogleNuevo = false,
-
-  /* ---------- LOGIN ---------- */
   loginEmail,
   setLoginEmail,
   loginPass,
   setLoginPass,
-
-  /* ---------- REGISTRO ---------- */
   regEmail,
   setRegEmail,
   regPass,
@@ -30,25 +25,22 @@ const LoginForm = ({
   setRegNombre,
   regTel,
   setRegTel,
-
-  /* handlers principales */
   handleLogin,
   handleRegister,
   handleGoogleLogin,
-
-  /* legales */
   esperandoAceptacion,
   handleAceptarGoogle,
-
-  /* error global */
   error,
 }) => {
-  // ✅ Cambia automáticamente a Registrarse si Google es nuevo
-  const [isLogin, setIsLogin] = useState(true);
+  /* ───── control de pestañas ───── */
+  const [isLogin, setIsLogin] = useState(!startInRegister);
+
   useEffect(() => {
-    if (startInRegister) setIsLogin(false);
+    // sincroniza el tab con la prop cada vez que cambie
+    setIsLogin(!startInRegister);
   }, [startInRegister]);
 
+  /* ───── estados auxiliares ───── */
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [aceptado, setAceptado] = useState(false);
@@ -68,6 +60,7 @@ const LoginForm = ({
     }
   }, [esperandoAceptacion]);
 
+  /* ───── envío del formulario ───── */
   const onSubmit = (e) => {
     e.preventDefault();
     if (!aceptado && !esperandoAceptacion) {
@@ -85,11 +78,7 @@ const LoginForm = ({
   return (
     <Card className="login-card">
       <div className="login-header">
-        <img
-          src="/Horizontal.png"
-          alt="APFINE Logo"
-          className="logo-top-left"
-        />
+        <img src="/Horizontal.png" alt="APFINE Logo" className="logo-top-left" />
         <IoClose className="close-icon" onClick={cerrar} />
       </div>
 
@@ -112,6 +101,7 @@ const LoginForm = ({
         {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={onSubmit}>
+          {/* ───── LOGIN ───── */}
           {isLogin && (
             <>
               <Form.Group className="mb-3">
@@ -144,6 +134,7 @@ const LoginForm = ({
             </>
           )}
 
+          {/* ───── REGISTRO ───── */}
           {!isLogin && (
             <>
               <Form.Group className="mb-3">
@@ -260,6 +251,7 @@ const LoginForm = ({
           </Button>
         </div>
 
+        {/* ───── LEGAL ───── */}
         {!esperandoAceptacion && (
           <div
             id="checkbox-wrapper"
