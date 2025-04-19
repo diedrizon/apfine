@@ -19,7 +19,7 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "../database/authcontext";
 
-import codigosCedula from "../database/codigocedulacion.json";
+import codigosCedula from "../data/codigocedulacion.json";
 import "../styles/login.css";
 
 /* ═════════ UTILIDADES CÉDULA ═════════ */
