@@ -1,26 +1,19 @@
-/* src/styles/GastosFijos.css */
-
-/* === Variables globales opcionales === */
 :root {
-  --gf-card-bg-light: #f5f5f5;
-  --gf-card-bg-hover-light: #eaeaea;
-  --gf-card-text-light: #000;
-  --gf-summary-bg-light: #f5f5f5;
-  --gf-summary-text-light: #000;
+  --gf-bg-light: #f5f5f5;
+  --gf-hover-light: #eaeaea;
+  --gf-text-light: #000;
+  --gf-summary-light: #f5f5f5;
 
-  --gf-card-bg-dark: #3a3a3a;
-  --gf-card-bg-hover-dark: #4a4a4a;
-  --gf-card-text-dark: #fff;
-  --gf-summary-bg-dark: #3a3a3a;
-  --gf-summary-text-dark: #fff;
+  --gf-bg-dark: #3a3a3a;
+  --gf-hover-dark: #4a4a4a;
+  --gf-text-dark: #fff;
+  --gf-summary-dark: #3a3a3a;
 }
 
-/* Contenedor */
 .gastos-fijos-container {
   padding: 20px;
 }
 
-/* Encabezado de sección */
 .section-header {
   display: flex;
   align-items: center;
@@ -31,15 +24,19 @@
   margin: 0;
 }
 
-/* Layout */
+/* Layout general */
 .content {
   display: flex;
   gap: 20px;
 }
-
-/* Listado */
 .listado {
   flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.resumen {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -47,87 +44,29 @@
 
 /* Tarjeta */
 .item {
-  padding: 8px 12px;
-  border: none;
   border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
   transition: background-color 0.3s;
 }
 
-/* Subinfo y acciones */
-.subinfo {
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 6px;
+/* Expandida */
+.item.expanded {
+  background-color: var(--gf-hover-light);
 }
-.acciones {
-  display: flex;
-  gap: 6px;
+body.dark-mode .item.expanded {
+  background-color: var(--gf-hover-dark);
 }
 
-/* Resumen */
-.resumen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.summary-card {
-  border: none;
-  border-radius: 12px;
-}
-.summary-card .card-body {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* === Light Mode === */
-body.light-mode .item {
-  background-color: var(--gf-card-bg-light);
-  color: var(--gf-card-text-light);
-}
-body.light-mode .item:hover {
-  background-color: var(--gf-card-bg-hover-light);
-}
-body.light-mode .subinfo {
-  color: #333;
-}
-body.light-mode .summary-card {
-  background-color: var(--gf-summary-bg-light);
-  color: var(--gf-summary-text-light);
-}
-body.light-mode .section-header h4 {
-  color: var(--gf-card-text-light);
-}
-
-/* === Dark Mode === */
-body.dark-mode .item {
-  background-color: var(--gf-card-bg-dark);
-  color: var(--gf-card-text-dark);
-}
-body.dark-mode .item:hover {
-  background-color: var(--gf-card-bg-hover-dark);
-}
-body.dark-mode .subinfo {
-  color: #ccc;
-}
-body.dark-mode .summary-card {
-  background-color: var(--gf-summary-bg-dark);
-  color: var(--gf-summary-text-dark);
-}
-body.dark-mode .section-header h4 {
-  color: var(--gf-card-text-dark);
-}
-
-/* Ícono dentro de la tarjeta */
-.item .top {
+.top {
   display: flex;
   align-items: center;
   margin-bottom: 4px;
 }
-.item .icon {
+.icon {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -136,13 +75,72 @@ body.dark-mode .section-header h4 {
   justify-content: center;
   margin-right: 8px;
 }
-body.light-mode .item .icon {
+.nombre {
+  font-weight: 500;
+  font-size: 1rem;
+}
+.subinfo {
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+.acciones {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+}
+
+/* Colores claro */
+body.light-mode .item {
+  background-color: var(--gf-bg-light);
+  color: var(--gf-text-light);
+}
+body.light-mode .subinfo {
+  color: #333;
+}
+body.light-mode .icon {
   background-color: #007bff;
   color: #fff;
 }
-body.dark-mode .item .icon {
+body.light-mode .summary-card {
+  background-color: var(--gf-summary-light);
+  color: var(--gf-text-light);
+}
+body.light-mode .section-header h4 {
+  color: var(--gf-text-light);
+}
+
+/* Colores oscuro */
+body.dark-mode .item {
+  background-color: var(--gf-bg-dark);
+  color: var(--gf-text-dark);
+}
+body.dark-mode .subinfo {
+  color: #ccc;
+}
+body.dark-mode .icon {
   background-color: #6c757d;
   color: #fff;
+}
+body.dark-mode .summary-card {
+  background-color: var(--gf-summary-dark);
+  color: var(--gf-text-dark);
+}
+body.dark-mode .section-header h4 {
+  color: var(--gf-text-dark);
+}
+
+/* Resumen */
+.summary-card {
+  border: none;
+  border-radius: 12px;
+}
+.summary-card .card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Responsive */
