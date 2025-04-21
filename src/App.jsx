@@ -20,6 +20,7 @@ import Recomendaciones from "./views/Recomendaciones";
 import NotFound from "./views/NotFound";
 import Privacidad from "./views/Privacidad";
 import Terminos from "./views/Terminos";
+import Gastofijos from "./views/GastosFijos";
 import "./App.css";
 import ReactGA from "react-ga4";
 
@@ -100,29 +101,33 @@ function AppContent() {
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/terminos-condiciones" element={<Terminos />} />
 
-          {/* Rutas protegidas */}
-          <Route
-            path="/inicio"
-            element={<ProtectedRoute element={<Inicio />} />}
-          />
-          <Route
-            path="/categorias"
-            element={<ProtectedRoute element={<Categorias />} />}
-          />
-          <Route
-            path="/ingresos"
-            element={<ProtectedRoute element={<Ingresos />} />}
-          />
-          <Route
-            path="/gastos"
-            element={<ProtectedRoute element={<Gastos />} />}
-          />
-          <Route
-            path="/recomendaciones"
-            element={<ProtectedRoute element={<Recomendaciones />} />}
-          />
+          /* Rutas protegidas */
+                <Route
+                path="/inicio"
+                element={<ProtectedRoute element={<Inicio />} />}
+                />
+                <Route
+                path="/categorias"
+                element={<ProtectedRoute element={<Categorias />} />}
+                />
+                <Route
+                path="/ingresos"
+                element={<ProtectedRoute element={<Ingresos />} />}
+                />
+                <Route
+                path="/gastos"
+                element={<ProtectedRoute element={<Gastos />} />}
+                />
+                <Route
+                path="/gastofijos"
+                element={<ProtectedRoute element={<Gastofijos />} />}
+                />
+                <Route
+                path="/recomendaciones"
+                element={<ProtectedRoute element={<Recomendaciones />} />}
+                />
 
-          {/* Página no encontrada */}
+                {/* Página no encontrada */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

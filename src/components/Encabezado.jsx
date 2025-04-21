@@ -13,7 +13,7 @@ const Encabezado = ({ isSidebarOpen, toggleSidebar, isDarkMode, toggleTheme }) =
 
   const ocultarHeaderEn = ["/", "/login", "/recuperar", "/privacidad", "/terminos-condiciones"];
   const esRuta404 = location.pathname && ![
-    "/", "/login", "/recuperar", "/inicio", "/categorias", "/ingresos", "/gastos", "/recomendaciones"
+    "/", "/login", "/recuperar", "/inicio", "/categorias", "/ingresos", "/gastos", "/recomendaciones", "/gastofijos"
   ].includes(location.pathname);
 
   if (ocultarHeaderEn.includes(location.pathname) || esRuta404) return null;
