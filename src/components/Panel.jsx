@@ -100,37 +100,39 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
           </button>
 
           <ul className="sidebar-menu">
-                  <li className="module" onClick={() => toggleModuleName("finanzas")}>
-                    <BiMoney className="module-icon" />
-                    <span className="module-text">Finanzas</span>
-                    {openModule === "finanzas" ? (
-                    <BiChevronDown />
-                    ) : (
-                    <BiChevronRight />
-                    )}
-                  </li>
-                  {openModule === "finanzas" && (
-                    <ul className="submenu">
-                    {renderSubItem(<BiDollar />, "Ingresos", () =>
-                      handleNavigate("/ingresos")
-                    )}
-                    {renderSubItem(<BiListCheck />, "Gastos", () =>
-                      handleNavigate("/gastos")
-                    )}
-                    {renderSubItem(<BiCube />, "Gastos fijos", () =>
-                      handleNavigate("/gastofijos")
-                    )}
-                    {renderSubItem(<BiFolder />, "Categorías", () =>
-                      handleNavigate("/categorias")
-                    )}
-                    {renderSubItem(<BiTargetLock />, "Metas", () => {})}
-                    {renderSubItem(<BiBulb />, "Recomendaciones", () =>
-                      handleNavigate("/recomendaciones")
-                    )}
-                    </ul>
-                  )}
+            <li className="module" onClick={() => toggleModuleName("finanzas")}>
+              <BiMoney className="module-icon" />
+              <span className="module-text">Finanzas</span>
+              {openModule === "finanzas" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
+            </li>
+            {openModule === "finanzas" && (
+              <ul className="submenu">
+                {renderSubItem(<BiDollar />, "Ingresos", () =>
+                  handleNavigate("/ingresos")
+                )}
+                {renderSubItem(<BiListCheck />, "Gastos", () =>
+                  handleNavigate("/gastos")
+                )}
+                {renderSubItem(<BiCube />, "Gastos fijos", () =>
+                  handleNavigate("/gastofijos")
+                )}
+                {renderSubItem(<BiFolder />, "Categorías", () =>
+                  handleNavigate("/categorias")
+                )}
+                {renderSubItem(<BiTargetLock />, "Metas", () =>
+                  handleNavigate("/metas")
+                )}
+                {renderSubItem(<BiBulb />, "Recomendaciones", () =>
+                  handleNavigate("/recomendaciones")
+                )}
+              </ul>
+            )}
 
-                  {/* Producción */}
+            {/* Producción */}
             <li
               className="module"
               onClick={() => toggleModuleName("produccion")}

@@ -1,0 +1,170 @@
+:root {
+  --mt-bg-light: #f5f5f5;
+  --mt-hover-light: #eaeaea;
+  --mt-text-light: #000;
+  --mt-badge-activa: #0d6efd;
+  --mt-badge-cumplida: #198754;
+  --mt-badge-vencida: #dc3545;
+
+  --mt-bg-dark: #3a3a3a;
+  --mt-hover-dark: #4a4a4a;
+  --mt-text-dark: #fff;
+}
+
+/* Contenedor general */
+.metas-container {
+  padding: 20px;
+}
+
+/* Encabezado */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.section-header h4 {
+  margin: 0;
+  color: var(--mt-text-light);
+}
+body.dark-mode .section-header h4 {
+  color: var(--mt-text-dark);
+}
+
+/* Layout de contenido */
+.content {
+  display: flex;
+  gap: 20px;
+}
+
+/* Panel izquierdo (listado) */
+.listado {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Panel derecho (resumen) */
+.resumen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Tarjeta de meta */
+.meta-item {
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 10px;
+  transition: background-color 0.3s;
+  background-color: var(--mt-bg-light);
+  color: var(--mt-text-light);
+}
+.meta-item.expanded {
+  background-color: var(--mt-hover-light);
+}
+body.dark-mode .meta-item {
+  background-color: var(--mt-bg-dark);
+  color: var(--mt-text-dark);
+}
+body.dark-mode .meta-item.expanded {
+  background-color: var(--mt-hover-dark);
+}
+
+/* Contenido interno */
+.top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+.nombre {
+  font-weight: 500;
+  font-size: 1rem;
+}
+.subinfo {
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+body.dark-mode .subinfo {
+  color: #ccc;
+}
+body.light-mode .subinfo {
+  color: #333;
+}
+
+/* Botones */
+.acciones {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* Badge por estado */
+.badge-activa {
+  color: #fff;
+  background-color: var(--mt-badge-activa);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.badge-cumplida {
+  color: #fff;
+  background-color: var(--mt-badge-cumplida);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.badge-vencida {
+  color: #fff;
+  background-color: var(--mt-badge-vencida);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Tarjeta resumen */
+.summary-card {
+  border-radius: 12px;
+  border: none;
+  background-color: var(--mt-bg-light);
+  color: var(--mt-text-light);
+}
+body.dark-mode .summary-card {
+  background-color: var(--mt-bg-dark);
+  color: var(--mt-text-dark);
+}
+.summary-card .card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+  .resumen {
+    order: 1;
+  }
+  .listado {
+    order: 2;
+  }
+  .summary-card {
+    width: 100% !important;
+    display: block !important;
+  }
+}

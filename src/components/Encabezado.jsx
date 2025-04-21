@@ -6,15 +6,37 @@ import { HiOutlineMenuAlt1 } from "react-icons/hi";
 import { FiLogOut } from "react-icons/fi";
 import { BiSun, BiMoon } from "react-icons/bi";
 
-const Encabezado = ({ isSidebarOpen, toggleSidebar, isDarkMode, toggleTheme }) => {
+const Encabezado = ({
+  isSidebarOpen,
+  toggleSidebar,
+  isDarkMode,
+  toggleTheme,
+}) => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const ocultarHeaderEn = ["/", "/login", "/recuperar", "/privacidad", "/terminos-condiciones"];
-  const esRuta404 = location.pathname && ![
-    "/", "/login", "/recuperar", "/inicio", "/categorias", "/ingresos", "/gastos", "/recomendaciones", "/gastofijos"
-  ].includes(location.pathname);
+  const ocultarHeaderEn = [
+    "/",
+    "/login",
+    "/recuperar",
+    "/privacidad",
+    "/terminos-condiciones",
+  ];
+  const esRuta404 =
+    location.pathname &&
+    ![
+      "/",
+      "/login",
+      "/recuperar",
+      "/inicio",
+      "/categorias",
+      "/ingresos",
+      "/gastos",
+      "/recomendaciones",
+      "/gastofijos",
+      "/metas",
+    ].includes(location.pathname);
 
   if (ocultarHeaderEn.includes(location.pathname) || esRuta404) return null;
 
