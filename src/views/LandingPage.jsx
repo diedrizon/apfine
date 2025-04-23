@@ -63,7 +63,6 @@ const LandingPage = () => {
               <Nav.Link onClick={() => scrollTo("services")}>
                 Servicios
               </Nav.Link>
-              {/* Se quita el botón de FAQ y se agrupa con Beneficios */}
               <Nav.Link onClick={() => scrollTo("benefitsFaq")}>
                 Beneficios
               </Nav.Link>
@@ -192,7 +191,6 @@ const LandingPage = () => {
         <Container>
           <h2 className="lp-section-title text-center">Servicios Destacados</h2>
           <Row className="lp-services-cards">
-            {/* TARJETAS DE ARRIBA (originales sin cambios) */}
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaChartLine className="lp-card-icon-top" />
@@ -225,7 +223,6 @@ const LandingPage = () => {
               </div>
             </Col>
 
-            {/* TARJETAS DE ABAJO (texto corregido y balanceado) */}
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaClipboardList className="lp-card-icon-top" />

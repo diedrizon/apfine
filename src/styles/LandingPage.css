@@ -1,14 +1,11 @@
-/* Importar fuente moderna desde Google Fonts (usa localmente si prefieres) */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
-/* Global: No forzamos el fondo en body para respetar el modo */
 body {
   font-family: "Inter", sans-serif;
   margin: 0;
   scroll-behavior: smooth;
 }
 
-/* Estilos encapsulados para la Landing Page */
 .landing-page {
   /* Variables para MODO CLARO */
   --button-primary: #0033cc;
@@ -596,9 +593,7 @@ body {
   }
 }
 
-/* ==================================================== */
-/*    SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN          */
-/* ==================================================== */
+/*    SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN  */
 
 .landing-page .lp-benefits-faq {
   background: var(--card-bg);
@@ -652,8 +647,7 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
     padding: 0 10px;
   }
 }
-/* === SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN === */
-/* === SECCIÓN: BENEFICIOS E INFORMACIÓN === */
+/*SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN */
 .lp-benefits-faq {
   background: var(--card-bg);
   padding: 100px 0;
@@ -668,7 +662,7 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
   height: 100%;
-  text-align: left; /* 👈 Alineación general a la izquierda */
+  text-align: left; 
 }
 
 .lp-card-info:hover {
@@ -687,7 +681,7 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
   text-align: center;
 }
 
-/* === BENEFICIOS === */
+/* BENEFICIOS */
 .lp-check-list {
   list-style: none;
   padding-left: 0;
@@ -695,10 +689,10 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
 
 .lp-check-list li {
   position: relative;
-  padding-left: 20px; /* 👈 Menor espacio a la izquierda */
+  padding-left: 20px; 
   font-size: 1.1rem;
   color: var(--text-general);
-  margin-bottom: 10px; /* 👈 Menor separación entre ítems */
+  margin-bottom: 10px; 
 }
 
 .lp-check-list li::before {
@@ -710,7 +704,7 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
   font-size: 1rem;
 }
 
-/* === FAQ === */
+/* FAQ */
 .lp-faq-item {
   margin-bottom: 20px;
 }
