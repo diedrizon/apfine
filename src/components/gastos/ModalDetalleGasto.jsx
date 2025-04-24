@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button, Row, Col } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 
 function ModalDetalleGasto({ show, handleClose, gastoDetalle }) {
   if (!gastoDetalle) return null;
@@ -15,6 +15,13 @@ function ModalDetalleGasto({ show, handleClose, gastoDetalle }) {
     comprobanteURL,
   } = gastoDetalle;
 
+  const Item = ({ label, value }) => (
+    <div className="detalle-item">
+      <span className="detalle-label">{label}</span>
+      <span className="detalle-value">{value || "—"}</span>
+    </div>
+  );
+
   return (
     <Modal
       show={show}
@@ -27,47 +34,35 @@ function ModalDetalleGasto({ show, handleClose, gastoDetalle }) {
       <Modal.Header closeButton>
         <Modal.Title>Detalle del Gasto</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
-        <Row className="mb-2">
-          <Col md={4}>Fecha Gasto:</Col>
-          <Col md={8}>{fecha_gasto || "—"}</Col>
-        </Row>
-        <Row className="mb-2">
-          <Col md={4}>Monto:</Col>
-          <Col md={8}>{monto || "—"}</Col>
-        </Row>
-        <Row className="mb-2">
-          <Col md={4}>Tipo Gasto:</Col>
-          <Col md={8}>{tipo_gasto || "—"}</Col>
-        </Row>
-        <Row className="mb-2">
-          <Col md={4}>Categoría:</Col>
-          <Col md={8}>{categoria || "—"}</Col>
-        </Row>
-        <Row className="mb-2">
-          <Col md={4}>Proveedor:</Col>
-          <Col md={8}>{proveedor || "—"}</Col>
-        </Row>
-        <Row className="mb-2">
-          <Col md={4}>Medio de Pago:</Col>
-          <Col md={8}>{medio_pago || "—"}</Col>
-        </Row>
-        <Row className="mb-2">
-          <Col md={4}>Descripción:</Col>
-          <Col md={8}>{descripcion || "—"}</Col>
-        </Row>
-        <hr />
-        {comprobanteURL ? (
-          <>
-            <p>Comprobante:</p>
-            <a href={comprobanteURL} target="_blank" rel="noreferrer">
-              Ver comprobante
-            </a>
-          </>
-        ) : (
-          <p>No se adjuntó comprobante.</p>
-        )}
+        <div className="detalle-gasto">
+          <Item label="Fecha del Gasto" value={fecha_gasto} />
+          <Item label="Monto" value={`C$ ${monto}`} />
+          <Item label="Tipo de Gasto" value={tipo_gasto} />
+          <Item label="Categoría" value={categoria} />
+          <Item label="Proveedor" value={proveedor} />
+          <Item label="Medio de Pago" value={medio_pago} />
+          <Item label="Descripción" value={descripcion} />
+
+          <div className="detalle-item">
+            <span className="detalle-label">Comprobante</span>
+            {comprobanteURL ? (
+              <a
+                href={comprobanteURL}
+                target="_blank"
+                rel="noreferrer"
+                className="comprobante-link"
+              >
+                Ver comprobante
+              </a>
+            ) : (
+              <span className="detalle-value">No se adjuntó comprobante.</span>
+            )}
+          </div>
+        </div>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
           Cerrar

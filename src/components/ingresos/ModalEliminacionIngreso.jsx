@@ -1,6 +1,6 @@
-// src/components/ingresos/ModalEliminacionIngreso.jsx
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
+import { FaExclamationTriangle } from "react-icons/fa";
 
 function ModalEliminacionIngreso({
   show,
@@ -21,15 +21,20 @@ function ModalEliminacionIngreso({
         <Modal.Title>Eliminar Ingreso</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {ingresoAEliminar ? (
-          <p>
-            ¿Estás seguro de eliminar el ingreso de tipo{" "}
-            <strong>{ingresoAEliminar.tipo_ingreso}</strong> con monto{" "}
-            <strong>C${ingresoAEliminar.monto}</strong>?
-          </p>
-        ) : (
-          <p>No hay ingreso seleccionado.</p>
-        )}
+        <div className="modal-warning-body">
+          <FaExclamationTriangle className="warning-icon" />
+          <div className="warning-text">
+            {ingresoAEliminar ? (
+              <p>
+                ¿Estás seguro de que deseas eliminar el ingreso del tipo{" "}
+                <strong>{ingresoAEliminar.tipo_ingreso}</strong> con monto{" "}
+                <strong>C${ingresoAEliminar.monto}</strong>?
+              </p>
+            ) : (
+              <p>No se ha seleccionado ingreso.</p>
+            )}
+          </div>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

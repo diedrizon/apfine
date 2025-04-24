@@ -1,5 +1,7 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
+import "../styles/ModalMensaje.css";
+
 
 function ModalMensaje({ show, handleClose, message, className }) {
   return (
