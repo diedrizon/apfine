@@ -79,3 +79,33 @@ body.dark-mode .header {
   background: #000;
   color: #fff;
 }
+
+.estado-offline {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+  pointer-events: none;
+  user-select: none;
+  z-index: 9999;
+}
+
+.icono-offline {
+  font-size: 1.2rem;
+}
+
+/* Modo claro */
+body.light-mode {
+  --color-text: #222;
+}
+
+/* Modo oscuro */
+body.dark-mode {
+  --color-text: #eee;
+}

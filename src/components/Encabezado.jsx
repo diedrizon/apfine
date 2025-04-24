@@ -4,7 +4,7 @@ import "../styles/Encabezado.css";
 import { useAuth } from "../database/authcontext";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
 import { FiLogOut } from "react-icons/fi";
-import { BiSun, BiMoon } from "react-icons/bi";
+import { BiSun, BiMoon, BiWifiOff } from "react-icons/bi";
 
 const Encabezado = ({
   isSidebarOpen,
@@ -12,7 +12,7 @@ const Encabezado = ({
   isDarkMode,
   toggleTheme,
 }) => {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, isOffline } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,6 +23,7 @@ const Encabezado = ({
     "/privacidad",
     "/terminos-condiciones",
   ];
+
   const esRuta404 =
     location.pathname &&
     ![
@@ -62,6 +63,13 @@ const Encabezado = ({
         )}
         {!isLoggedIn && <h1 className="guest-title">Prestame Dinero</h1>}
       </div>
+
+      {isLoggedIn && isOffline && (
+        <div className="estado-offline">
+          <BiWifiOff className="icono-offline" />
+          <span>Sin conexión</span>
+        </div>
+      )}
 
       {isLoggedIn && (
         <>
