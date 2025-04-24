@@ -1,13 +1,12 @@
-// src/views/Categorias.jsx
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../database/firebaseconfig";
 import {
   collection,
-  getDocs,
+  onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
 } from "firebase/firestore";
 import { Container, Button, Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
@@ -19,9 +18,6 @@ import "../styles/Categorias.css";
 import { onAuthStateChanged } from "firebase/auth";
 import ReactGA from "react-ga4";
 
-/** 
- * Obtiene el componente de ícono de FontAwesome
- */
 function getIconComponent(iconName) {
   const IconComponent = FaIcons[iconName];
   return IconComponent ? <IconComponent /> : <FaIcons.FaQuestion />;
@@ -32,27 +28,36 @@ function Categorias() {
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModalMensaje, setShowModalMensaje] = useState(false);
+  const [mensaje, setMensaje] = useState("");
 
   const [categoriaNueva, setCategoriaNueva] = useState({
     nombre: "",
     color: "",
     icono: "",
-    aplicacion: "" // <--- Nuevo campo
+    aplicacion: "",
   });
+
   const [categoriaEditada, setCategoriaEditada] = useState(null);
   const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
-
-  // Para expandir la categoría seleccionada
   const [expandedCategory, setExpandedCategory] = useState(null);
-
-  // Modal de mensaje
-  const [showModalMensaje, setShowModalMensaje] = useState(false);
-  const [mensaje, setMensaje] = useState("");
-
   const [usuarioId, setUsuarioId] = useState(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
   const categoriasCollection = collection(db, "categorias");
 
-  // Detectar user
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    setIsOffline(!navigator.onLine);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -61,32 +66,46 @@ function Categorias() {
     });
   }, []);
 
-  // Cargar categorías
   useEffect(() => {
     if (usuarioId) {
-      fetchCategorias();
+      const cleanup = fetchCategorias();
+      return () => cleanup();
     }
-  },);
+  });
 
-  async function fetchCategorias() {
-    const data = await getDocs(categoriasCollection);
-    const fetched = data.docs
-      .map(docu => ({ ...docu.data(), id: docu.id }))
-      .filter(cat => cat.usuarioId === usuarioId);
-    setCategorias(fetched);
+  function fetchCategorias() {
+    const stopListening = onSnapshot(
+      categoriasCollection,
+      (snapshot) => {
+        const fetched = snapshot.docs
+          .map((docu) => ({ ...docu.data(), id: docu.id }))
+          .filter((cat) => cat.usuarioId === usuarioId);
+
+        setCategorias(fetched);
+        if (isOffline) {
+          console.log("Offline: Mostrando datos desde la caché local.");
+        } else {
+          console.log("Categorías cargadas desde Firestore:", fetched);
+        }
+      },
+      (error) => {
+        console.error("Error al escuchar categorías:", error);
+        if (isOffline) {
+          console.log("Offline: Mostrando datos desde la caché local.");
+        } else {
+          setMensaje("Error al cargar las categorías: " + error.message);
+          setShowModalMensaje(true);
+        }
+      }
+    );
+    return stopListening;
   }
 
-  // Abrir/Cerrar modales
   function handleOpenAddModal() {
-    // Reiniciamos el objeto
-    setCategoriaNueva({
-      nombre: "",
-      color: "",
-      icono: "",
-      aplicacion: ""
-    });
+    setCategoriaNueva({ nombre: "", color: "", icono: "", aplicacion: "" });
     setShowModalAdd(true);
   }
+
   function handleCloseAddModal() {
     setShowModalAdd(false);
   }
@@ -95,6 +114,7 @@ function Categorias() {
     setCategoriaEditada({ ...categoria });
     setShowModalEdit(true);
   }
+
   function handleCloseEditModal() {
     setShowModalEdit(false);
   }
@@ -103,39 +123,31 @@ function Categorias() {
     setCategoriaAEliminar(categoria);
     setShowModalDelete(true);
   }
+
   function handleCloseDeleteModal() {
     setShowModalDelete(false);
   }
 
-  // Manejar cambios en formularios
   function handleChangeNueva(e) {
     const { name, value } = e.target;
-    setCategoriaNueva(prev => ({ ...prev, [name]: value }));
+    setCategoriaNueva((prev) => ({ ...prev, [name]: value }));
   }
 
   function handleChangeEditada(e) {
     const { name, value } = e.target;
-    setCategoriaEditada(prev => ({ ...prev, [name]: value }));
+    setCategoriaEditada((prev) => ({ ...prev, [name]: value }));
   }
 
-  // Crear
   async function handleAddCategoria() {
-    if (!categoriaNueva.nombre) {
-      setMensaje("Te hace falta llenar el campo Nombre");
+    if (
+      !categoriaNueva.nombre ||
+      !categoriaNueva.color ||
+      !categoriaNueva.icono
+    ) {
+      setMensaje("Por favor completá todos los campos obligatorios.");
       setShowModalMensaje(true);
       return;
     }
-    if (!categoriaNueva.color) {
-      setMensaje("Te hace falta llenar el campo Color");
-      setShowModalMensaje(true);
-      return;
-    }
-    if (!categoriaNueva.icono) {
-      setMensaje("Te hace falta llenar el campo Ícono");
-      setShowModalMensaje(true);
-      return;
-    }
-
 
     const nuevaCategoria = { ...categoriaNueva, usuarioId };
     await addDoc(categoriasCollection, nuevaCategoria);
@@ -143,59 +155,60 @@ function Categorias() {
     ReactGA.event({
       category: "Categoría",
       action: "Categoría agregada",
-      label: categoriaNueva.nombre || "Sin nombre"
+      label: categoriaNueva.nombre || "Sin nombre",
     });
 
     setMensaje(`La categoría "${categoriaNueva.nombre}" se creó exitosamente.`);
     setShowModalMensaje(true);
-
-    // Reset
     setCategoriaNueva({ nombre: "", color: "", icono: "", aplicacion: "" });
     handleCloseAddModal();
-    fetchCategorias();
   }
 
-  // Editar
   async function handleEditCategoria() {
-    if (!categoriaEditada.nombre) {
-      setMensaje("Te hace falta llenar el campo Nombre");
-      setShowModalMensaje(true);
-      return;
-    }
-    if (!categoriaEditada.color) {
-      setMensaje("Te hace falta llenar el campo Color");
-      setShowModalMensaje(true);
-      return;
-    }
-    if (!categoriaEditada.icono) {
-      setMensaje("Te hace falta llenar el campo Ícono");
+    if (
+      !categoriaEditada.nombre ||
+      !categoriaEditada.color ||
+      !categoriaEditada.icono
+    ) {
+      setMensaje("Por favor completá todos los campos obligatorios.");
       setShowModalMensaje(true);
       return;
     }
 
     const refDoc = doc(db, "categorias", categoriaEditada.id);
-
     await updateDoc(refDoc, {
       nombre: categoriaEditada.nombre,
       color: categoriaEditada.color,
       icono: categoriaEditada.icono,
-      aplicacion: categoriaEditada.aplicacion || ""
+      aplicacion: categoriaEditada.aplicacion || "",
     });
+
+    if (isOffline) {
+      setCategorias((prev) =>
+        prev.map((cat) =>
+          cat.id === categoriaEditada.id ? { ...categoriaEditada } : cat
+        )
+      );
+      setMensaje(
+        "Sin conexión: Categoría actualizada localmente. Se sincronizará cuando haya internet."
+      );
+      setShowModalMensaje(true);
+      return;
+    }
 
     ReactGA.event({
       category: "Categoría",
       action: "Categoría editada",
-      label: categoriaEditada.nombre || "Sin nombre"
+      label: categoriaEditada.nombre || "Sin nombre",
     });
 
-    setMensaje(`La categoría "${categoriaEditada.nombre}" se editó correctamente.`);
+    setMensaje(
+      `La categoría "${categoriaEditada.nombre}" se editó correctamente.`
+    );
     setShowModalMensaje(true);
-
     handleCloseEditModal();
-    fetchCategorias();
   }
 
-  // Eliminar
   async function handleDeleteCategoria() {
     if (!categoriaAEliminar) return;
     const refDoc = doc(db, "categorias", categoriaAEliminar.id);
@@ -204,22 +217,22 @@ function Categorias() {
     ReactGA.event({
       category: "Categoría",
       action: "Categoría eliminada",
-      label: categoriaAEliminar.nombre || "Sin nombre"
+      label: categoriaAEliminar.nombre || "Sin nombre",
     });
 
-    setMensaje(`La categoría "${categoriaAEliminar.nombre}" se eliminó exitosamente.`);
+    setMensaje(
+      `La categoría "${categoriaAEliminar.nombre}" se eliminó exitosamente.`
+    );
     setShowModalMensaje(true);
-
     handleCloseDeleteModal();
-    fetchCategorias();
   }
 
-  // Expandir una categoría al hacer click
   function toggleExpandedCategory(categoria) {
-    setExpandedCategory(expandedCategory === categoria.id ? null : categoria.id);
+    setExpandedCategory(
+      expandedCategory === categoria.id ? null : categoria.id
+    );
   }
 
-  // Ejemplo de estadística
   const totalCategorias = categorias.length;
   const mayorGasto = categorias[0] ? categorias[0].nombre : "N/A";
 
@@ -234,7 +247,7 @@ function Categorias() {
 
       <div className="categorias-content">
         <div className="categorias-list">
-          {categorias.map(cat => {
+          {categorias.map((cat) => {
             const isExpanded = expandedCategory === cat.id;
             return (
               <div
@@ -255,14 +268,13 @@ function Categorias() {
                 {isExpanded && (
                   <div className="categoria-actions-expanded">
                     <p style={{ margin: "5px 0 10px 0" }}>
-                      {/* Aquí puedes mostrar la 'aplicacion' */}
                       <strong>Aplicación:</strong>{" "}
                       {cat.aplicacion ? cat.aplicacion : "Sin definir"}
                     </p>
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         handleOpenDeleteModal(cat);
                       }}
@@ -272,7 +284,7 @@ function Categorias() {
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         handleOpenEditModal(cat);
                       }}
@@ -311,7 +323,6 @@ function Categorias() {
         </div>
       </div>
 
-      {/* Modales */}
       <ModalRegistroCategoria
         show={showModalAdd}
         handleClose={handleCloseAddModal}
