@@ -428,3 +428,21 @@ body.dark-mode .react-date-picker__wrapper {
   border-radius: 6px;
 }
 
+@media (max-width: 576px) {
+  .custom-modal .modal-content {
+      width: 95%;
+      margin: auto;
+  }
+  .custom-modal .modal-title {
+      font-size: 1rem;
+  }
+  .custom-modal .modal-body {
+      padding: 1rem;
+  }
+  .modal-group input,
+  .modal-group select,
+  .modal-group textarea {
+      width: 100%;
+      box-sizing: border-box;
+  }
+}

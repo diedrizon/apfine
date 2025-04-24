@@ -262,3 +262,12 @@ body.dark-mode .react-date-picker__wrapper {
   color: white !important;
   border-radius: 6px;
 }
+
+@media (max-width: 576px) {
+  .modal-group input,
+  .modal-group select,
+  .modal-group textarea {
+      width: 100%;
+      box-sizing: border-box;
+  }
+}
