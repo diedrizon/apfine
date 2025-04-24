@@ -20,60 +20,61 @@ import ModalMensaje from "../components/ModalMensaje";
 
 import "../styles/Gastos.css";
 
-/**
- * Dado el tipo_gasto (Personal u Operativo), selecciona un ícono.
- * Ajusta a tu gusto.
- */
+// Ícono con color dinámico por tipo de gasto
 function getIconGasto(tipo_gasto) {
-  if (!tipo_gasto) return <FaIcons.FaQuestion />;
-  const lower = tipo_gasto.toLowerCase();
-  if (lower === "personal") return <FaIcons.FaUser />;
-  if (lower === "operativo") return <FaIcons.FaTools />;
-  return <FaIcons.FaInbox />;
+  const clase =
+    tipo_gasto === "Personal"
+      ? "personal"
+      : tipo_gasto === "Operativo"
+      ? "operativo"
+      : "default";
+  const estilo = { fontSize: "1.5rem" };
+
+  const icon =
+    tipo_gasto === "Personal"
+      ? <FaIcons.FaUser />
+      : tipo_gasto === "Operativo"
+      ? <FaIcons.FaTools />
+      : <FaIcons.FaInbox />;
+
+  return <div className={`gasto-icon ${clase}`} style={estilo}>{icon}</div>;
 }
 
 function Gastos() {
   const [userId, setUserId] = useState(null);
   const [gastos, setGastos] = useState([]);
-  const [categorias, setCategorias] = useState([]); // Nuevo estado para categorías
+  const [categorias, setCategorias] = useState([]);
 
-  // Modales
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [showModalDetalle, setShowModalDetalle] = useState(false);
 
-  // Objetos manipulados
   const [gastoNuevo, setGastoNuevo] = useState(null);
   const [gastoEditado, setGastoEditado] = useState(null);
   const [gastoAEliminar, setGastoAEliminar] = useState(null);
   const [gastoDetalle, setGastoDetalle] = useState(null);
 
-  // Modal Mensaje
   const [showModalMensaje, setShowModalMensaje] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
-  // Para expandir tarjetas
   const [expandedId, setExpandedId] = useState(null);
 
-  // Referencia a las colecciones "gastos" y "categorias"
   const gastosCollection = collection(db, "gastos");
   const categoriasCollection = collection(db, "categorias");
 
-  // Detectar el user.uid
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) setUserId(user.uid);
     });
   }, []);
 
-  // Cargar gastos y categorías cuando tengamos el userId
   useEffect(() => {
     if (userId) {
       fetchGastos();
       fetchCategorias();
     }
-  }, );
+  },);
 
   async function fetchGastos() {
     try {
@@ -96,7 +97,6 @@ function Gastos() {
         ...docu.data(),
         id: docu.id,
       }));
-      // Filtramos las categorías para gastos: solo se toman las que sean "Gasto" o "Ambos"
       const userCategorias = allCategorias.filter(
         (cat) =>
           cat.usuarioId === userId &&
@@ -108,7 +108,6 @@ function Gastos() {
     }
   }
 
-  // Abrir/cerrar modales
   function openAddModal() {
     setGastoNuevo({
       fecha_gasto: "",
@@ -122,6 +121,7 @@ function Gastos() {
     });
     setShowModalAdd(true);
   }
+
   function closeAddModal() {
     setShowModalAdd(false);
   }
@@ -130,6 +130,7 @@ function Gastos() {
     setGastoEditado({ ...g });
     setShowModalEdit(true);
   }
+
   function closeEditModal() {
     setShowModalEdit(false);
   }
@@ -138,6 +139,7 @@ function Gastos() {
     setGastoAEliminar(g);
     setShowModalDelete(true);
   }
+
   function closeDeleteModal() {
     setShowModalDelete(false);
   }
@@ -146,11 +148,11 @@ function Gastos() {
     setGastoDetalle(g);
     setShowModalDetalle(true);
   }
+
   function closeDetalleModal() {
     setShowModalDetalle(false);
   }
 
-  // CRUD
   async function handleAddGasto(nuevo) {
     try {
       await addDoc(gastosCollection, { ...nuevo, userId });
@@ -197,12 +199,10 @@ function Gastos() {
     }
   }
 
-  // Expandir tarjetas
   function toggleExpanded(g) {
     setExpandedId(expandedId === g.id ? null : g.id);
   }
 
-  // Ejemplo: total de gastos
   const totalGastos = gastos.length;
 
   return (
@@ -225,7 +225,7 @@ function Gastos() {
                 onClick={() => toggleExpanded(g)}
               >
                 <div className="gasto-top">
-                  <div className="gasto-icon">{getIconGasto(g.tipo_gasto)}</div>
+                  {getIconGasto(g.tipo_gasto)}
                   <span className="gasto-nombre">
                     {g.tipo_gasto || "—"} (C${g.monto})
                   </span>
@@ -285,7 +285,6 @@ function Gastos() {
         </div>
       </div>
 
-      {/* Modal Registro */}
       {gastoNuevo && (
         <ModalRegistroGasto
           show={showModalAdd}
@@ -295,12 +294,10 @@ function Gastos() {
           handleAddGasto={handleAddGasto}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
-          // Se pasan las categorías filtradas para Gastos
           categorias={categorias}
         />
       )}
 
-      {/* Modal Edición */}
       {gastoEditado && (
         <ModalEdicionGasto
           show={showModalEdit}
@@ -310,12 +307,10 @@ function Gastos() {
           handleEditGasto={handleEditGasto}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
-          // Se pasan las categorías filtradas para Gastos
           categorias={categorias}
         />
       )}
 
-      {/* Modal Eliminación */}
       {gastoAEliminar && (
         <ModalEliminacionGasto
           show={showModalDelete}
@@ -325,7 +320,6 @@ function Gastos() {
         />
       )}
 
-      {/* Modal Detalle */}
       {gastoDetalle && (
         <ModalDetalleGasto
           show={showModalDetalle}
@@ -334,7 +328,6 @@ function Gastos() {
         />
       )}
 
-      {/* Modal Mensaje */}
       <ModalMensaje
         show={showModalMensaje}
         handleClose={() => setShowModalMensaje(false)}

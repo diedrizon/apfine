@@ -1,0 +1,42 @@
+.modal-mensaje .modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-normal);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .modal-mensaje .modal-header {
+    border-bottom: 1px solid var(--card-border);
+  }
+  
+  .modal-mensaje .modal-title {
+    color: var(--text-title);
+    font-weight: 600;
+  }
+  
+  .modal-mensaje .modal-body p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-normal);
+  }
+  
+  .modal-mensaje .modal-footer {
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .modal-mensaje .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .modal-mensaje .btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+  }
+  

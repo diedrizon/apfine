@@ -1,8 +1,58 @@
-// src/components/gastos/ModalEdicionGasto.jsx
 import React, { useState } from "react";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../database/firebaseconfig";
+
+// ✅ Función de validación externa
+function validarGasto(gasto, archivo, setMensaje, setShowModalMensaje) {
+  const hoy = new Date();
+  const fecha = new Date(gasto.fecha_gasto);
+
+  if (!gasto.fecha_gasto || isNaN(fecha) || fecha > hoy) {
+    setMensaje("La fecha es inválida o futura.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  const monto = parseFloat(gasto.monto);
+  if (isNaN(monto) || monto < 1 || monto > 1000000) {
+    setMensaje("El monto debe estar entre C$1 y C$1,000,000.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  if (!gasto.tipo_gasto) {
+    setMensaje("Selecciona un tipo de gasto.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  if (!gasto.categoria) {
+    setMensaje("Selecciona una categoría.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  if (gasto.proveedor && gasto.proveedor.length > 50) {
+    setMensaje("El proveedor no puede exceder los 50 caracteres.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  if (gasto.descripcion && gasto.descripcion.length > 100) {
+    setMensaje("La descripción no puede exceder los 100 caracteres.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  if (archivo && archivo.size > 5 * 1024 * 1024) {
+    setMensaje("El archivo no puede superar los 5MB.");
+    setShowModalMensaje(true);
+    return false;
+  }
+
+  return true;
+}
 
 function ModalEdicionGasto({
   show,
@@ -12,75 +62,25 @@ function ModalEdicionGasto({
   handleEditGasto,
   setMensaje,
   setShowModalMensaje,
-  // Recibimos las categorías filtradas para Gastos
   categorias,
 }) {
   const [fileComprobante, setFileComprobante] = useState(null);
 
-  if (!gastoEditado) return null;
-
-  function handleChange(e) {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setGastoEditado((prev) => ({ ...prev, [name]: value }));
-  }
+  };
 
-  function handleFileChange(e) {
+  const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setFileComprobante(e.target.files[0]);
     }
-  }
+  };
 
-  function validar() {
-    const hoy = new Date();
-    const fecha = new Date(gastoEditado.fecha_gasto);
-    if (fecha > hoy) {
-      setMensaje("La fecha no puede ser futura.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    const montoNum = parseFloat(gastoEditado.monto);
-    if (isNaN(montoNum) || montoNum < 1 || montoNum > 1000000) {
-      setMensaje("El monto debe estar entre 1 y 1,000,000.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    if (!gastoEditado.tipo_gasto) {
-      setMensaje("Debes seleccionar el tipo de gasto.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    if (!gastoEditado.categoria) {
-      setMensaje("Debes seleccionar la categoría.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    if (
-      gastoEditado.proveedor &&
-      gastoEditado.proveedor.length > 50
-    ) {
-      setMensaje("El proveedor no debe exceder 50 caracteres.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    if (
-      gastoEditado.descripcion &&
-      gastoEditado.descripcion.length > 100
-    ) {
-      setMensaje("La descripción no debe exceder 100 caracteres.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    if (fileComprobante && fileComprobante.size > 5 * 1024 * 1024) {
-      setMensaje("El archivo no debe superar los 5 MB.");
-      setShowModalMensaje(true);
-      return false;
-    }
-    return true;
-  }
-
-  async function onSubmit(e) {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (!validar()) return;
+    const valido = validarGasto(gastoEditado, fileComprobante, setMensaje, setShowModalMensaje);
+    if (!valido) return;
 
     let urlArchivo = gastoEditado.comprobanteURL || "";
     if (fileComprobante) {
@@ -99,7 +99,9 @@ function ModalEdicionGasto({
     }
 
     handleEditGasto({ ...gastoEditado, comprobanteURL: urlArchivo });
-  }
+  };
+
+  if (!gastoEditado) return null;
 
   return (
     <Modal
@@ -113,135 +115,126 @@ function ModalEdicionGasto({
       <Modal.Header closeButton>
         <Modal.Title>Editar Gasto</Modal.Title>
       </Modal.Header>
+
       <Form onSubmit={onSubmit}>
         <Modal.Body>
-          <Row className="mb-3">
-            <Col md={4}>Fecha Gasto *</Col>
-            <Col md={8}>
-              <Form.Control
-                type="date"
-                name="fecha_gasto"
-                value={gastoEditado.fecha_gasto || ""}
-                onChange={handleChange}
-                required
-              />
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Monto *</Col>
-            <Col md={8}>
-              <Form.Control
-                type="number"
-                name="monto"
-                value={gastoEditado.monto || ""}
-                onChange={handleChange}
-                required
-              />
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Tipo de Gasto *</Col>
-            <Col md={8}>
-              <Form.Select
-                name="tipo_gasto"
-                value={gastoEditado.tipo_gasto || ""}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione</option>
-                <option value="Personal">Personal</option>
-                <option value="Operativo">Operativo</option>
-              </Form.Select>
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Categoría *</Col>
-            <Col md={8}>
-              <Form.Select
-                name="categoria"
-                value={gastoEditado.categoria || ""}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.nombre}>
-                    {cat.nombre}
-                  </option>
-                ))}
-              </Form.Select>
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Proveedor</Col>
-            <Col md={8}>
-              <Form.Control
-                type="text"
-                name="proveedor"
-                value={gastoEditado.proveedor || ""}
-                onChange={handleChange}
-                placeholder="Máx 50 caracteres"
-              />
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Medio de Pago</Col>
-            <Col md={8}>
-              <Form.Select
-                name="medio_pago"
-                value={gastoEditado.medio_pago || ""}
-                onChange={handleChange}
-              >
-                <option value="">Seleccione</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Transferencia">Transferencia</option>
-                <option value="Otro">Otro</option>
-              </Form.Select>
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Descripción</Col>
-            <Col md={8}>
-              <Form.Control
-                type="text"
-                name="descripcion"
-                value={gastoEditado.descripcion || ""}
-                onChange={handleChange}
-                placeholder="Máx 100 caracteres"
-              />
-            </Col>
-          </Row>
-  
-          <Row className="mb-3">
-            <Col md={4}>Comprobante</Col>
-            <Col md={8}>
-              <Form.Control
-                type="file"
-                accept=".jpg,.jpeg,.png,.pdf"
-                onChange={handleFileChange}
-              />
-              <small>(Opcional, máx 5 MB)</small>
-              {gastoEditado.comprobanteURL && (
-                <div style={{ marginTop: "8px" }}>
-                  <a
-                    href={gastoEditado.comprobanteURL}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Ver comprobante actual
-                  </a>
-                </div>
-              )}
-            </Col>
-          </Row>
+          <div className="modal-group">
+            <label htmlFor="fecha_gasto">Fecha del Gasto *</label>
+            <input
+              type="date"
+              id="fecha_gasto"
+              name="fecha_gasto"
+              value={gastoEditado.fecha_gasto}
+              onChange={handleChange}
+              className="form-control-fecha"
+              required
+            />
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="monto">Monto *</label>
+            <input
+              type="number"
+              id="monto"
+              name="monto"
+              value={gastoEditado.monto}
+              onChange={handleChange}
+              placeholder="Ej: 500"
+              required
+            />
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="tipo_gasto">Tipo de Gasto *</label>
+            <select
+              id="tipo_gasto"
+              name="tipo_gasto"
+              value={gastoEditado.tipo_gasto}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione</option>
+              <option value="Personal">Personal</option>
+              <option value="Operativo">Operativo</option>
+            </select>
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="categoria">Categoría *</label>
+            <select
+              id="categoria"
+              name="categoria"
+              value={gastoEditado.categoria}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.nombre}>
+                  {cat.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="proveedor">Proveedor</label>
+            <input
+              type="text"
+              id="proveedor"
+              name="proveedor"
+              value={gastoEditado.proveedor}
+              onChange={handleChange}
+              placeholder="Máx 50 caracteres"
+            />
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="medio_pago">Medio de Pago</label>
+            <select
+              id="medio_pago"
+              name="medio_pago"
+              value={gastoEditado.medio_pago}
+              onChange={handleChange}
+            >
+              <option value="">Seleccione</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="descripcion">Descripción</label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              value={gastoEditado.descripcion}
+              onChange={handleChange}
+              placeholder="Máx 100 caracteres"
+              rows={3}
+            ></textarea>
+          </div>
+
+          <div className="modal-group">
+            <label htmlFor="comprobante">Comprobante</label>
+            <input
+              type="file"
+              id="comprobante"
+              accept=".jpg,.jpeg,.png,.pdf"
+              onChange={handleFileChange}
+            />
+            <small>(Opcional, máximo 5MB)</small>
+            {gastoEditado.comprobanteURL && (
+              <div style={{ marginTop: "8px" }}>
+                <a href={gastoEditado.comprobanteURL} target="_blank" rel="noreferrer">
+                  Ver comprobante actual
+                </a>
+              </div>
+            )}
+          </div>
         </Modal.Body>
-  
+
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
