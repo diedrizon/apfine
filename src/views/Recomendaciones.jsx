@@ -13,23 +13,46 @@ import {
 } from "firebase/firestore";
 import {
   Coins,
-  TrendingUp,
+  TrendingUp as TrendingUpIcon,
   BadgeCheck,
   History,
   CalendarDays,
   AlertTriangle,
   CheckCircle,
   Lightbulb,
-  TrendingUp as TrendingUpIcon,
   ShieldCheck,
 } from "lucide-react";
 import Paginacion from "../components/ordenamiento/Paginacion";
 import "../styles/recomendador.css";
 
-const iconList = [<Coins />, <TrendingUp />, <BadgeCheck />];
+const iconList = [<Coins />, <TrendingUpIcon />, <BadgeCheck />];
+
+const hoy = () => new Date();
+const anioActual = () => hoy().getFullYear();
+const mesActual = () => hoy().getMonth(); // 0-11
+const diaISO = () => hoy().toISOString().slice(0, 10);
+const esDelMes = (iso) => {
+  if (!iso) return false;
+  const d = new Date(iso);
+  return d.getFullYear() === anioActual() && d.getMonth() === mesActual();
+};
+
+const formatoCordoba = (v) =>
+  new Intl.NumberFormat("es-NI", {
+    style: "currency",
+    currency: "NIO",
+    minimumFractionDigits: 2,
+  }).format(v);
+
+const sumarMontos = (arr) =>
+  arr.reduce((acc, el) => acc + (parseFloat(el.monto) || 0), 0);
+
+const hash32 = (txt) =>
+  txt.split("").reduce((h, c) => (h = (h << 5) - h + c.charCodeAt(0)), 0);
 
 const Recomendador = () => {
   const { user } = useAuth();
+
   const [respuesta, setRespuesta] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [historial, setHistorial] = useState([]);
@@ -37,154 +60,165 @@ const Recomendador = () => {
   const [filtroAnio, setFiltroAnio] = useState("Todos");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
-  const [limiteDiarioAlcanzado, setLimiteDiarioAlcanzado] = useState(false);
-  const [recomendacionesRestantes, setRecomendacionesRestantes] = useState(3);
-
-  const formatoCordoba = (valor) => {
-    return new Intl.NumberFormat("es-NI", {
-      style: "currency",
-      currency: "NIO",
-      minimumFractionDigits: 2,
-    }).format(valor);
-  };
-
-  // Calcula el día actual en formato "YYYY-MM-DD"
-  const obtenerDiaActual = () => new Date().toISOString().slice(0, 10);
+  const [limiteDiario, setLimiteDiario] = useState(false);
+  const [restantes, setRestantes] = useState(3);
 
   useEffect(() => {
-    if (user?.uid) {
-      obtenerHistorial(user.uid);
-      contarRecomendacionesDeHoy(user.uid);
-    }
-  });
+    if (!user?.uid) return;
+    cargarHistorial();
+    contarRecomendacionesHoy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
-  const sumarMontos = (docs) => {
-    return docs.reduce((acc, item) => {
-      const monto = Number(item.monto);
-      return isNaN(monto) ? acc : acc + monto;
-    }, 0);
-  };
-
-  const obtenerDatosFinancieros = async (uid) => {
-    const ingresosSnap = await getDocs(
-      query(collection(db, "ingresos"), where("userId", "==", uid))
+  async function cargarHistorial() {
+    const q = query(
+      collection(db, "recomendaciones"),
+      where("userId", "==", user.uid),
+      orderBy("fecha", "desc")
     );
-    const gastosSnap = await getDocs(
-      query(collection(db, "gastos"), where("userId", "==", uid))
+    const snap = await getDocs(q);
+    setHistorial(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }
+
+  async function contarRecomendacionesHoy() {
+    const q = query(
+      collection(db, "recomendaciones"),
+      where("userId", "==", user.uid),
+      where("dia", "==", diaISO())
     );
+    const snap = await getDocs(q);
+    const n = snap.size;
+    setRestantes(Math.max(0, 3 - n));
+    setLimiteDiario(n >= 3);
+  }
 
-    const ingresos = ingresosSnap.docs.map((doc) => doc.data());
-    const gastos = gastosSnap.docs.map((doc) => doc.data());
+  async function obtenerDatosFinancieros(uid) {
+    const [ingSnap, gasSnap, fixSnap, metaSnap] = await Promise.all([
+      getDocs(query(collection(db, "ingresos"), where("userId", "==", uid))),
+      getDocs(query(collection(db, "gastos"), where("userId", "==", uid))),
+      getDocs(
+        query(collection(db, "gastos_fijos"), where("userId", "==", uid))
+      ),
+      getDocs(query(collection(db, "metas"), where("userId", "==", uid))),
+    ]);
 
-    const totalIngresos = sumarMontos(ingresos);
-    const totalGastos = sumarMontos(gastos);
+    const ingresosMes = ingSnap.docs
+      .map((d) => d.data())
+      .filter((i) => esDelMes(i.fecha_ingreso));
+
+    const gastosMes = gasSnap.docs
+      .map((d) => d.data())
+      .filter((g) => esDelMes(g.fecha_gasto));
+
+    const gastosFijos = fixSnap.docs.map((d) => d.data());
+    const metas = metaSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+    const totalIngresos = sumarMontos(ingresosMes);
+    const totalVar = sumarMontos(gastosMes);
+    const totalFijos = sumarMontos(
+      gastosFijos.map((g) => ({ monto: g.monto_mensual }))
+    );
+    const totalGastos = totalVar + totalFijos;
     const excedente = totalIngresos - totalGastos;
     const fondoMin = totalGastos * 3;
     const fondoMax = totalGastos * 6;
 
     return {
-      ingresos,
-      gastos,
+      ingresosMes,
+      gastosMes,
+      gastosFijos,
+      metas,
       totalIngresos,
       totalGastos,
       excedente,
       fondoMin,
       fondoMax,
+      totalVar,
+      totalFijos,
     };
-  };
+  }
 
-  const obtenerHistorial = async (uid) => {
-    try {
-      const q = query(
-        collection(db, "recomendaciones"),
-        where("userId", "==", uid),
-        orderBy("fecha", "desc")
-      );
-      const snapshot = await getDocs(q);
-      const datosHistorial = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .filter(Boolean);
-      setHistorial(datosHistorial);
-    } catch (error) {
-      console.error("Error cargando historial:", error);
-    }
-  };
+  function construirPrompt(datos) {
+    const {
+      totalIngresos,
+      totalVar,
+      totalFijos,
+      excedente,
+      fondoMin,
+      fondoMax,
+      metas,
+    } = datos;
 
-  // Se usa el campo "dia" (cadena en formato YYYY-MM-DD) para contar recomendaciones de hoy
-  const contarRecomendacionesDeHoy = async (uid) => {
-    const diaActual = obtenerDiaActual();
-    const q = query(
-      collection(db, "recomendaciones"),
-      where("userId", "==", uid),
-      where("dia", "==", diaActual)
-    );
+    const metasTxt = metas.length
+      ? metas
+          .map((m) => {
+            const prog =
+              ((parseFloat(m.monto_actual || 0) /
+                parseFloat(m.monto_objetivo || 1)) *
+                100) |
+              0;
+            return `«${m.nombre_meta}» ${prog}% (objetivo C$${m.monto_objetivo})`;
+          })
+          .join("; ")
+      : "Sin metas registradas";
 
-    try {
-      const snapshot = await getDocs(q);
-      const conteo = snapshot.size;
-      setRecomendacionesRestantes(Math.max(0, 3 - conteo));
-      setLimiteDiarioAlcanzado(conteo >= 3);
-    } catch (error) {
-      console.error("Error contando recomendaciones de hoy:", error);
-    }
-  };
+    const prevMes = historial
+      .filter((h) => h.mes === mesActual() && h.anio === anioActual())
+      .flatMap((h) => h.recomendaciones)
+      .slice(0, 6);
 
-  const obtenerRecomendacion = async () => {
-    if (limiteDiarioAlcanzado || !user) return;
+    return `
+Eres asesor financiero para emprendedores nicaragüenses.
+
+Datos del usuario (mes actual):
+• Ingresos variables: ${formatoCordoba(totalIngresos)}
+• Gastos variables:  ${formatoCordoba(totalVar)}
+• Gastos fijos:      ${formatoCordoba(totalFijos)}
+• Excedente:         ${formatoCordoba(excedente)}
+• Fondo de emergencia ideal: de ${formatoCordoba(fondoMin)} a ${formatoCordoba(
+      fondoMax
+    )}
+• Metas activas:     ${metasTxt}
+
+Recomendaciones previas este mes (NO LAS REPITAS):
+${prevMes.map((r) => `- ${r}`).join("\n") || "- Ninguna"}
+
+Genera **3 recomendaciones nuevas, conectadas** (sin numerar).  
+Sé concreto y accionable; usa cifras solo cuando aporte valor.  
+Devuelve SOLO el JSON:
+
+[
+  "Recomendación 1...",
+  "Recomendación 2...",
+  "Recomendación 3..."
+]
+`;
+  }
+
+  async function obtenerRecomendacion() {
+    if (limiteDiario || !user) return;
     setCargando(true);
 
     try {
-      const {
-        totalIngresos,
-        totalGastos,
-        excedente,
-        fondoMin,
-        fondoMax,
-        gastos,
-      } = await obtenerDatosFinancieros(user.uid);
+      const datos = await obtenerDatosFinancieros(user.uid);
 
-      // Si el usuario no tiene ingresos ni gastos registrados, se muestra una tarjeta de advertencia
-      if (totalIngresos === 0 && totalGastos === 0) {
+      if (datos.totalIngresos === 0 && datos.totalGastos === 0) {
         setRespuesta([
-          "No se puede generar una recomendación porque no has registrado ingresos ni gastos. Por favor, registra tus movimientos financieros para recibir asesoría personalizada.",
+          "No has registrado ingresos ni gastos este mes. Ingresa tus movimientos para recibir recomendaciones personalizadas.",
         ]);
         setCargando(false);
         return;
       }
 
-      const categoriasGasto = [
-        ...new Set(gastos.map((g) => g.categoria || "Sin categoría")),
-      ];
+      const prompt = construirPrompt(datos);
 
-      const prompt = `
-Eres un asesor financiero que ayuda a emprendedores en Nicaragua.
-
-Estos son los datos reales del usuario:
-- Ingresos mensuales: ${formatoCordoba(totalIngresos)}
-- Gastos mensuales: ${formatoCordoba(totalGastos)}
-- Excedente mensual: ${formatoCordoba(excedente)}
-- Fondo de emergencia recomendado: entre ${formatoCordoba(
-        fondoMin
-      )} y ${formatoCordoba(fondoMax)}
-
-Basado en estos datos, genera 3 recomendaciones financieras CONECTADAS entre sí, como si estuvieras guiando al usuario paso a paso, pero SIN escribir "Paso 1" o "Paso 2".
-
-El texto debe fluir como una breve conversación o consejo continuo. No repitas montos innecesariamente.
-
-Responde en formato JSON así:
-[
-  "Recomendación 1 sin numerar...",
-  "Recomendación 2 sin numerar...",
-  "Recomendación 3 sin numerar..."
-]
-`;
-
-      const response = await axios.post(
+      const aiRes = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          model: "gpt-4",
+          model: "gpt-4o-mini",
           messages: [{ role: "user", content: prompt }],
           max_tokens: 300,
+          temperature: 0.7,
         },
         {
           headers: {
@@ -196,57 +230,51 @@ Responde en formato JSON así:
 
       let recomendaciones = [];
       try {
-        recomendaciones = JSON.parse(response.data.choices[0].message.content);
+        recomendaciones = JSON.parse(aiRes.data.choices[0].message.content);
       } catch {
-        recomendaciones = ["Error: No se pudo interpretar la respuesta."];
+        recomendaciones = [
+          "⚠ No se pudo interpretar la respuesta de la IA. Intenta de nuevo.",
+        ];
       }
 
       setRespuesta(recomendaciones);
 
-      // Almacena la recomendación con el timestamp del servidor y el campo "dia"
-      const diaActual = obtenerDiaActual();
       await addDoc(collection(db, "recomendaciones"), {
         userId: user.uid,
         fecha: serverTimestamp(),
-        dia: diaActual,
+        dia: diaISO(),
+        mes: mesActual(),
+        anio: anioActual(),
+        hash: hash32(recomendaciones.join("|")),
         resumen: {
-          ingresos: totalIngresos,
-          gastos: totalGastos,
-          exceso: excedente,
-          categorias: categoriasGasto,
+          ingresos: datos.totalIngresos,
+          gastos: datos.totalGastos,
+          excedente: datos.excedente,
         },
         recomendaciones,
       });
 
-      setRecomendacionesRestantes((prev) => {
-        const nuevo = prev - 1;
-        if (nuevo <= 0) setLimiteDiarioAlcanzado(true);
-        return nuevo;
-      });
-
-      obtenerHistorial(user.uid);
-    } catch (error) {
-      console.error("Error generando recomendación:", error);
+      setRestantes((p) => Math.max(0, p - 1));
+      if (restantes - 1 <= 0) setLimiteDiario(true);
+      cargarHistorial();
+    } catch (e) {
+      console.error(e);
       setRespuesta(["⚠ Error al generar la recomendación."]);
     } finally {
       setCargando(false);
     }
-  };
+  }
 
-  const filtrarHistorial = () => {
-    return historial.filter((item) => {
-      // Si el documento tiene el campo "fecha", se convierte a Date para extraer mes y año
-      const fecha = item.fecha?.toDate ? item.fecha.toDate() : null;
-      const mes = fecha?.getMonth();
-      const anio = fecha?.getFullYear();
-      return (
-        (filtroMes === "Todos" || mes === parseInt(filtroMes)) &&
-        (filtroAnio === "Todos" || anio === parseInt(filtroAnio))
-      );
-    });
-  };
+  const historialFiltrado = historial.filter((item) => {
+    const fecha = item.fecha?.toDate ? item.fecha.toDate() : null;
+    const mes = fecha?.getMonth();
+    const anio = fecha?.getFullYear();
+    return (
+      (filtroMes === "Todos" || mes === parseInt(filtroMes)) &&
+      (filtroAnio === "Todos" || anio === parseInt(filtroAnio))
+    );
+  });
 
-  const historialFiltrado = filtrarHistorial();
   const paginado = historialFiltrado.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -256,14 +284,14 @@ Responde en formato JSON así:
     <div className="recomendador-container">
       <button
         onClick={obtenerRecomendacion}
-        disabled={cargando || !user || limiteDiarioAlcanzado}
+        disabled={cargando || !user || limiteDiario}
         className="recomendador-boton"
       >
         {cargando ? "Generando..." : "Obtener Recomendación Financiera"}
       </button>
 
       <div className="estado-recomendacion">
-        {limiteDiarioAlcanzado ? (
+        {limiteDiario ? (
           <>
             <AlertTriangle color="#dc3545" size={18} />
             <span style={{ color: "#dc3545" }}>
@@ -274,7 +302,7 @@ Responde en formato JSON así:
           <>
             <CheckCircle color="#198754" size={18} />
             <span style={{ color: "#198754" }}>
-              Recomendaciones restantes hoy: {recomendacionesRestantes}
+              Recomendaciones restantes hoy: {restantes}
             </span>
           </>
         )}
@@ -320,13 +348,9 @@ Responde en formato JSON así:
             value={filtroAnio}
           >
             <option value="Todos">Todos los años</option>
-            {[
-              ...new Set(
-                historial.map((h) => h.fecha?.toDate?.().getFullYear())
-              ),
-            ].map((anio) => (
-              <option key={anio} value={anio}>
-                {anio}
+            {[...new Set(historial.map((h) => h.anio))].map((y) => (
+              <option key={y} value={y}>
+                {y}
               </option>
             ))}
           </select>
