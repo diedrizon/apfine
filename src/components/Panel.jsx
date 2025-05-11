@@ -26,7 +26,7 @@ import "../styles/Panel.css";
 function Panel({ isSidebarOpen, toggleSidebar }) {
   const [openModule, setOpenModule] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const [userPhoto, setUserPhoto] = useState("");
@@ -202,23 +202,46 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
               </ul>
             )}
 
-            {/* Administración */}
-            <li className="module" onClick={() => toggleModuleName("admin")}>
-              <BiCog className="module-icon" />
-              <span className="module-text">Administración</span>
-              {openModule === "admin" ? <BiChevronDown /> : <BiChevronRight />}
-            </li>
-            {openModule === "admin" && (
-              <ul className="submenu">
-                {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
-                {renderSubItem(<BiTargetLock />, "Roles y permisos", () => {})}
-                {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
-                {renderSubItem(
-                  <BiCog />,
-                  "Monitoreo / Configuración",
-                  () => {}
+            {/* Administración (solo si es admin) */}
+            {isAdmin && (
+              <>
+                <li
+                  className="module"
+                  onClick={() => toggleModuleName("admin")}
+                >
+                  <BiCog className="module-icon" />
+                  <span className="module-text">Administración</span>
+                  {openModule === "admin" ? (
+                    <BiChevronDown />
+                  ) : (
+                    <BiChevronRight />
+                  )}
+                </li>
+                {openModule === "admin" && (
+                  <ul className="submenu">
+                    {renderSubItem(
+                      <BiUser />,
+                      "Gestión de usuarios",
+                      () => {}
+                    )}
+                    {renderSubItem(
+                      <BiTargetLock />,
+                      "Roles y permisos",
+                      () => {}
+                    )}
+                    {renderSubItem(
+                      <BiBulb />,
+                      "Supervisión de IA",
+                      () => {}
+                    )}
+                    {renderSubItem(
+                      <BiCog />,
+                      "Monitoreo / Configuración",
+                      () => {}
+                    )}
+                  </ul>
                 )}
-              </ul>
+              </>
             )}
           </ul>
         </div>

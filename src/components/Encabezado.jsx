@@ -12,7 +12,7 @@ const Encabezado = ({
   isDarkMode,
   toggleTheme,
 }) => {
-  const { isLoggedIn, logout, isOffline } = useAuth();
+  const { isLoggedIn, logout, isOffline, cargando } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,7 +39,8 @@ const Encabezado = ({
       "/metas",
     ].includes(location.pathname);
 
-  if (ocultarHeaderEn.includes(location.pathname) || esRuta404) return null;
+  if (cargando || ocultarHeaderEn.includes(location.pathname) || esRuta404)
+    return null;
 
   const handleLogout = async () => {
     if (isSidebarOpen) toggleSidebar();
@@ -61,7 +62,6 @@ const Encabezado = ({
             <HiOutlineMenuAlt1 className="menu-icon" />
           </button>
         )}
-        {!isLoggedIn && <h1 className="guest-title">Prestame Dinero</h1>}
       </div>
 
       {isLoggedIn && isOffline && (

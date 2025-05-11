@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
@@ -80,7 +79,7 @@ const Login = () => {
 
   const validarDatosRegistro = () => {
     if (!CEDULA_RX.test(regCedula)) return "Cédula inválida.";
-    if (!NOMBRE_RX.test(regNombre.trim())) return "Nombre inválido.";
+    if (!NOMBRE_RX.test(regNombre.trim())) return "Nombre inválida.";
     if (!regEmail.includes("@")) return "Correo inválido.";
     if (!PHONE_RX.test(regTel)) return "Teléfono inválido.";
     if (!esGoogleNuevo) {
@@ -103,6 +102,10 @@ const Login = () => {
       localStorage.setItem("userDisplayName", perfil.nombre || "Usuario");
       localStorage.setItem("userEmail", perfil.correo || "");
       localStorage.setItem("userPhotoURL", perfil.photoURL || "");
+
+      // ✅ Marcar que acaba de iniciar sesión
+      sessionStorage.setItem("justLoggedIn", "true");
+
       nav("/inicio");
     } catch {
       setError("Credenciales inválidas.");
@@ -159,6 +162,7 @@ const Login = () => {
     localStorage.removeItem("requiereCompletarPerfil");
 
     if (esGoogleNuevo) {
+      sessionStorage.setItem("justLoggedIn", "true");
       nav("/inicio");
     } else {
       setMostrarRegistro(false);
@@ -188,6 +192,7 @@ const Login = () => {
         localStorage.setItem("userEmail", perfil.correo || gUser.email);
         localStorage.setItem("userPhotoURL", perfil.photoURL || gUser.photoURL);
         localStorage.setItem("pendienteAceptarGoogle", "true");
+        sessionStorage.setItem("justLoggedIn", "true");
         setEsperandoAceptacion(true);
       } else {
         localStorage.setItem("requiereCompletarPerfil", "true");
@@ -205,6 +210,7 @@ const Login = () => {
 
   const handleAceptarGoogle = () => {
     localStorage.removeItem("pendienteAceptarGoogle");
+    sessionStorage.setItem("justLoggedIn", "true");
     nav("/inicio");
   };
 

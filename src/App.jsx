@@ -35,7 +35,25 @@ const RouteChangeTracker = () => {
 
 function AppContent() {
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const saved = localStorage.getItem("sidebarState");
+    const justLoggedIn = sessionStorage.getItem("justLoggedIn");
+
+    if (justLoggedIn === "true") {
+      sessionStorage.removeItem("justLoggedIn");
+      localStorage.setItem("sidebarState", "open");
+      return true;
+    }
+
+    if (saved === null) {
+      localStorage.setItem("sidebarState", "open");
+      return true;
+    }
+
+    return saved === "open";
+  });
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -62,10 +80,14 @@ function AppContent() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const toggleSidebar = () => {
+    const newState = !isSidebarOpen;
+    setIsSidebarOpen(newState);
+    localStorage.setItem("sidebarState", newState ? "open" : "closed");
+  };
+
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
-  // Rutas que no muestran encabezado ni panel
   const sinEncabezado = [
     "/",
     "/login",
@@ -90,7 +112,13 @@ function AppContent() {
       )}
 
       <main
-        className={`main ${isSidebarOpen && !isMobile ? "sidebar-open" : ""} ${
+        className={`main ${
+          isSidebarOpen &&
+          !isMobile &&
+          !sinEncabezado.includes(location.pathname)
+            ? "sidebar-open"
+            : ""
+        } ${
           sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
         }`}
       >
@@ -101,7 +129,7 @@ function AppContent() {
           <Route path="/recuperar" element={<Recuperar />} />
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/terminos-condiciones" element={<Terminos />} />
-          /* Rutas protegidas */
+          {/* Rutas protegidas */}
           <Route
             path="/inicio"
             element={<ProtectedRoute element={<Inicio />} />}
