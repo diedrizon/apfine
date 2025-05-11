@@ -28,6 +28,7 @@ function GastosFijos() {
   const [userId, setUserId] = useState(null);
   const [gastosFijos, setGastosFijos] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -57,39 +58,104 @@ function GastosFijos() {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
-    fetchGastosFijos();
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchGastosFijos();
+    }
   });
 
   async function fetchGastosFijos() {
-    const snap = await getDocs(colRef);
-    const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    setGastosFijos(all.filter((g) => g.userId === userId));
+    try {
+      const snap = await getDocs(colRef);
+      const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setGastosFijos(all.filter((g) => g.userId === userId));
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async function handleAddGastoFijo(nuevo) {
-    await addDoc(colRef, { ...nuevo, userId });
-    setMensaje("Gasto fijo creado correctamente");
+    setShowAdd(false); // Cerrar modal inmediatamente
+
+    const tempId = `temp_${Date.now()}`;
+    const nuevoGastoFijo = { ...nuevo, userId };
+
+    if (isOffline) {
+      setGastosFijos((prev) => [...prev, { ...nuevoGastoFijo, id: tempId }]);
+    }
+
+    setMensaje("Gasto fijo creado correctamente.");
     setShowMsg(true);
-    setShowAdd(false);
+
+    try {
+      await addDoc(colRef, nuevoGastoFijo);
+    } catch (error) {
+      console.error(error);
+    }
+
     fetchGastosFijos();
   }
 
   async function handleEditGastoFijo(editado) {
-    const refDoc = doc(db, "gastos_fijos", editado.id);
-    await updateDoc(refDoc, { ...editado });
-    setMensaje("Gasto fijo actualizado");
+    setShowEdit(false); // Cerrar modal inmediatamente
+
+    if (isOffline) {
+      setGastosFijos((prev) =>
+        prev.map((g) => (g.id === editado.id ? { ...editado } : g))
+      );
+    }
+
+    setMensaje("Gasto fijo actualizado correctamente.");
     setShowMsg(true);
-    setShowEdit(false);
+
+    if (!editado.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "gastos_fijos", editado.id);
+        await updateDoc(refDoc, { ...editado });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     fetchGastosFijos();
   }
 
   async function handleDeleteGastoFijo() {
-    const refDoc = doc(db, "gastos_fijos", gastoFijoAEliminar.id);
-    await deleteDoc(refDoc);
-    setMensaje("Gasto fijo eliminado");
+    if (!gastoFijoAEliminar) return;
+
+    setShowDel(false); // Cerrar modal inmediatamente
+
+    if (isOffline) {
+      setGastosFijos((prev) =>
+        prev.filter((g) => g.id !== gastoFijoAEliminar.id)
+      );
+    }
+
+    setMensaje("Gasto fijo eliminado correctamente.");
     setShowMsg(true);
-    setShowDel(false);
+
+    if (!gastoFijoAEliminar.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "gastos_fijos", gastoFijoAEliminar.id);
+        await deleteDoc(refDoc);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     fetchGastosFijos();
   }
 
@@ -97,6 +163,8 @@ function GastosFijos() {
     setGastoFijoDetalle(g);
     setShowDetalle(true);
   }
+
+  const totalFijos = gastosFijos.length;
 
   return (
     <Container fluid className="gastos-fijos-container">
@@ -130,6 +198,7 @@ function GastosFijos() {
                   <span className="mx-2">|</span>
                   <span>{g.proximo_pago}</span>
                 </div>
+
                 {isExpanded && (
                   <div className="acciones">
                     <Button
@@ -175,12 +244,13 @@ function GastosFijos() {
           <Card className="summary-card">
             <Card.Body>
               <Card.Title>Total Fijos</Card.Title>
-              <Card.Text>{gastosFijos.length}</Card.Text>
+              <Card.Text>{totalFijos}</Card.Text>
             </Card.Body>
           </Card>
         </div>
       </div>
 
+      {/* Modales */}
       <ModalRegistroGastoFijo
         show={showAdd}
         handleClose={() => setShowAdd(false)}

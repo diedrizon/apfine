@@ -49,9 +49,11 @@ function Categorias() {
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
+
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     setIsOffline(!navigator.onLine);
+
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
@@ -82,20 +84,11 @@ function Categorias() {
           .filter((cat) => cat.usuarioId === usuarioId);
 
         setCategorias(fetched);
-        if (isOffline) {
-          console.log("Offline: Mostrando datos desde la caché local.");
-        } else {
-          console.log("Categorías cargadas desde Firestore:", fetched);
-        }
       },
       (error) => {
         console.error("Error al escuchar categorías:", error);
-        if (isOffline) {
-          console.log("Offline: Mostrando datos desde la caché local.");
-        } else {
-          setMensaje("Error al cargar las categorías: " + error.message);
-          setShowModalMensaje(true);
-        }
+        setMensaje("Error al cargar las categorías: " + error.message);
+        setShowModalMensaje(true);
       }
     );
     return stopListening;
@@ -149,19 +142,29 @@ function Categorias() {
       return;
     }
 
+    handleCloseAddModal(); // ✅ Cerramos modal inmediatamente
+
     const nuevaCategoria = { ...categoriaNueva, usuarioId };
-    await addDoc(categoriasCollection, nuevaCategoria);
+    const tempId = `temp_${Date.now()}`;
+
+    if (isOffline) {
+      setCategorias((prev) => [...prev, { ...nuevaCategoria, id: tempId }]);
+    }
+
+    setMensaje(`La categoría "${categoriaNueva.nombre}" se creó exitosamente.`);
+    setShowModalMensaje(true);
+
+    try {
+      await addDoc(categoriasCollection, nuevaCategoria);
+    } catch (error) {
+      console.error("Error al agregar categoría:", error);
+    }
 
     ReactGA.event({
       category: "Categoría",
       action: "Categoría agregada",
       label: categoriaNueva.nombre || "Sin nombre",
     });
-
-    setMensaje(`La categoría "${categoriaNueva.nombre}" se creó exitosamente.`);
-    setShowModalMensaje(true);
-    setCategoriaNueva({ nombre: "", color: "", icono: "", aplicacion: "" });
-    handleCloseAddModal();
   }
 
   async function handleEditCategoria() {
@@ -175,13 +178,7 @@ function Categorias() {
       return;
     }
 
-    const refDoc = doc(db, "categorias", categoriaEditada.id);
-    await updateDoc(refDoc, {
-      nombre: categoriaEditada.nombre,
-      color: categoriaEditada.color,
-      icono: categoriaEditada.icono,
-      aplicacion: categoriaEditada.aplicacion || "",
-    });
+    handleCloseEditModal(); // ✅ Cerramos modal inmediatamente
 
     if (isOffline) {
       setCategorias((prev) =>
@@ -189,11 +186,25 @@ function Categorias() {
           cat.id === categoriaEditada.id ? { ...categoriaEditada } : cat
         )
       );
-      setMensaje(
-        "Sin conexión: Categoría actualizada localmente. Se sincronizará cuando haya internet."
-      );
-      setShowModalMensaje(true);
-      return;
+    }
+
+    setMensaje(
+      `La categoría "${categoriaEditada.nombre}" se editó correctamente.`
+    );
+    setShowModalMensaje(true);
+
+    if (!categoriaEditada.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "categorias", categoriaEditada.id);
+        await updateDoc(refDoc, {
+          nombre: categoriaEditada.nombre,
+          color: categoriaEditada.color,
+          icono: categoriaEditada.icono,
+          aplicacion: categoriaEditada.aplicacion || "",
+        });
+      } catch (error) {
+        console.error("Error al editar categoría:", error);
+      }
     }
 
     ReactGA.event({
@@ -201,30 +212,38 @@ function Categorias() {
       action: "Categoría editada",
       label: categoriaEditada.nombre || "Sin nombre",
     });
-
-    setMensaje(
-      `La categoría "${categoriaEditada.nombre}" se editó correctamente.`
-    );
-    setShowModalMensaje(true);
-    handleCloseEditModal();
   }
 
   async function handleDeleteCategoria() {
     if (!categoriaAEliminar) return;
-    const refDoc = doc(db, "categorias", categoriaAEliminar.id);
-    await deleteDoc(refDoc);
+
+    handleCloseDeleteModal(); // ✅ Cerramos modal inmediatamente
+
+    if (isOffline) {
+      setCategorias((prev) =>
+        prev.filter((cat) => cat.id !== categoriaAEliminar.id)
+      );
+    }
+
+    setMensaje(
+      `La categoría "${categoriaAEliminar.nombre}" se eliminó exitosamente.`
+    );
+    setShowModalMensaje(true);
+
+    if (!categoriaAEliminar.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "categorias", categoriaAEliminar.id);
+        await deleteDoc(refDoc);
+      } catch (error) {
+        console.error("Error al eliminar categoría:", error);
+      }
+    }
 
     ReactGA.event({
       category: "Categoría",
       action: "Categoría eliminada",
       label: categoriaAEliminar.nombre || "Sin nombre",
     });
-
-    setMensaje(
-      `La categoría "${categoriaAEliminar.nombre}" se eliminó exitosamente.`
-    );
-    setShowModalMensaje(true);
-    handleCloseDeleteModal();
   }
 
   function toggleExpandedCategory(categoria) {

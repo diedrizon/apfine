@@ -20,7 +20,6 @@ import ModalMensaje from "../components/ModalMensaje";
 
 import "../styles/Gastos.css";
 
-// Ícono con color dinámico por tipo de gasto
 function getIconGasto(tipo_gasto) {
   const clase =
     tipo_gasto === "Personal"
@@ -31,32 +30,39 @@ function getIconGasto(tipo_gasto) {
   const estilo = { fontSize: "1.5rem" };
 
   const icon =
-    tipo_gasto === "Personal"
-      ? <FaIcons.FaUser />
-      : tipo_gasto === "Operativo"
-      ? <FaIcons.FaTools />
-      : <FaIcons.FaInbox />;
+    tipo_gasto === "Personal" ? (
+      <FaIcons.FaUser />
+    ) : tipo_gasto === "Operativo" ? (
+      <FaIcons.FaTools />
+    ) : (
+      <FaIcons.FaInbox />
+    );
 
-  return <div className={`gasto-icon ${clase}`} style={estilo}>{icon}</div>;
+  return (
+    <div className={`gasto-icon ${clase}`} style={estilo}>
+      {icon}
+    </div>
+  );
 }
 
 function Gastos() {
   const [userId, setUserId] = useState(null);
   const [gastos, setGastos] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [showModalDetalle, setShowModalDetalle] = useState(false);
+  const [showModalMensaje, setShowModalMensaje] = useState(false);
+
+  const [mensaje, setMensaje] = useState("");
 
   const [gastoNuevo, setGastoNuevo] = useState(null);
   const [gastoEditado, setGastoEditado] = useState(null);
   const [gastoAEliminar, setGastoAEliminar] = useState(null);
   const [gastoDetalle, setGastoDetalle] = useState(null);
-
-  const [showModalMensaje, setShowModalMensaje] = useState(false);
-  const [mensaje, setMensaje] = useState("");
 
   const [expandedId, setExpandedId] = useState(null);
 
@@ -70,11 +76,25 @@ function Gastos() {
   }, []);
 
   useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
     if (userId) {
       fetchGastos();
       fetchCategorias();
     }
-  },);
+  });
 
   async function fetchGastos() {
     try {
@@ -154,49 +174,75 @@ function Gastos() {
   }
 
   async function handleAddGasto(nuevo) {
+    closeAddModal();
+
+    const tempId = `temp_${Date.now()}`;
+    const nuevoGasto = { ...nuevo, userId };
+
+    if (isOffline) {
+      setGastos((prev) => [...prev, { ...nuevoGasto, id: tempId }]);
+    }
+
+    setMensaje("Gasto registrado con éxito.");
+    setShowModalMensaje(true);
+
     try {
-      await addDoc(gastosCollection, { ...nuevo, userId });
-      setMensaje("Gasto registrado con éxito.");
-      setShowModalMensaje(true);
-      closeAddModal();
-      fetchGastos();
+      await addDoc(gastosCollection, nuevoGasto);
     } catch (error) {
       console.error(error);
-      setMensaje("Error al registrar el gasto.");
-      setShowModalMensaje(true);
     }
+
+    fetchGastos();
   }
 
   async function handleEditGasto(editado) {
     if (!editado.id) return;
-    try {
-      const refDoc = doc(db, "gastos", editado.id);
-      await updateDoc(refDoc, { ...editado });
-      setMensaje("Gasto actualizado con éxito.");
-      setShowModalMensaje(true);
-      closeEditModal();
-      fetchGastos();
-    } catch (error) {
-      console.error(error);
-      setMensaje("Error al editar el gasto.");
-      setShowModalMensaje(true);
+
+    closeEditModal();
+
+    if (isOffline) {
+      setGastos((prev) =>
+        prev.map((g) => (g.id === editado.id ? { ...editado } : g))
+      );
     }
+
+    setMensaje("Gasto actualizado con éxito.");
+    setShowModalMensaje(true);
+
+    if (!editado.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "gastos", editado.id);
+        await updateDoc(refDoc, { ...editado });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchGastos();
   }
 
   async function handleDeleteGasto() {
     if (!gastoAEliminar) return;
-    try {
-      const refDoc = doc(db, "gastos", gastoAEliminar.id);
-      await deleteDoc(refDoc);
-      setMensaje("Gasto eliminado con éxito.");
-      setShowModalMensaje(true);
-      closeDeleteModal();
-      fetchGastos();
-    } catch (error) {
-      console.error(error);
-      setMensaje("Error al eliminar el gasto.");
-      setShowModalMensaje(true);
+
+    closeDeleteModal();
+
+    if (isOffline) {
+      setGastos((prev) => prev.filter((g) => g.id !== gastoAEliminar.id));
     }
+
+    setMensaje("Gasto eliminado con éxito.");
+    setShowModalMensaje(true);
+
+    if (!gastoAEliminar.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "gastos", gastoAEliminar.id);
+        await deleteDoc(refDoc);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchGastos();
   }
 
   function toggleExpanded(g) {
@@ -285,6 +331,7 @@ function Gastos() {
         </div>
       </div>
 
+      {/* Modales */}
       {gastoNuevo && (
         <ModalRegistroGasto
           show={showModalAdd}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, auth } from "../database/firebaseconfig"; 
+import { db, auth } from "../database/firebaseconfig";
 import {
   collection,
   getDocs,
@@ -16,14 +16,10 @@ import ModalRegistroIngreso from "../components/ingresos/ModalRegistroIngreso";
 import ModalEdicionIngreso from "../components/ingresos/ModalEdicionIngreso";
 import ModalEliminacionIngreso from "../components/ingresos/ModalEliminacionIngreso";
 import ModalDetalleIngreso from "../components/ingresos/ModalDetalleIngreso";
-import ModalMensaje from "../components/ModalMensaje"; 
+import ModalMensaje from "../components/ModalMensaje";
 
 import "../styles/Ingresos.css";
 
-/**
- * Según el tipo_ingreso, asigna un ícono distinto.
- * Puedes personalizar más si deseas.
- */
 function getIconComponent(tipo_ingreso) {
   if (!tipo_ingreso) return <FaIcons.FaQuestion />;
   const lower = tipo_ingreso.toLowerCase();
@@ -38,43 +34,51 @@ function Ingresos() {
   const [ingresos, setIngresos] = useState([]);
   const [categorias, setCategorias] = useState([]);
 
-  // Modales
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [showModalDetalle, setShowModalDetalle] = useState(false);
 
-  // Objetos a manipular
   const [ingresoNuevo, setIngresoNuevo] = useState(null);
   const [ingresoEditado, setIngresoEditado] = useState(null);
   const [ingresoAEliminar, setIngresoAEliminar] = useState(null);
   const [ingresoDetalle, setIngresoDetalle] = useState(null);
 
-  // Modal de mensaje genérico
   const [showModalMensaje, setShowModalMensaje] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
-  // Para expandir tarjetas
   const [expandedId, setExpandedId] = useState(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
-  // Referencia a las colecciones
   const ingresosCollection = collection(db, "ingresos");
   const categoriasCollection = collection(db, "categorias");
 
-  // Detectar user.uid
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) setUserId(user.uid);
     });
   }, []);
 
-  // Cargar ingresos cuando tengamos el userId
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   useEffect(() => {
     if (userId) {
       fetchIngresos();
       fetchCategorias();
     }
-  },);
+  });
 
   async function fetchIngresos() {
     try {
@@ -83,7 +87,6 @@ function Ingresos() {
         ...docu.data(),
         id: docu.id,
       }));
-      // Filtrar por userId
       const filtered = all.filter((ing) => ing.userId === userId);
       setIngresos(filtered);
     } catch (error) {
@@ -98,10 +101,10 @@ function Ingresos() {
         ...docu.data(),
         id: docu.id,
       }));
-      // Filtrar por usuario y obtener solo las categorías de Ingresos o Ambas
       const userCategorias = allCategorias.filter(
-        (cat) => cat.usuarioId === userId &&
-                 (cat.aplicacion === "Ingreso" || cat.aplicacion === "Ambos")
+        (cat) =>
+          cat.usuarioId === userId &&
+          (cat.aplicacion === "Ingreso" || cat.aplicacion === "Ambos")
       );
       setCategorias(userCategorias);
     } catch (error) {
@@ -109,9 +112,7 @@ function Ingresos() {
     }
   }
 
-  // ========== ABRIR / CERRAR MODALES ==========
   const openAddModal = () => {
-    // Inicializamos ingreso nuevo con campos vacíos
     setIngresoNuevo({
       fecha_ingreso: "",
       monto: "",
@@ -144,60 +145,82 @@ function Ingresos() {
   };
   const closeDetalleModal = () => setShowModalDetalle(false);
 
-  // ========== CRUD ==========
   async function handleAddIngreso(nuevo) {
+    closeAddModal();
+
+    const tempId = `temp_${Date.now()}`;
+    const nuevoIngreso = { ...nuevo, userId };
+
+    if (isOffline) {
+      setIngresos((prev) => [...prev, { ...nuevoIngreso, id: tempId }]);
+    }
+
+    setMensaje("Ingreso registrado correctamente.");
+    setShowModalMensaje(true);
+
     try {
-      // Guardar en Firestore, añadiendo userId
-      await addDoc(ingresosCollection, { ...nuevo, userId });
-      setMensaje("Ingreso registrado correctamente.");
-      setShowModalMensaje(true);
-      closeAddModal();
-      fetchIngresos();
+      await addDoc(ingresosCollection, nuevoIngreso);
     } catch (error) {
       console.error(error);
-      setMensaje("Error al registrar el ingreso.");
-      setShowModalMensaje(true);
     }
+
+    fetchIngresos();
   }
 
   async function handleEditIngreso(editado) {
-    if (!editado.id) return;
-    try {
-      const refDoc = doc(db, "ingresos", editado.id);
-      await updateDoc(refDoc, { ...editado });
-      setMensaje("Ingreso actualizado correctamente.");
-      setShowModalMensaje(true);
-      closeEditModal();
-      fetchIngresos();
-    } catch (error) {
-      console.error(error);
-      setMensaje("Error al actualizar el ingreso.");
-      setShowModalMensaje(true);
+    closeEditModal();
+
+    if (isOffline) {
+      setIngresos((prev) =>
+        prev.map((ing) => (ing.id === editado.id ? { ...editado } : ing))
+      );
     }
+
+    setMensaje("Ingreso actualizado correctamente.");
+    setShowModalMensaje(true);
+
+    if (!editado.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "ingresos", editado.id);
+        await updateDoc(refDoc, { ...editado });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchIngresos();
   }
 
   async function handleDeleteIngreso() {
     if (!ingresoAEliminar) return;
-    try {
-      const refDoc = doc(db, "ingresos", ingresoAEliminar.id);
-      await deleteDoc(refDoc);
-      setMensaje("Ingreso eliminado correctamente.");
-      setShowModalMensaje(true);
-      closeDeleteModal();
-      fetchIngresos();
-    } catch (error) {
-      console.error(error);
-      setMensaje("Error al eliminar el ingreso.");
-      setShowModalMensaje(true);
+
+    closeDeleteModal();
+
+    if (isOffline) {
+      setIngresos((prev) =>
+        prev.filter((ing) => ing.id !== ingresoAEliminar.id)
+      );
     }
+
+    setMensaje("Ingreso eliminado correctamente.");
+    setShowModalMensaje(true);
+
+    if (!ingresoAEliminar.id.startsWith("temp_")) {
+      try {
+        const refDoc = doc(db, "ingresos", ingresoAEliminar.id);
+        await deleteDoc(refDoc);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchIngresos();
   }
 
-  // Expandir/cerrar tarjeta
   function toggleExpanded(ingreso) {
     setExpandedId(expandedId === ingreso.id ? null : ingreso.id);
   }
 
-  // Ejemplo de cálculo rápido
   const totalIngresos = ingresos.length;
 
   return (
@@ -210,7 +233,6 @@ function Ingresos() {
       </div>
 
       <div className="ingresos-content">
-        {/* Sección principal: las tarjetas */}
         <div className="ingresos-list">
           {ingresos.map((ing) => {
             const isExpanded = expandedId === ing.id;
@@ -273,7 +295,6 @@ function Ingresos() {
           })}
         </div>
 
-        {/* Sección derecha con resumen */}
         <div className="ingresos-summary">
           <Card className="summary-card">
             <Card.Body>
@@ -284,7 +305,6 @@ function Ingresos() {
         </div>
       </div>
 
-      {/* Modal de Registro */}
       {ingresoNuevo && (
         <ModalRegistroIngreso
           show={showModalAdd}
@@ -294,12 +314,10 @@ function Ingresos() {
           handleAddIngreso={handleAddIngreso}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
-          // Se pasan las categorías filtradas
           categorias={categorias}
         />
       )}
 
-      {/* Modal de Edición */}
       {ingresoEditado && (
         <ModalEdicionIngreso
           show={showModalEdit}
@@ -309,12 +327,10 @@ function Ingresos() {
           handleEditIngreso={handleEditIngreso}
           setMensaje={setMensaje}
           setShowModalMensaje={setShowModalMensaje}
-          // Se pasan las categorías filtradas para edición
           categorias={categorias}
         />
       )}
 
-      {/* Modal de Eliminación */}
       {ingresoAEliminar && (
         <ModalEliminacionIngreso
           show={showModalDelete}
@@ -324,7 +340,6 @@ function Ingresos() {
         />
       )}
 
-      {/* Modal de Detalle */}
       {ingresoDetalle && (
         <ModalDetalleIngreso
           show={showModalDetalle}
@@ -333,7 +348,6 @@ function Ingresos() {
         />
       )}
 
-      {/* Modal de Mensajes */}
       <ModalMensaje
         show={showModalMensaje}
         handleClose={() => setShowModalMensaje(false)}
