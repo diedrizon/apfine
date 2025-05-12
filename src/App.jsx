@@ -24,6 +24,8 @@ import Gastofijos from "./views/GastosFijos";
 import Metas from "./views/Metas";
 import MateriasPrimas from "./views/MateriasPrimas";
 import GestionUsuario from "./views/GestionUsuarios";
+import Inventario from "./views/Inventario";
+
 import "./App.css";
 import ReactGA from "react-ga4";
 
@@ -166,6 +168,10 @@ function AppContent() {
           <Route
             path="/materias-primas"
             element={<ProtectedRoute element={<MateriasPrimas />} />}
+          />
+          <Route
+            path="/inventario"
+            element={<ProtectedRoute element={<Inventario />} />}
           />
 
           {/* Gestión de usuarios */}

@@ -151,7 +151,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiCube />, "Materias primas", () =>
                   handleNavigate("/materias-primas")
                 )}
-                {renderSubItem(<BiPackage />, "Inventario", () => {})}
+                {renderSubItem(<BiListCheck />, "Inventario", () =>
+                  handleNavigate("/inventario")
+                )}
                 {renderSubItem(
                   <BiClipboard />,
                   "Órdenes de producción",
