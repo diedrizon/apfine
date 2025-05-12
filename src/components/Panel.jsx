@@ -221,13 +221,23 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 </li>
                 {openModule === "admin" && (
                   <ul className="submenu">
-                    {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
+                    {renderSubItem(
+                      <BiUser />,
+                      "Gestión de usuarios",
+                      () => {
+                        handleNavigate("/gestion-usuarios");
+                      }
+                    )}
                     {renderSubItem(
                       <BiTargetLock />,
                       "Roles y permisos",
                       () => {}
                     )}
-                    {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
+                    {renderSubItem(
+                      <BiBulb />,
+                      "Supervisión de IA",
+                      () => {}
+                    )}
                     {renderSubItem(
                       <BiCog />,
                       "Monitoreo / Configuración",
