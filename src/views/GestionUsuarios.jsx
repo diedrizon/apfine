@@ -1,4 +1,3 @@
-// GestionUsuario.jsx
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../database/firebaseconfig";
 import {
@@ -139,7 +138,11 @@ function GestionUsuario() {
                 <div className="usuario-subinfo">
                   <span>{u.telefono || "Sin teléfono"}</span>
                   <span className="mx-2">|</span>
+                  <span>{u.departamento || "-"}</span>
+                  <span className="mx-2">|</span>
                   <span>{u.rol}</span>
+                  <span className="mx-2">|</span>
+                  <span>{u.activo ? "Activo" : "Inactivo"}</span>
                 </div>
 
                 {isExpanded && (

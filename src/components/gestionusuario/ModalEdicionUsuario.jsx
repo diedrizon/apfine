@@ -77,6 +77,39 @@ function ModalEdicionUsuario({
             <option>Administrador</option>
           </Form.Select>
         </Form.Group>
+
+        <Form.Group className="modal-group">
+          <Form.Label>Departamento</Form.Label>
+          <Form.Control
+            type="text"
+            name="departamento"
+            value={usuarioEditado?.departamento || ""}
+            onChange={(e) =>
+              setUsuarioEditado({
+                ...usuarioEditado,
+                departamento: e.target.value,
+              })
+            }
+          />
+        </Form.Group>
+
+        <Form.Group className="modal-group">
+          <Form.Label>Activo</Form.Label>
+          <Form.Select
+            name="activo"
+            value={usuarioEditado?.activo ? "true" : "false"}
+            onChange={(e) =>
+              setUsuarioEditado({
+                ...usuarioEditado,
+                activo: e.target.value === "true",
+              })
+            }
+          >
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+          </Form.Select>
+        </Form.Group>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
