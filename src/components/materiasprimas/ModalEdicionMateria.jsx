@@ -1,7 +1,17 @@
 import React from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-function ModalEdicionMateria({
+const unidades = [
+  "Kilogramo",
+  "Libra",
+  "Litro",
+  "Unidad",
+  "Metro",
+  "Mililitro",
+  "Gramo",
+];
+
+export default function ModalEdicionMateria({
   show,
   handleClose,
   materiaEditada,
@@ -10,17 +20,49 @@ function ModalEdicionMateria({
   setMensaje,
   setShowModalMensaje,
 }) {
-  const handleChange = (e) =>
+  if (!materiaEditada) return null;
+  const change = (e) =>
     setMateriaEditada({ ...materiaEditada, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!materiaEditada.nombre || !materiaEditada.stock_actual) {
-      setMensaje("Completa los campos obligatorios.");
+  const validar = () => {
+    const {
+      nombre,
+      unidad_medida,
+      stock_actual,
+      stock_minimo,
+      costo_unitario,
+    } = materiaEditada;
+    if (!nombre.trim()) {
+      setMensaje("El nombre es obligatorio.");
       setShowModalMensaje(true);
-      return;
+      return false;
     }
-    handleEditMateria(materiaEditada);
+    if (!unidad_medida) {
+      setMensaje("Selecciona una unidad.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    if (!stock_actual || stock_actual <= 0) {
+      setMensaje("Stock inválido.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    if (!stock_minimo || stock_minimo < 0) {
+      setMensaje("Stock mínimo inválido.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    if (!costo_unitario || costo_unitario <= 0) {
+      setMensaje("Costo inválido.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    return true;
+  };
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (validar()) handleEditMateria(materiaEditada);
   };
 
   return (
@@ -28,7 +70,7 @@ function ModalEdicionMateria({
       <Modal.Header closeButton>
         <Modal.Title>Editar Insumo</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
           <Row className="modal-group">
             <Col>
@@ -36,21 +78,27 @@ function ModalEdicionMateria({
               <Form.Control
                 name="nombre"
                 value={materiaEditada.nombre}
-                onChange={handleChange}
+                onChange={change}
                 required
               />
             </Col>
             <Col sm={4}>
               <Form.Label>Unidad*</Form.Label>
-              <Form.Control
+              <Form.Select
                 name="unidad_medida"
                 value={materiaEditada.unidad_medida}
-                onChange={handleChange}
+                onChange={change}
                 required
-              />
+              >
+                <option value="">Selecciona unidad</option>
+                {unidades.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </Form.Select>
             </Col>
           </Row>
-
           <Row className="modal-group">
             <Col>
               <Form.Label>Stock actual*</Form.Label>
@@ -58,7 +106,7 @@ function ModalEdicionMateria({
                 type="number"
                 name="stock_actual"
                 value={materiaEditada.stock_actual}
-                onChange={handleChange}
+                onChange={change}
                 required
               />
             </Col>
@@ -68,12 +116,11 @@ function ModalEdicionMateria({
                 type="number"
                 name="stock_minimo"
                 value={materiaEditada.stock_minimo}
-                onChange={handleChange}
+                onChange={change}
                 required
               />
             </Col>
           </Row>
-
           <Row className="modal-group">
             <Col>
               <Form.Label>Costo unitario (C$)*</Form.Label>
@@ -81,7 +128,7 @@ function ModalEdicionMateria({
                 type="number"
                 name="costo_unitario"
                 value={materiaEditada.costo_unitario}
-                onChange={handleChange}
+                onChange={change}
                 required
               />
             </Col>
@@ -89,19 +136,18 @@ function ModalEdicionMateria({
               <Form.Label>Proveedor</Form.Label>
               <Form.Control
                 name="proveedor"
-                value={materiaEditada.proveedor}
-                onChange={handleChange}
+                value={materiaEditada.proveedor || ""}
+                onChange={change}
               />
             </Col>
           </Row>
-
           <Form.Group className="modal-group">
             <Form.Label>Última compra</Form.Label>
             <Form.Control
               type="date"
               name="ultima_compra"
-              value={materiaEditada.ultima_compra}
-              onChange={handleChange}
+              value={materiaEditada.ultima_compra || ""}
+              onChange={change}
             />
           </Form.Group>
         </Modal.Body>
@@ -117,5 +163,3 @@ function ModalEdicionMateria({
     </Modal>
   );
 }
-
-export default ModalEdicionMateria;

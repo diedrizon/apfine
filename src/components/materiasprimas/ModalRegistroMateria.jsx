@@ -1,7 +1,17 @@
 import React from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-function ModalRegistroMateria({
+const unidades = [
+  "Kilogramo",
+  "Libra",
+  "Litro",
+  "Unidad",
+  "Metro",
+  "Mililitro",
+  "Gramo",
+];
+
+export default function ModalRegistroMateria({
   show,
   handleClose,
   materiaNueva,
@@ -9,25 +19,72 @@ function ModalRegistroMateria({
   handleAddMateria,
   setMensaje,
   setShowModalMensaje,
+  materiasExistentes,
 }) {
-  // Evita errores si materiaNueva aún no está definido
   if (!materiaNueva) return null;
 
-  const handleChange = (e) =>
+  const change = (e) =>
     setMateriaNueva({ ...materiaNueva, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { nombre, stock_actual } = materiaNueva;
-
-    // Validación mínima
-    if (!nombre || !stock_actual) {
-      setMensaje("Completa los campos obligatorios.");
+  const validar = () => {
+    const {
+      nombre,
+      unidad_medida,
+      stock_actual,
+      stock_minimo,
+      costo_unitario,
+    } = materiaNueva;
+    if (!nombre.trim()) {
+      setMensaje("El nombre es obligatorio.");
       setShowModalMensaje(true);
-      return;
+      return false;
     }
+    if (!unidad_medida) {
+      setMensaje("Selecciona una unidad.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    if (!stock_actual || stock_actual <= 0) {
+      setMensaje("Stock inválido.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    if (!stock_minimo || stock_minimo < 0) {
+      setMensaje("Stock mínimo inválido.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    if (!costo_unitario || costo_unitario <= 0) {
+      setMensaje("Costo inválido.");
+      setShowModalMensaje(true);
+      return false;
+    }
+    return true;
+  };
 
-    handleAddMateria(materiaNueva);
+  const submit = (e) => {
+    e.preventDefault();
+    if (!validar()) return;
+    const existe = materiasExistentes.find(
+      (m) =>
+        m.nombre.toLowerCase().trim() ===
+        materiaNueva.nombre.toLowerCase().trim()
+    );
+    if (existe) {
+      const actualizado = {
+        ...existe,
+        stock_actual:
+          parseFloat(existe.stock_actual) +
+          parseFloat(materiaNueva.stock_actual),
+        ultima_compra:
+          materiaNueva.ultima_compra || new Date().toISOString().split("T")[0],
+        costo_unitario: materiaNueva.costo_unitario,
+        proveedor: materiaNueva.proveedor,
+      };
+      handleAddMateria(actualizado, true);
+    } else {
+      handleAddMateria(materiaNueva, false);
+    }
   };
 
   return (
@@ -35,90 +92,92 @@ function ModalRegistroMateria({
       <Modal.Header closeButton>
         <Modal.Title>Registrar Insumo</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
-          <Row className="modal-group">
-            <Col>
-              <Form.Label>Nombre*</Form.Label>
-              <Form.Control
-                name="nombre"
-                value={materiaNueva.nombre || ""}
-                onChange={handleChange}
-                required
-              />
-            </Col>
-            <Col sm={4}>
-              <Form.Label>Unidad*</Form.Label>
-              <Form.Control
-                name="unidad_medida"
-                value={materiaNueva.unidad_medida || ""}
-                onChange={handleChange}
-                placeholder="kg, lt, un"
-                required
-              />
-            </Col>
-          </Row>
+          <div className="modal-group">
+            <Form.Label>Nombre*</Form.Label>
+            <Form.Control
+              name="nombre"
+              value={materiaNueva.nombre || ""}
+              onChange={change}
+              required
+            />
+          </div>
 
           <Row className="modal-group">
             <Col>
-              <Form.Label>Stock actual*</Form.Label>
+              <Form.Label>Unidad*</Form.Label>
+              <Form.Select
+                name="unidad_medida"
+                value={materiaNueva.unidad_medida || ""}
+                onChange={change}
+                required
+              >
+                <option value="">Selecciona unidad</option>
+                {unidades.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+          </Row>
+
+          <div className="modal-row-2col">
+            <div className="modal-group">
+              <Form.Label>Stock a agregar*</Form.Label>
               <Form.Control
                 type="number"
                 name="stock_actual"
                 value={materiaNueva.stock_actual || ""}
-                onChange={handleChange}
-                required
+                onChange={change}
               />
-            </Col>
-            <Col>
+            </div>
+            <div className="modal-group">
               <Form.Label>Stock mínimo*</Form.Label>
               <Form.Control
                 type="number"
                 name="stock_minimo"
                 value={materiaNueva.stock_minimo || ""}
-                onChange={handleChange}
-                required
+                onChange={change}
               />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className="modal-group">
-            <Col>
-              <Form.Label>Costo unitario (C$)*</Form.Label>
-              <Form.Control
-                type="number"
-                name="costo_unitario"
-                value={materiaNueva.costo_unitario || ""}
-                onChange={handleChange}
-                required
-              />
-            </Col>
-            <Col>
-              <Form.Label>Proveedor</Form.Label>
-              <Form.Control
-                name="proveedor"
-                value={materiaNueva.proveedor || ""}
-                onChange={handleChange}
-              />
-            </Col>
-          </Row>
+          <div className="modal-group">
+            <Form.Label>Costo unitario (C$)*</Form.Label>
+            <Form.Control
+              type="number"
+              name="costo_unitario"
+              value={materiaNueva.costo_unitario || ""}
+              onChange={change}
+            />
+          </div>
 
-          <Form.Group className="modal-group">
-            <Form.Label>Última compra</Form.Label>
+          <div className="modal-group">
+            <Form.Label>Proveedor</Form.Label>
+            <Form.Control
+              name="proveedor"
+              value={materiaNueva.proveedor || ""}
+              onChange={change}
+            />
+          </div>
+
+          <div className="modal-group">
+            <Form.Label>Fecha de última compra</Form.Label>
             <Form.Control
               type="date"
               name="ultima_compra"
               value={materiaNueva.ultima_compra || ""}
-              onChange={handleChange}
+              onChange={change}
             />
-          </Form.Group>
+          </div>
         </Modal.Body>
-
         <Modal.Footer className="modal-footer">
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button variant="primary" type="submit">
+          <Button type="submit" variant="primary">
             Guardar
           </Button>
         </Modal.Footer>
@@ -126,5 +185,3 @@ function ModalRegistroMateria({
     </Modal>
   );
 }
-
-export default ModalRegistroMateria;

@@ -16,7 +16,7 @@ function ModalEliminacionMateria({
       <Modal.Body className="modal-warning-body">
         <FaExclamationTriangle className="warning-icon" />
         <p>
-          ¿Estás seguro de eliminar el insumo 
+          ¿Estás seguro de eliminar el insumo
           <strong>{materiaAEliminar?.nombre}</strong>?
         </p>
       </Modal.Body>

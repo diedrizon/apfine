@@ -7,164 +7,144 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { Container, Button, Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
-import { BiCube } from "react-icons/bi";
 import ModalRegistroMateria from "../components/materiasprimas/ModalRegistroMateria";
 import ModalEdicionMateria from "../components/materiasprimas/ModalEdicionMateria";
 import ModalEliminacionMateria from "../components/materiasprimas/ModalEliminacionMateria";
 import ModalDetalleMateria from "../components/materiasprimas/ModalDetalleMateria";
 import ModalMensaje from "../components/ModalMensaje";
-
 import "../styles/MateriasPrimas.css";
 
-function getIcon(stock, minimo) {
-  if (stock <= minimo) return <FaIcons.FaExclamationTriangle color="#ff9800" />;
-  return <FaIcons.FaCube />;
-}
-
-function MateriasPrimas() {
+export default function MateriasPrimas() {
   const [userId, setUserId] = useState(null);
   const [materias, setMaterias] = useState([]);
-
-  const [showModalAdd, setShowModalAdd] = useState(false);
-  const [showModalEdit, setShowModalEdit] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
-  const [showModalDetalle, setShowModalDetalle] = useState(false);
-  const [showModalMensaje, setShowModalMensaje] = useState(false);
-
-  const [materiaNueva, setMateriaNueva] = useState(null);
-  const [materiaEditada, setMateriaEditada] = useState(null);
-  const [materiaAEliminar, setMateriaAEliminar] = useState(null);
-  const [materiaDetalle, setMateriaDetalle] = useState(null);
-
-  const [mensaje, setMensaje] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
-
-  const materiasCollection = collection(db, "materias_primas");
-
-  useEffect(
-    () => onAuthStateChanged(auth, (user) => user && setUserId(user.uid)),
-    []
-  );
+  const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDel, setShowDel] = useState(false);
+  const [showDet, setShowDet] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [nueva, setNueva] = useState(null);
+  const [editada, setEditada] = useState(null);
+  const [aEliminar, setAEliminar] = useState(null);
+  const [detalle, setDetalle] = useState(null);
+  const col = collection(db, "materias_primas");
 
   useEffect(() => {
-    const online = () => setIsOffline(false);
-    const offline = () => setIsOffline(true);
-    window.addEventListener("online", online);
-    window.addEventListener("offline", offline);
-    setIsOffline(!navigator.onLine);
+    onAuthStateChanged(auth, (u) => u && setUserId(u.uid));
+  }, []);
+
+  useEffect(() => {
+    const goOnline = () => setIsOffline(false);
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
     return () => {
-      window.removeEventListener("online", online);
-      window.removeEventListener("offline", offline);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
     };
   }, []);
 
   useEffect(() => {
     if (userId) fetchMaterias();
-  });
+  }, [userId]);
 
   async function fetchMaterias() {
-    try {
-      const snap = await getDocs(materiasCollection);
-      const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setMaterias(all.filter((m) => m.userId === userId));
-    } catch (err) {
-      console.error(err);
-    }
+    const snap = await getDocs(col);
+    const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    setMaterias(all.filter((m) => m.userId === userId));
   }
 
-  const openAddModal = () => {
-    setMateriaNueva({
+  const openAdd = () => {
+    setNueva({
       nombre: "",
       unidad_medida: "",
-      stock_actual: "",
       stock_minimo: "",
       costo_unitario: "",
       proveedor: "",
       ultima_compra: "",
     });
-    setShowModalAdd(true);
+    setShowAdd(true);
   };
-  const closeAddModal = () => setShowModalAdd(false);
 
-  const openEditModal = (m) => {
-    setMateriaEditada({ ...m });
-    setShowModalEdit(true);
-  };
-  const closeEditModal = () => setShowModalEdit(false);
+  async function handleAddMateria(data, esUpdate) {
+    setShowAdd(false);
+    if (esUpdate) {
+      if (isOffline)
+        setMaterias((p) => p.map((m) => (m.id === data.id ? data : m)));
+      setMsg("Stock actualizado correctamente.");
+      setShowMsg(true);
+      if (!data.id.startsWith("temp_")) {
+        await updateDoc(doc(db, "materias_primas", data.id), {
+          nombre: data.nombre,
+          unidad_medida: data.unidad_medida,
+          stock_minimo: data.stock_minimo,
+          costo_unitario: data.costo_unitario,
+          proveedor: data.proveedor,
+          ultima_compra: data.ultima_compra,
+        });
+      }
+    } else {
+      // Aseguramos que el stock_actual venga definido en el objeto data
+      const initialStock = Number(data.stock_actual) || 0;
+      const payload = { 
+        ...data, 
+        userId, 
+        stock_actual: initialStock, 
+        // para que en la vista se muestre el costo unitario de la última entrada
+        ultimo_precio: initialStock > 0 ? parseFloat(data.costo_unitario) : "", 
+        proveedor_reciente: data.proveedor || "" 
+      };
 
-  const openDeleteModal = (m) => {
-    setMateriaAEliminar(m);
-    setShowModalDelete(true);
-  };
-  const closeDeleteModal = () => setShowModalDelete(false);
-
-  const openDetalleModal = (m) => {
-    setMateriaDetalle(m);
-    setShowModalDetalle(true);
-  };
-  const closeDetalleModal = () => setShowModalDetalle(false);
-
-  async function handleAddMateria(nueva) {
-    closeAddModal();
-    const tempId = `temp_${Date.now()}`;
-    const data = { ...nueva, userId };
-
-    if (isOffline) setMaterias((prev) => [...prev, { ...data, id: tempId }]);
-
-    setMensaje("Insumo registrado correctamente.");
-    setShowModalMensaje(true);
-
-    try {
-      await addDoc(materiasCollection, data);
-    } catch (e) {
-      console.error(e);
+      if (isOffline) {
+        const tempId = `temp_${Date.now()}`;
+        setMaterias((p) => [...p, { ...payload, id: tempId }]);
+      } else {
+        // Primero, registra el insumo principal con los datos iniciales
+        const docRef = await addDoc(col, payload);
+        // Luego, crea una entrada inicial que refleje el stock inicial
+        if (initialStock > 0) {
+          await addDoc(collection(db, "materias_primas", docRef.id, "entradas"), {
+            cantidad: initialStock,
+            proveedor: data.proveedor || "",
+            costo_unitario: parseFloat(data.costo_unitario),
+            fecha: data.ultima_compra || new Date().toISOString().split("T")[0],
+            creada_en: serverTimestamp(),
+          });
+        }
+      }
+      setMsg("Insumo registrado correctamente.");
+      setShowMsg(true);
     }
     fetchMaterias();
   }
 
-  async function handleEditMateria(editada) {
-    closeEditModal();
-    if (isOffline) {
-      setMaterias((prev) =>
-        prev.map((m) => (m.id === editada.id ? editada : m))
-      );
-    }
-
-    setMensaje("Insumo actualizado correctamente.");
-    setShowModalMensaje(true);
-
-    if (!editada.id.startsWith("temp_")) {
-      try {
-        await updateDoc(doc(db, "materias_primas", editada.id), editada);
-      } catch (e) {
-        console.error(e);
-      }
+  async function handleEditMateria(item) {
+    setShowEdit(false);
+    if (isOffline)
+      setMaterias((p) => p.map((m) => (m.id === item.id ? item : m)));
+    setMsg("Insumo actualizado correctamente.");
+    setShowMsg(true);
+    if (!item.id.startsWith("temp_")) {
+      await updateDoc(doc(db, "materias_primas", item.id), item);
     }
     fetchMaterias();
   }
 
   async function handleDeleteMateria() {
-    if (!materiaAEliminar) return;
-    closeDeleteModal();
-
-    if (isOffline) {
-      setMaterias((prev) => prev.filter((m) => m.id !== materiaAEliminar.id));
-    }
-
-    setMensaje("Insumo eliminado correctamente.");
-    setShowModalMensaje(true);
-
-    if (!materiaAEliminar.id.startsWith("temp_")) {
-      try {
-        await deleteDoc(doc(db, "materias_primas", materiaAEliminar.id));
-      } catch (e) {
-        console.error(e);
-      }
+    if (!aEliminar) return;
+    setShowDel(false);
+    if (isOffline) setMaterias((p) => p.filter((m) => m.id !== aEliminar.id));
+    setMsg("Insumo eliminado correctamente.");
+    setShowMsg(true);
+    if (!aEliminar.id.startsWith("temp_")) {
+      await deleteDoc(doc(db, "materias_primas", aEliminar.id));
     }
     fetchMaterias();
   }
@@ -172,73 +152,74 @@ function MateriasPrimas() {
   const toggleExpanded = (m) =>
     setExpandedId(expandedId === m.id ? null : m.id);
 
-  const totalMaterias = materias.length;
-
   return (
     <Container fluid className="materias-container">
       <div className="materias-header">
-        <h5>Lista de Materias Primas / Insumos</h5>
-        <Button variant="primary" onClick={openAddModal}>
-          Agregar
-        </Button>
+        <h5>Materias Primas / Insumos</h5>
+        <Button onClick={openAdd}>Agregar</Button>
       </div>
-
       <div className="materias-content">
         <div className="materias-list">
-          {materias.map((mat) => {
-            const isExpanded = expandedId === mat.id;
+          {materias.map((m) => {
+            const exp = expandedId === m.id;
             return (
               <div
-                key={mat.id}
-                className={`materia-item ${isExpanded ? "expanded" : ""}`}
-                onClick={() => toggleExpanded(mat)}
+                key={m.id}
+                className={`materia-item ${exp ? "expanded" : ""}`}
+                onClick={() => toggleExpanded(m)}
               >
                 <div className="materia-top">
                   <div className="materia-icon">
-                    {getIcon(mat.stock_actual, mat.stock_minimo)}
+                    {m.stock_actual <= m.stock_minimo ? (
+                      <FaIcons.FaExclamationTriangle color="#ff9800" />
+                    ) : (
+                      <FaIcons.FaCube />
+                    )}
                   </div>
-                  <span className="materia-nombre">{mat.nombre}</span>
+                  <span className="materia-nombre">{m.nombre}</span>
                   <span className="materia-stock">
-                    {mat.stock_actual} {mat.unidad_medida}
+                    {m.stock_actual} {m.unidad_medida}
                   </span>
                 </div>
                 <div className="materia-subinfo">
-                  <span>C$ {mat.costo_unitario}</span>
+                  <span>C$ {m.ultimo_precio || m.costo_unitario}</span>
                   <span className="mx-2">|</span>
-                  <span>{mat.proveedor || "Sin proveedor"}</span>
+                  <span>{m.proveedor_reciente || m.proveedor || "—"}</span>
                 </div>
-
-                {isExpanded && (
+                {exp && (
                   <div className="materia-actions-expanded">
                     <Button
-                      variant="danger"
                       size="sm"
+                      variant="info"
                       onClick={(e) => {
                         e.stopPropagation();
-                        openDeleteModal(mat);
+                        setDetalle(m);
+                        setShowDet(true);
                       }}
                     >
-                      <FaIcons.FaTrash />
+                      <FaIcons.FaEye />
                     </Button>
                     <Button
-                      variant="secondary"
                       size="sm"
+                      variant="secondary"
                       onClick={(e) => {
                         e.stopPropagation();
-                        openEditModal(mat);
+                        setEditada(m);
+                        setShowEdit(true);
                       }}
                     >
                       <FaIcons.FaEdit />
                     </Button>
                     <Button
-                      variant="info"
                       size="sm"
+                      variant="danger"
                       onClick={(e) => {
                         e.stopPropagation();
-                        openDetalleModal(mat);
+                        setAEliminar(m);
+                        setShowDel(true);
                       }}
                     >
-                      <FaIcons.FaEye /> Ver
+                      <FaIcons.FaTrash />
                     </Button>
                   </div>
                 )}
@@ -246,66 +227,60 @@ function MateriasPrimas() {
             );
           })}
         </div>
-
         <div className="materias-summary">
           <Card className="summary-card">
             <Card.Body>
               <Card.Title>Total Insumos</Card.Title>
-              <Card.Text>{totalMaterias}</Card.Text>
+              <Card.Text>{materias.length}</Card.Text>
             </Card.Body>
           </Card>
         </div>
       </div>
 
-      {/* MODALES */}
-      {showModalAdd && materiaNueva && (
+      {showAdd && nueva && (
         <ModalRegistroMateria
-          show={showModalAdd}
-          handleClose={closeAddModal}
-          materiaNueva={materiaNueva}
-          setMateriaNueva={setMateriaNueva}
+          show={showAdd}
+          handleClose={() => setShowAdd(false)}
+          materiaNueva={nueva}
+          setMateriaNueva={setNueva}
           handleAddMateria={handleAddMateria}
-          setMensaje={setMensaje}
-          setShowModalMensaje={setShowModalMensaje}
+          setMensaje={setMsg}
+          setShowModalMensaje={setShowMsg}
+          materiasExistentes={materias}
         />
       )}
-
-      {materiaEditada && (
+      {showEdit && editada && (
         <ModalEdicionMateria
-          show={showModalEdit}
-          handleClose={closeEditModal}
-          materiaEditada={materiaEditada}
-          setMateriaEditada={setMateriaEditada}
+          show={showEdit}
+          handleClose={() => setShowEdit(false)}
+          materiaEditada={editada}
+          setMateriaEditada={setEditada}
           handleEditMateria={handleEditMateria}
-          setMensaje={setMensaje}
-          setShowModalMensaje={setShowModalMensaje}
+          setMensaje={setMsg}
+          setShowModalMensaje={setShowMsg}
         />
       )}
-
-      {materiaAEliminar && (
+      {showDel && aEliminar && (
         <ModalEliminacionMateria
-          show={showModalDelete}
-          handleClose={closeDeleteModal}
-          materiaAEliminar={materiaAEliminar}
+          show={showDel}
+          handleClose={() => setShowDel(false)}
+          materiaAEliminar={aEliminar}
           handleDeleteMateria={handleDeleteMateria}
         />
       )}
-
-      {materiaDetalle && (
+      {showDet && detalle && (
         <ModalDetalleMateria
-          show={showModalDetalle}
-          handleClose={closeDetalleModal}
-          materiaDetalle={materiaDetalle}
+          show={showDet}
+          handleClose={() => setShowDet(false)}
+          materiaDetalle={detalle}
+          actualizarVista={fetchMaterias} // 🔄 Se actualiza la vista principal al guardar entrada
         />
       )}
-
       <ModalMensaje
-        show={showModalMensaje}
-        handleClose={() => setShowModalMensaje(false)}
-        message={mensaje}
+        show={showMsg}
+        handleClose={() => setShowMsg(false)}
+        message={msg}
       />
     </Container>
   );
 }
-
-export default MateriasPrimas;
