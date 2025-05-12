@@ -40,30 +40,44 @@
 
 .usuario-top {
   display: flex;
-  align-items: center;
-  margin-bottom: 5px;
+  align-items: center; /* Icono y texto en línea horizontal */
+  gap: 10px;
 }
 
 .usuario-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  margin-right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   background-color: #0d6efd;
+  flex-shrink: 0;
+}
+
+.usuario-texto {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Para aplicar ellipsis correctamente */
 }
 
 .usuario-nombre {
-  flex: 1;
   font-weight: 500;
   font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .usuario-email {
-  color: #000;
+  font-size: 0.9rem;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .usuario-subinfo {
@@ -73,6 +87,7 @@
   align-items: center;
   gap: 5px;
   flex-wrap: wrap;
+  margin-top: 5px; /* Separación adicional entre el correo y los datos */
 }
 
 .usuario-actions-expanded {
