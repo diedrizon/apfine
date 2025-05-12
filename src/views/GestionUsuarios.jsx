@@ -12,6 +12,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { Container, Button, Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 
+import "../styles/GestionUsuario.css";
+
 function getIconFijo() {
   return <FaIcons.FaLock />;
 }
@@ -41,16 +43,32 @@ function GestionUsuario() {
           window.removeEventListener("offline", offline);
         };
       }, []);
+
+      useEffect(() => {
+         if (userId) fetchUsuarios();
+      });
+
+      async function fetchUsuarios() {
+        try {
+          const snap = await getDocs(usuariosCollection);
+          const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          setUsuarios(all.filter((u) => u.id !== userId));
+          //console.log(all);
+        } catch (error) {
+          console.error("Error fetching usuarios:", error);
+        }
+      }
     return (
         <Container fluid className="usuario-container">
           <div className="usuario-header">
             <h5>Gestión de Usuarios</h5>
-            
           </div>
 
           <div className="usuario-content">
             <div className="usuarios-list">
-              
+              {usuarios.map((usuarios) => {
+                const isExpanded = expandedId === usuarios.id;
+              })}
             </div>
           </div>
         </Container>  
