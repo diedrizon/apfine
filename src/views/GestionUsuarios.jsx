@@ -12,6 +12,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { Container, Button, Modal, Form, Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import ModalEliminacionUsuario from "../components/gestionusuario/ModalElimacionUsuario";
+import ModalEdicionUsuario from "../components/gestionusuario/ModalEdicionUsuario";
 import ModalMensaje from "../components/ModalMensaje";
 
 import "../styles/GestionUsuario.css";
@@ -173,91 +174,17 @@ function GestionUsuario() {
         </div>
       </div>
 
-      {/* Modal Edición */}
-      {showEdit && usuarioEditado && (
-        <Modal
+      {/* Modal Edición Usuario */}
+      {usuarioEditado && (
+        <ModalEdicionUsuario
           show={showEdit}
-          onHide={() => setShowEdit(false)}
-          className="custom-modal"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Editar Usuario</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group className="modal-group">
-              <Form.Label>Nombre</Form.Label>
-              <Form.Control
-                type="text"
-                name="nombre"
-                value={usuarioEditado.nombre}
-                onChange={(e) =>
-                  setUsuarioEditado({
-                    ...usuarioEditado,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="modal-group">
-              <Form.Label>Correo</Form.Label>
-              <Form.Control
-                type="email"
-                name="correo"
-                value={usuarioEditado.correo}
-                onChange={(e) =>
-                  setUsuarioEditado({
-                    ...usuarioEditado,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="modal-group">
-              <Form.Label>Teléfono</Form.Label>
-              <Form.Control
-                type="text"
-                name="telefono"
-                value={usuarioEditado.telefono}
-                onChange={(e) =>
-                  setUsuarioEditado({
-                    ...usuarioEditado,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-              />
-            </Form.Group>
-            <Form.Group className="modal-group">
-              <Form.Label>Rol</Form.Label>
-              <Form.Select
-                name="rol"
-                value={usuarioEditado.rol}
-                onChange={(e) =>
-                  setUsuarioEditado({
-                    ...usuarioEditado,
-                    [e.target.name]: e.target.value,
-                  })
-                }
-              >
-                <option>Beneficiario</option>
-                <option>Administrador</option>
-              </Form.Select>
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => handleEditUsuario(usuarioEditado)}
-            >
-              Guardar
-            </Button>
-          </Modal.Footer>
-        </Modal>
+          handleClose={() => setShowEdit(false)}
+          usuarioEditado={usuarioEditado}
+          setUsuarioEditado={setUsuarioEditado}
+          handleEditUsuario={handleEditUsuario}
+        />
       )}
 
-      {/* Modal Eliminación */}
       {/* Modal Eliminación */}
       {usuarioAEliminar && (
         <ModalEliminacionUsuario
