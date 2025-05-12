@@ -7,6 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  serverTimestamp
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { Container, Button, Card } from "react-bootstrap";
@@ -67,14 +68,32 @@ export default function Inventario() {
 
   const add = async (item) => {
     setShowAdd(false);
-    const tempId = `temp_${Date.now()}`;
-    if (offline) setProductos((p) => [...p, { ...item, id: tempId, userId }]);
-    setMsg("Producto registrado.");
-    setShowMsg(true);
-    try {
-      await addDoc(col, { ...item, userId });
-    } catch (e) {
-      console.error(e);
+    const initialStock = Number(item.stock_actual) || 0;
+
+    if (offline) {
+      const tempId = `temp_${Date.now()}`;
+      setProductos((p) => [...p, { ...item, id: tempId, userId }]);
+      setMsg("Producto registrado en modo offline.");
+      setShowMsg(true);
+    } else {
+      // Registra el producto principal incluyendo el stock_actual
+      const docRef = await addDoc(col, {
+        ...item,
+        userId,
+        stock_actual: initialStock
+      });
+      // Si se registró stock inicial mayor a 0, crea una entrada inicial
+      if (initialStock > 0) {
+        await addDoc(collection(db, "inventario", docRef.id, "entradas"), {
+          cantidad: initialStock,
+          costo_unitario: Number(item.costo_unitario),
+          proveedor: item.proveedor || "",
+          fecha: item.fecha || new Date().toISOString().split("T")[0],
+          creada_en: serverTimestamp()
+        });
+      }
+      setMsg("Producto registrado.");
+      setShowMsg(true);
     }
     cargar();
   };
@@ -119,7 +138,7 @@ export default function Inventario() {
       stock_minimo: "",
       costo_unitario: "",
       precio_venta: "",
-      ubicacion: "",
+      ubicacion: ""
     });
     setShowAdd(true);
   };
@@ -240,6 +259,7 @@ export default function Inventario() {
           show={showDet}
           handleClose={() => setShowDet(false)}
           item={detalle}
+          actualizarVista={cargar} // ✅ Importante: actualizar al guardar entrada
         />
       )}
       <ModalMensaje
