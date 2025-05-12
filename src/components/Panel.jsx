@@ -148,7 +148,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             {openModule === "produccion" && (
               <ul className="submenu">
                 {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => {})}
-                {renderSubItem(<BiCube />, "Materias primas", () => {})}
+                {renderSubItem(<BiCube />, "Materias primas", () =>
+                  handleNavigate("/materias-primas")
+                )}
                 {renderSubItem(<BiPackage />, "Inventario", () => {})}
                 {renderSubItem(
                   <BiClipboard />,
@@ -219,21 +221,13 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 </li>
                 {openModule === "admin" && (
                   <ul className="submenu">
-                    {renderSubItem(
-                      <BiUser />,
-                      "Gestión de usuarios",
-                      () => {}
-                    )}
+                    {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
                     {renderSubItem(
                       <BiTargetLock />,
                       "Roles y permisos",
                       () => {}
                     )}
-                    {renderSubItem(
-                      <BiBulb />,
-                      "Supervisión de IA",
-                      () => {}
-                    )}
+                    {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
                     {renderSubItem(
                       <BiCog />,
                       "Monitoreo / Configuración",
