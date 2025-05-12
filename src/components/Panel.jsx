@@ -100,6 +100,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
           </button>
 
           <ul className="sidebar-menu">
+            {/* Finanzas */}
             <li className="module" onClick={() => toggleModuleName("finanzas")}>
               <BiMoney className="module-icon" />
               <span className="module-text">Finanzas</span>
@@ -147,13 +148,17 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "produccion" && (
               <ul className="submenu">
-                {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => {})}
-                {renderSubItem(<BiCube />, "Materias primas", () => {})}
-                {renderSubItem(<BiPackage />, "Inventario", () => {})}
-                {renderSubItem(
-                  <BiClipboard />,
-                  "Órdenes de producción",
-                  () => {}
+                {renderSubItem(<BiBarChartAlt2 />, "Vista general", () =>
+                  handleNavigate("/produccion")
+                )}
+                {renderSubItem(<BiCube />, "Materias primas", () =>
+                  handleNavigate("/materias-primas")
+                )}
+                {renderSubItem(<BiPackage />, "Inventario", () =>
+                  handleNavigate("/inventario")
+                )}
+                {renderSubItem(<BiClipboard />, "Órdenes de producción", () =>
+                  handleNavigate("/ordenes-produccion")
                 )}
               </ul>
             )}
@@ -170,18 +175,22 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "reportes" && (
               <ul className="submenu">
-                {renderSubItem(<BiPackage />, "Dashboard", () => {})}
-                {renderSubItem(
-                  <BiBarChartAlt2 />,
-                  "Datos / Reportes",
-                  () => {}
+                {renderSubItem(<BiPackage />, "Dashboard", () =>
+                  handleNavigate("/reportes/dashboard")
                 )}
-                {renderSubItem(<BiCube />, "Exportar", () => {})}
-                {renderSubItem(<BiBell />, "Alertas", () => {})}
+                {renderSubItem(<BiBarChartAlt2 />, "Datos / Reportes", () =>
+                  handleNavigate("/reportes/datos")
+                )}
+                {renderSubItem(<BiCube />, "Exportar", () =>
+                  handleNavigate("/reportes/exportar")
+                )}
+                {renderSubItem(<BiBell />, "Alertas", () =>
+                  handleNavigate("/reportes/alertas")
+                )}
               </ul>
             )}
 
-            {/* Comunidad */}
+            {/* Comunidad y Educación */}
             <li
               className="module"
               onClick={() => toggleModuleName("comunidad")}
@@ -196,9 +205,15 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "comunidad" && (
               <ul className="submenu">
-                {renderSubItem(<BiUser />, "Comunidad", () => {})}
-                {renderSubItem(<BiBook />, "Educación", () => {})}
-                {renderSubItem(<BiBookOpen />, "Tutoriales / Quiz", () => {})}
+                {renderSubItem(<BiUser />, "Comunidad", () =>
+                  handleNavigate("/comunidad")
+                )}
+                {renderSubItem(<BiBook />, "Educación", () =>
+                  handleNavigate("/educacion")
+                )}
+                {renderSubItem(<BiBookOpen />, "Tutoriales / Quiz", () =>
+                  handleNavigate("/tutoriales-quiz")
+                )}
               </ul>
             )}
 
@@ -206,17 +221,25 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             <li className="module" onClick={() => toggleModuleName("admin")}>
               <BiCog className="module-icon" />
               <span className="module-text">Administración</span>
-              {openModule === "admin" ? <BiChevronDown /> : <BiChevronRight />}
+              {openModule === "admin" ? (
+                <BiChevronDown />
+              ) : (
+                <BiChevronRight />
+              )}
             </li>
             {openModule === "admin" && (
               <ul className="submenu">
-                {renderSubItem(<BiUser />, "Gestión de usuarios", () => {})}
-                {renderSubItem(<BiTargetLock />, "Roles y permisos", () => {})}
-                {renderSubItem(<BiBulb />, "Supervisión de IA", () => {})}
-                {renderSubItem(
-                  <BiCog />,
-                  "Monitoreo / Configuración",
-                  () => {}
+                {renderSubItem(<BiUser />, "Gestión de usuarios", () =>
+                  handleNavigate("/admin/usuarios")
+                )}
+                {renderSubItem(<BiTargetLock />, "Roles y permisos", () =>
+                  handleNavigate("/admin/roles")
+                )}
+                {renderSubItem(<BiBulb />, "Supervisión de IA", () =>
+                  handleNavigate("/admin/supervision-ia")
+                )}
+                {renderSubItem(<BiCog />, "Monitoreo / Configuración", () =>
+                  handleNavigate("/admin/configuracion")
                 )}
               </ul>
             )}
