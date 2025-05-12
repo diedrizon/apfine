@@ -9,10 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [
         'Iconodeaplicacion.png',
-        'icons/icon-192x192.png',
-        'icons/icon-512x512.png'
+        'icons/Icono1.png',
+        'icons/Icono2.png'
       ],
-      manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,svg,ico,webmanifest}'],
         runtimeCaching: [
