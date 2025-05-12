@@ -22,6 +22,7 @@ import Privacidad from "./views/Privacidad";
 import Terminos from "./views/Terminos";
 import Gastofijos from "./views/GastosFijos";
 import Metas from "./views/Metas";
+import MateriasPrimas from "./views/MateriasPrimas";
 import "./App.css";
 import ReactGA from "react-ga4";
 
@@ -158,6 +159,14 @@ function AppContent() {
             path="/recomendaciones"
             element={<ProtectedRoute element={<Recomendaciones />} />}
           />
+                  
+      
+         {/*Produccion*/}
+          <Route
+            path="/materias-primas"
+            element={<ProtectedRoute element={<MateriasPrimas />} />}
+          />
+
           {/* Página no encontrada */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />

@@ -37,6 +37,7 @@ const Encabezado = ({
       "/recomendaciones",
       "/gastofijos",
       "/metas",
+      "/materias-primas",
     ].includes(location.pathname);
 
   if (cargando || ocultarHeaderEn.includes(location.pathname) || esRuta404)
