@@ -1,63 +1,66 @@
+// src/components/LoginForm.jsx
+
 import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc";
 import { IoClose } from "react-icons/io5";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import codigosCedula from "../data/codigocedulacion.json";
 import "../styles/login.css";
 
-const ONLY_DIGITS = /[^0-9]/g;
 const ONLY_LETTERS = /[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g;
 
-// ✅ NUEVO formatCedula FUNCIONAL Y CORRECTO
+// formatea la cédula en 001-000203-0001A y siempre conserva la letra
 const formatCedula = (inputValue, cursorPos) => {
-  const clean = inputValue.toUpperCase().replace(/[^0-9A-J]/g, "");
+  const clean = inputValue.toUpperCase().replace(/[^0-9A-Z]/g, "");
   const numeros = clean.replace(/[^0-9]/g, "").slice(0, 13);
   const letra = clean.replace(/[0-9]/g, "").slice(0, 1);
-  let result = "";
 
-  // Reconstruir la cédula formateada
+  let result = "";
   if (numeros.length > 0) result += numeros.slice(0, 3);
   if (numeros.length > 3) result += "-" + numeros.slice(3, 9);
   if (numeros.length > 9) result += "-" + numeros.slice(9, 13);
-  if (numeros.length === 13 && letra) result += letra;
+  if (letra) result += letra;
 
-  // Ajustar cursor
   const cleanBeforeCursor = inputValue
     .slice(0, cursorPos)
-    .replace(/[^0-9A-J]/g, "");
+    .replace(/[^0-9A-Z]/g, "");
   const rawBeforeCursor = cleanBeforeCursor.replace(/[^0-9]/g, "");
   let newCursor = rawBeforeCursor.length;
   if (newCursor > 3) newCursor += 1;
   if (newCursor > 9) newCursor += 1;
   if (newCursor > 13) newCursor += 1;
+  if (letra && rawBeforeCursor.length >= 13) newCursor += 1;
 
   return { value: result, cursor: newCursor };
 };
 
-// ✅ NUEVO formatTel CON CURSOR ESTABLE
+// formatea teléfono en 8888-1234
 const formatTel = (inputValue, cursorPos) => {
   const clean = inputValue.replace(/\D/g, "").slice(0, 8);
   let result = "";
-
   if (clean.length > 0) result += clean.slice(0, 4);
   if (clean.length > 4) result += "-" + clean.slice(4);
 
-  // Calcular posición del cursor
-  const cleanBeforeCursor = inputValue
-    .slice(0, cursorPos)
-    .replace(/\D/g, "");
+  const cleanBeforeCursor = inputValue.slice(0, cursorPos).replace(/\D/g, "");
   let newCursor = cleanBeforeCursor.length;
   if (newCursor > 4) newCursor += 1;
-
   return { value: result, cursor: newCursor };
 };
 
 const validarCorreo = v => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
 const validarNombre = v => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,}$/.test(v);
 const validarTelefono = v => /^\d{4}-\d{4}$/.test(v);
-const validarCedula = v => /^\d{3}-\d{6}-\d{4}[A-J]$/.test(v);
-const validarPassword = v => /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{6,}$/.test(v);
+const validarCedulaSintaxis = v => /^\d{3}-\d{6}-\d{4}[A-Z]$/.test(v);
+const validarPassword = v =>
+  /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{6,}$/.test(v);
+
+// extrae los primeros 3 dígitos y verifica en el JSON
+const validarCodigoCedulacion = v => {
+  const tres = v.replace(/[^0-9]/g, "").slice(0, 3);
+  return tres.length === 3 && Object.prototype.hasOwnProperty.call(codigosCedula, tres);
+};
 
 const LoginForm = ({
   startInRegister = false,
@@ -99,10 +102,7 @@ const LoginForm = ({
   const olvidar = () => nav("/recuperar");
 
   useEffect(() => {
-    if (
-      esperandoAceptacion &&
-      localStorage.getItem("pendienteAceptarGoogle") === "true"
-    ) {
+    if (esperandoAceptacion && localStorage.getItem("pendienteAceptarGoogle") === "true") {
       setWarnGoogle(true);
     }
   }, [esperandoAceptacion]);
@@ -121,17 +121,17 @@ const LoginForm = ({
     isLogin ? handleLogin(e) : handleRegister(e);
   };
 
+  // condición combinada: sintaxis correcta y código existente
+  const cedulaEsInvalida =
+    regCedula &&
+    (!validarCedulaSintaxis(regCedula) || !validarCodigoCedulacion(regCedula));
+
   return (
     <Card className="login-card">
       <div className="login-header">
-        <img
-          src="/Horizontal.png"
-          alt="APFINE Logo"
-          className="logo-top-left"
-        />
+        <img src="/Horizontal.png" alt="APFINE Logo" className="logo-top-left" />
         <IoClose className="close-icon" onClick={cerrar} />
       </div>
-
       <Card.Body>
         <div className="toggle-buttons mb-3">
           <span
@@ -151,7 +151,7 @@ const LoginForm = ({
         {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={onSubmit}>
-          {isLogin && (
+          {isLogin ? (
             <>
               <Form.Group className="mb-3">
                 <Form.Label>Correo electrónico</Form.Label>
@@ -162,7 +162,6 @@ const LoginForm = ({
                   required
                 />
               </Form.Group>
-
               <Form.Group className="mb-3">
                 <Form.Label>Contraseña</Form.Label>
                 <div className="input-with-eye">
@@ -183,9 +182,7 @@ const LoginForm = ({
                 </div>
               </Form.Group>
             </>
-          )}
-
-          {!isLogin && (
+          ) : (
             <>
               <Form.Group className="mb-3">
                 <Form.Label>Cédula</Form.Label>
@@ -210,14 +207,21 @@ const LoginForm = ({
                       input.setSelectionRange(cursor, cursor)
                     );
                   }}
-                  isInvalid={regCedula && !validarCedula(regCedula)}
+                  isInvalid={cedulaEsInvalida}
                   required
                 />
-                {regCedula && !validarCedula(regCedula) && (
+                {regCedula && !validarCedulaSintaxis(regCedula) && (
                   <div className="invalid-feedback visible">
-                    Cédula inválida.
+                    Formato de cédula inválido.
                   </div>
                 )}
+                {regCedula &&
+                  validarCedulaSintaxis(regCedula) &&
+                  !validarCodigoCedulacion(regCedula) && (
+                    <div className="invalid-feedback visible">
+                      Código de cedulación no existe.
+                    </div>
+                  )}
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -286,7 +290,7 @@ const LoginForm = ({
                   isInvalid={regTel && !validarTelefono(regTel)}
                   required
                 />
-                {regTel && !validarTelefono(regTel) && (  
+                {regTel && !validarTelefono(regTel) && (
                   <div className="invalid-feedback visible">
                     Teléfono inválido. Formato correcto: 8888-1234
                   </div>
@@ -325,7 +329,6 @@ const LoginForm = ({
                       </div>
                     )}
                   </Form.Group>
-
                   <Form.Group className="mb-3">
                     <Form.Label>Confirmar contraseña</Form.Label>
                     <div className="input-with-eye">
@@ -416,8 +419,8 @@ const LoginForm = ({
 
         {esperandoAceptacion && (
           <div
-            className="text-center mt-4 checkbox-legal-bottom"
             id="checkbox-wrapper"
+            className="text-center mt-4 checkbox-legal-bottom"
           >
             <Form.Check
               type="checkbox"

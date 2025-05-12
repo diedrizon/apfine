@@ -1,3 +1,5 @@
+// src/pages/Login.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
@@ -20,16 +22,17 @@ import { useAuth } from "../database/authcontext";
 import codigosCedula from "../data/codigocedulacion.json";
 import "../styles/login.css";
 
-const CEDULA_RX = /^\d{3}-\d{6}-\d{4}[A-J]$/;
+const CEDULA_RX = /^\d{3}-\d{6}-\d{4}[A-Z]$/;
 const NOMBRE_RX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/;
 const PHONE_RX = /^\d{4}-\d{4}$/;
 const PASS_RX = /^[A-Za-z\d]{6,}$/;
 
 const parseCedula = (raw) => {
   const clean = raw.replace(/[^0-9A-Za-z]/g, "").toUpperCase();
-  const match = clean.match(/^(\d{3})(\d{6})(\d{4})([A-J])$/);
+  const match = clean.match(/^(\d{3})(\d{6})(\d{4})([A-Z])$/);
   if (!match) return null;
-  const [, cod3, nac6] = match;
+  const cod3 = match[1];
+  const nac6 = match[2];
   return { cod3, nac6 };
 };
 
@@ -55,7 +58,7 @@ const edadDesde = (date) => {
 };
 
 const lugarDesdeCodigo = (c3) =>
-  codigosCedula[c3] ?? { municipio: "", departamento: "" };
+  codigosCedula[c3] || { municipio: "", departamento: "" };
 
 const Login = () => {
   const [loginEmail, setLoginEmail] = useState("");
@@ -79,7 +82,9 @@ const Login = () => {
 
   const validarDatosRegistro = () => {
     if (!CEDULA_RX.test(regCedula)) return "Cédula inválida.";
-    if (!NOMBRE_RX.test(regNombre.trim())) return "Nombre inválida.";
+    const cod3 = regCedula.replace(/[^0-9]/g, "").slice(0, 3);
+    if (!codigosCedula[cod3]) return "Cédula inválida, por favor revisala.";
+    if (!NOMBRE_RX.test(regNombre.trim())) return "Nombre inválido.";
     if (!regEmail.includes("@")) return "Correo inválido.";
     if (!PHONE_RX.test(regTel)) return "Teléfono inválido.";
     if (!esGoogleNuevo) {
@@ -102,10 +107,7 @@ const Login = () => {
       localStorage.setItem("userDisplayName", perfil.nombre || "Usuario");
       localStorage.setItem("userEmail", perfil.correo || "");
       localStorage.setItem("userPhotoURL", perfil.photoURL || "");
-
-      // ✅ Marcar que acaba de iniciar sesión
       sessionStorage.setItem("justLoggedIn", "true");
-
       nav("/inicio");
     } catch {
       setError("Credenciales inválidas.");
@@ -120,10 +122,8 @@ const Login = () => {
     const parsed = parseCedula(regCedula);
     if (!parsed) return setError("Cédula inválida.");
     const { cod3, nac6 } = parsed;
-
-    if (!codigosCedula[cod3]) {
+    if (!codigosCedula[cod3])
       return setError("Cédula inválida, por favor revisala.");
-    }
 
     const { municipio, departamento } = lugarDesdeCodigo(cod3);
     const fNac = fechaNac(nac6);
@@ -150,14 +150,14 @@ const Login = () => {
       edad,
       rol: "Beneficiario",
       activo: true,
-      photoURL: auth.currentUser?.photoURL ?? "",
+      photoURL: auth.currentUser?.photoURL || "",
       createdAt: serverTimestamp(),
     };
 
     await setDoc(doc(db, "usuario", uid), perfil);
     localStorage.setItem("userDisplayName", regNombre.trim());
     localStorage.setItem("userEmail", regEmail.trim());
-    localStorage.setItem("userPhotoURL", auth.currentUser?.photoURL ?? "");
+    localStorage.setItem("userPhotoURL", auth.currentUser?.photoURL || "");
     localStorage.removeItem("pendienteAceptarGoogle");
     localStorage.removeItem("requiereCompletarPerfil");
 
@@ -190,7 +190,10 @@ const Login = () => {
           perfil.nombre || gUser.displayName
         );
         localStorage.setItem("userEmail", perfil.correo || gUser.email);
-        localStorage.setItem("userPhotoURL", perfil.photoURL || gUser.photoURL);
+        localStorage.setItem(
+          "userPhotoURL",
+          perfil.photoURL || gUser.photoURL
+        );
         localStorage.setItem("pendienteAceptarGoogle", "true");
         sessionStorage.setItem("justLoggedIn", "true");
         setEsperandoAceptacion(true);
@@ -199,8 +202,8 @@ const Login = () => {
         setRequierePerfil(true);
         setMostrarRegistro(true);
         setEsGoogleNuevo(true);
-        setRegNombre(gUser.displayName ?? "");
-        setRegEmail(gUser.email ?? "");
+        setRegNombre(gUser.displayName || "");
+        setRegEmail(gUser.email || "");
       }
     } catch (err) {
       console.error(err);
@@ -215,8 +218,8 @@ const Login = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
     const validarPerfil = async () => {
-      if (!user) return;
       const ref = doc(db, "usuario", user.uid);
       const snap = await getDoc(ref);
       if (snap.exists()) {
