@@ -1,0 +1,24 @@
+.usuario-container {
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
+}
+
+.usuario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.usuario-content {
+  display: flex;
+  gap: 20px;
+}
+
+.usuarios-list {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
