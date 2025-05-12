@@ -16,11 +16,19 @@ import {
   FaBullseye,
   FaUsers,
 } from "react-icons/fa";
+import ModalInstalacionIOS from "../components/inicio/ModalInstalacionIOS"; // NUEVO IMPORT
 import "../styles/LandingPage.css";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+
+  // === ESTADOS NUEVOS PARA PWA ===
+  const [solicitudInstalacion, setSolicitudInstalacion] = useState(null);
+  const [mostrarBotonInstalacion, setMostrarBotonInstalacion] = useState(false);
+  const [esDispositivoIOS, setEsDispositivoIOS] = useState(false);
+  const [mostrarModalInstrucciones, setMostrarModalInstrucciones] =
+    useState(false);
 
   const scrollTo = (id) => {
     const element = document.getElementById(id);
@@ -40,6 +48,52 @@ const LandingPage = () => {
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
+
+  // === DETECCIÓN DE iOS ===
+  useEffect(() => {
+    const esIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setEsDispositivoIOS(esIOS);
+  }, []);
+
+  // === ESCUCHAR EVENTO beforeinstallprompt ===
+  useEffect(() => {
+    const manejarSolicitudInstalacion = (evento) => {
+      evento.preventDefault();
+      setSolicitudInstalacion(evento);
+      setMostrarBotonInstalacion(true);
+    };
+    window.addEventListener("beforeinstallprompt", manejarSolicitudInstalacion);
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        manejarSolicitudInstalacion
+      );
+    };
+  }, []);
+
+  // === FUNCIÓN PARA INSTALAR PWA EN ANDROID ===
+  const instalacion = async () => {
+    if (!solicitudInstalacion) return;
+    try {
+      await solicitudInstalacion.prompt();
+      const { outcome } = await solicitudInstalacion.userChoice;
+      console.log(
+        outcome === "accepted"
+          ? "Instalación aceptada"
+          : "Instalación rechazada"
+      );
+    } catch (error) {
+      console.error("Error al intentar instalar la PWA:", error);
+    } finally {
+      setSolicitudInstalacion(null);
+      setMostrarBotonInstalacion(false);
+    }
+  };
+
+  // === FUNCIONES MODAL iOS ===
+  const abrirModalInstrucciones = () => setMostrarModalInstrucciones(true);
+  const cerrarModalInstrucciones = () => setMostrarModalInstrucciones(false);
 
   return (
     <div className="landing-page">
@@ -158,9 +212,7 @@ const LandingPage = () => {
               <p className="lp-section-text">
                 APFINE es una plataforma nicaragüense que ayuda a emprendedores
                 a controlar sus finanzas sin necesidad de conocimientos
-                contables. Ofrecemos soluciones para microempresas y negocios
-                que desean automatizar el control de gastos, ingresos y
-                presupuestos.
+                contables.
               </p>
             </Col>
             <Col
@@ -201,7 +253,6 @@ const LandingPage = () => {
                 </p>
               </div>
             </Col>
-
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaBoxes className="lp-card-icon-top" />
@@ -212,7 +263,6 @@ const LandingPage = () => {
                 </p>
               </div>
             </Col>
-
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaRobot className="lp-card-icon-top" />
@@ -222,36 +272,33 @@ const LandingPage = () => {
                 </p>
               </div>
             </Col>
-
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaClipboardList className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Órdenes de Producción</h4>
                 <p className="lp-card-text">
                   Organizá y hacé seguimiento de pedidos, controlando el consumo
-                  de materias primas por orden de producción.
+                  de materias primas.
                 </p>
               </div>
             </Col>
-
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaBullseye className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Metas Financieras</h4>
                 <p className="lp-card-text">
-                  Establecé metas de ahorro o inversión, y visualizá tu progreso
-                  con indicadores claros y recordatorios.
+                  Establecé metas de ahorro o inversión, y visualizá tu
+                  progreso.
                 </p>
               </div>
             </Col>
-
             <Col xs={6} md={4} className="mb-4">
               <div className="lp-card compact-card">
                 <FaUsers className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Módulo Comunitario</h4>
                 <p className="lp-card-text">
-                  Conectate con otros emprendedores, compartí ideas,
-                  experiencias y fortalecé tu red profesional.
+                  Conectate con otros emprendedores y fortalecé tu red
+                  profesional.
                 </p>
               </div>
             </Col>
@@ -259,7 +306,7 @@ const LandingPage = () => {
         </Container>
       </section>
 
-      {/* SECCIÓN MERGE: BENEFICIOS E INFORMACIÓN (FAQ) */}
+      {/* SECCIÓN BENEFICIOS Y FAQ */}
       <section id="benefitsFaq" className="lp-section lp-benefits-faq reveal">
         <Container>
           <h2 className="lp-section-title text-center">
@@ -312,9 +359,9 @@ const LandingPage = () => {
             <Col xs={12} className="text-center">
               <h5>Contáctanos</h5>
               <p className="lp-footer-contact">
-                <span>Email: contacto@apfine.com</span> |
-                <span> Tel: +505 8825-7506</span> |
-                <span> Juigalpa, Chontales, Nicaragua</span>
+                <span>Email: contacto@apfine.com</span> |{" "}
+                <span>Tel: +505 8825-7506</span> |{" "}
+                <span>Juigalpa, Chontales, Nicaragua</span>
               </p>
               <p className="lp-footer-copy">
                 © {new Date().getFullYear()} APFINE. Todos los derechos
@@ -324,6 +371,28 @@ const LandingPage = () => {
           </Row>
         </Container>
       </footer>
+
+      {/* BOTONES INSTALACIÓN PWA */}
+      {!esDispositivoIOS && mostrarBotonInstalacion && (
+        <Button
+          variant="success"
+          onClick={instalacion}
+          className="lp-install-btn"
+        >
+          Instalar app APFINE <i className="bi bi-download"></i>
+        </Button>
+      )}
+      {esDispositivoIOS && (
+        <div className="text-center my-4">
+          <Button variant="info" onClick={abrirModalInstrucciones}>
+            ¿Cómo instalar APFINE en iPhone? <i className="bi bi-phone"></i>
+          </Button>
+        </div>
+      )}
+      <ModalInstalacionIOS
+        mostrar={mostrarModalInstrucciones}
+        cerrar={cerrarModalInstrucciones}
+      />
     </div>
   );
 };
