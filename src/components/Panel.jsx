@@ -26,7 +26,7 @@ import "../styles/Panel.css";
 function Panel({ isSidebarOpen, toggleSidebar }) {
   const [openModule, setOpenModule] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const { isLoggedIn, isAdmin } = useAuth();
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const [userPhoto, setUserPhoto] = useState("");
@@ -134,10 +134,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             )}
 
             {/* Producción */}
-            <li
-              className="module"
-              onClick={() => toggleModuleName("produccion")}
-            >
+            <li className="module" onClick={() => toggleModuleName("produccion")}>
               <BiCog className="module-icon" />
               <span className="module-text">Producción</span>
               {openModule === "produccion" ? (
@@ -191,10 +188,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             )}
 
             {/* Comunidad y Educación */}
-            <li
-              className="module"
-              onClick={() => toggleModuleName("comunidad")}
-            >
+            <li className="module" onClick={() => toggleModuleName("comunidad")}>
               <BiWorld className="module-icon" />
               <span className="module-text">Comunidad y Educación</span>
               {openModule === "comunidad" ? (
@@ -241,7 +235,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(<BiCog />, "Monitoreo / Configuración", () =>
                   handleNavigate("/admin/configuracion")
                 )}
-              </>
+              </ul>
             )}
           </ul>
         </div>
