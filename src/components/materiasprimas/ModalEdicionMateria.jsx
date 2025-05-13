@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { auth } from "../../database/firebaseconfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const unidades = [
   "Kilogramo",
@@ -20,9 +22,22 @@ export default function ModalEdicionMateria({
   setMensaje,
   setShowModalMensaje,
 }) {
+  const [uid, setUid] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) setUid(user.uid);
+    });
+    return () => unsubscribe();
+  }, []);
+
   if (!materiaEditada) return null;
+
   const change = (e) =>
-    setMateriaEditada({ ...materiaEditada, [e.target.name]: e.target.value });
+    setMateriaEditada({
+      ...materiaEditada,
+      [e.target.name]: e.target.value,
+    });
 
   const validar = () => {
     const {
@@ -62,7 +77,14 @@ export default function ModalEdicionMateria({
 
   const submit = (e) => {
     e.preventDefault();
-    if (validar()) handleEditMateria(materiaEditada);
+    if (!validar()) return;
+
+    const actualizado = {
+      ...materiaEditada,
+      usuario_id: materiaEditada.usuario_id || uid,
+    };
+
+    handleEditMateria(actualizado);
   };
 
   return (

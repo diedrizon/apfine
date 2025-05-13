@@ -7,14 +7,19 @@ import {
   addDoc,
   serverTimestamp,
   updateDoc,
-  doc
+  doc,
 } from "firebase/firestore";
 import { BiCube } from "react-icons/bi";
 import ModalRegistroEntrada from "./ModalRegistroEntrada";
 import ModalDetalleEntrada from "./ModalDetalleEntrada";
 import ModalMensaje from "../ModalMensaje";
 
-export default function ModalDetalleMateria({ show, handleClose, materiaDetalle, actualizarVista }) {
+export default function ModalDetalleMateria({
+  show,
+  handleClose,
+  materiaDetalle,
+  actualizarVista,
+}) {
   const [entradas, setEntradas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [showRegistro, setShowRegistro] = useState(false);
@@ -37,7 +42,7 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true
+      hour12: true,
     });
   };
 
@@ -55,9 +60,14 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
   const cargarEntradas = useCallback(async () => {
     if (!materiaDetalle?.id) return;
     setCargando(true);
-    const colRef = collection(db, "materias_primas", materiaDetalle.id, "entradas");
+    const colRef = collection(
+      db,
+      "materias_primas",
+      materiaDetalle.id,
+      "entradas"
+    );
     const snap = await getDocs(colRef);
-    const lista = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const lista = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
     setEntradas(lista);
     setCargando(false);
@@ -67,7 +77,10 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
     cargarEntradas();
   }, [materiaDetalle?.id, cargarEntradas]);
 
-  const totalStock = entradas.reduce((sum, e) => sum + parseFloat(e.cantidad), 0);
+  const totalStock = entradas.reduce(
+    (sum, e) => sum + parseFloat(e.cantidad),
+    0
+  );
 
   async function guardarEntrada(ent) {
     const nueva = {
@@ -75,11 +88,11 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
       proveedor: ent.proveedor || "",
       costo_unitario: parseFloat(ent.costo_unitario),
       fecha: ent.fecha,
-      creada_en: serverTimestamp()
+      creada_en: serverTimestamp(),
     };
 
     if (isOffline) {
-      setEntradas(prev => [{ ...nueva, id: `temp_${Date.now()}` }, ...prev]);
+      setEntradas((prev) => [{ ...nueva, id: `temp_${Date.now()}` }, ...prev]);
       setMsg("Entrada guardada en modo offline.");
     } else {
       try {
@@ -92,13 +105,11 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
         await updateDoc(doc(db, "materias_primas", materiaDetalle.id), {
           stock_actual: nuevoStock,
           ultimo_precio: parseFloat(ent.costo_unitario),
-          proveedor_reciente: ent.proveedor || ""
+          proveedor_reciente: ent.proveedor || "",
         });
 
         setMsg("Entrada registrada correctamente.");
-
-        if (actualizarVista) actualizarVista(); // ✅ Refresca la vista principal
-
+        if (actualizarVista) actualizarVista();
       } catch (error) {
         console.error("Error al guardar entrada:", error);
         setMsg("Error al registrar la entrada.");
@@ -110,7 +121,7 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
     cargarEntradas();
   }
 
-  const openDetalleEntrada = e => {
+  const openDetalleEntrada = (e) => {
     setEntradaSeleccionada(e);
     setShowDetEntrada(true);
   };
@@ -126,18 +137,51 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
         <Modal.Body>
           <div className="detalle-item">
             <span className="detalle-label">Unidad de medida:</span>
-            <span className="detalle-value">{materiaDetalle.unidad_medida}</span>
+            <span className="detalle-value">
+              {materiaDetalle.unidad_medida}
+            </span>
           </div>
+
           <div className="detalle-item">
             <span className="detalle-label">Stock actual:</span>
             <span className="detalle-value">
               {totalStock} {materiaDetalle.unidad_medida}
             </span>
           </div>
+
           <div className="detalle-item">
             <span className="detalle-label">Stock mínimo:</span>
             <span className="detalle-value">{materiaDetalle.stock_minimo}</span>
           </div>
+
+          <div className="detalle-item">
+            <span className="detalle-label">Costo unitario (C$):</span>
+            <span className="detalle-value">
+              {materiaDetalle.costo_unitario}
+            </span>
+          </div>
+
+          <div className="detalle-item">
+            <span className="detalle-label">Proveedor:</span>
+            <span className="detalle-value">
+              {materiaDetalle.proveedor || "—"}
+            </span>
+          </div>
+
+          <div className="detalle-item">
+            <span className="detalle-label">Última compra:</span>
+            <span className="detalle-value">
+              {materiaDetalle.ultima_compra || "—"}
+            </span>
+          </div>
+
+          <div className="detalle-item">
+            <span className="detalle-label">Usuario ID:</span>
+            <span className="detalle-value">
+              {materiaDetalle.usuario_id || "—"}
+            </span>
+          </div>
+
           <div className="detalle-item">
             <span className="detalle-label">Historial de entradas:</span>
           </div>
@@ -146,7 +190,7 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
           {!cargando && entradas.length === 0 && <p>No hay entradas.</p>}
           {!cargando && entradas.length > 0 && (
             <div className="entrada-list">
-              {entradas.map(e => (
+              {entradas.map((e) => (
                 <div
                   key={e.id}
                   className="entrada-item"
@@ -168,7 +212,9 @@ export default function ModalDetalleMateria({ show, handleClose, materiaDetalle,
                     </div>
                     <div className="entrada-meta">
                       <span className="entrada-label">Proveedor:</span>
-                      <span className="entrada-value">{e.proveedor || "—"}</span>
+                      <span className="entrada-value">
+                        {e.proveedor || "—"}
+                      </span>
                     </div>
                   </div>
                 </div>

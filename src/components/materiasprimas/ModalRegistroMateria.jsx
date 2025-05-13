@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { auth } from "../../database/firebaseconfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const unidades = [
   "Kilogramo",
@@ -21,6 +23,15 @@ export default function ModalRegistroMateria({
   setShowModalMensaje,
   materiasExistentes,
 }) {
+  const [uid, setUid] = useState(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) setUid(user.uid);
+    });
+    return () => unsub();
+  }, []);
+
   if (!materiaNueva) return null;
 
   const change = (e) =>
@@ -65,11 +76,18 @@ export default function ModalRegistroMateria({
   const submit = (e) => {
     e.preventDefault();
     if (!validar()) return;
+
+    const insumo = {
+      ...materiaNueva,
+      usuario_id: uid,
+    };
+
     const existe = materiasExistentes.find(
       (m) =>
         m.nombre.toLowerCase().trim() ===
         materiaNueva.nombre.toLowerCase().trim()
     );
+
     if (existe) {
       const actualizado = {
         ...existe,
@@ -80,10 +98,11 @@ export default function ModalRegistroMateria({
           materiaNueva.ultima_compra || new Date().toISOString().split("T")[0],
         costo_unitario: materiaNueva.costo_unitario,
         proveedor: materiaNueva.proveedor,
+        usuario_id: uid,
       };
       handleAddMateria(actualizado, true);
     } else {
-      handleAddMateria(materiaNueva, false);
+      handleAddMateria(insumo, false);
     }
   };
 
