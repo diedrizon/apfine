@@ -157,7 +157,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                 {renderSubItem(
                   <BiClipboard />,
                   "Órdenes de producción",
-                  () => {}
+                  () => handleNavigate("/ordenes-produccion")
                 )}
               </ul>
             )}

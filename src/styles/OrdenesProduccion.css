@@ -1,0 +1,103 @@
+@import "./MateriasPrimas.css";
+.ordenes-container {
+  padding: 20px;
+}
+.ordenes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--text-title);
+}
+.ordenes-content {
+  display: flex;
+  gap: 20px;
+}
+.ordenes-list {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ordenes-summary {
+  flex: 1;
+}
+.orden-item {
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--secondary-bg);
+  color: var(--text-normal);
+  cursor: pointer;
+}
+.orden-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.orden-num {
+  font-weight: 600;
+  margin-right: 8px;
+  color: var(--text-title);
+}
+.orden-producto {
+  font-weight: 500;
+  color: var(--text-title);
+}
+.orden-estado {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.orden-subinfo {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 5px;
+}
+.orden-actions-expanded {
+  margin-top: 6px;
+  display: flex;
+  gap: 4px;
+}
+.summary-card {
+  background: var(--secondary-bg);
+  border: none;
+  border-radius: 12px;
+}
+.mp-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mp-input {
+  width: 80px;
+  margin-left: 6px;
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  background: var(--secondary-bg);
+  color: var(--text-title);
+}
+.badge-danger {
+  background: #d32f2f;
+}
+.badge-warning {
+  background: #fbc02d;
+}
+.badge-secondary {
+  background: #78909c;
+}
+@media (max-width: 768px) {
+  .ordenes-content {
+    flex-direction: column;
+  }
+  .ordenes-summary {
+    order: 1;
+  }
+  .ordenes-list {
+    order: 2;
+  }
+  .summary-card {
+    width: 100% !important;
+  }
+}
+

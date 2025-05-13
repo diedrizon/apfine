@@ -25,6 +25,7 @@ import Metas from "./views/Metas";
 import MateriasPrimas from "./views/MateriasPrimas";
 import GestionUsuario from "./views/GestionUsuarios";
 import Inventario from "./views/Inventario";
+import OrdenesProduccion from "./views/OrdenesProduccion";
 
 import "./App.css";
 import ReactGA from "react-ga4";
@@ -172,6 +173,10 @@ function AppContent() {
           <Route
             path="/inventario"
             element={<ProtectedRoute element={<Inventario />} />}
+          />
+          <Route
+            path="/ordenes-produccion"
+            element={<ProtectedRoute element={<OrdenesProduccion />} />}
           />
 
           {/* Gestión de usuarios */}
