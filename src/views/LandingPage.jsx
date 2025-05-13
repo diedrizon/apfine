@@ -84,6 +84,13 @@ const LandingPage = () => {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <div className="landing-page">
       {/* NAVBAR */}
@@ -276,6 +283,13 @@ const LandingPage = () => {
       </footer>
 
       <ModalInstalacionIOS mostrar={mostrarModalInstrucciones} cerrar={cerrarModalInstrucciones} />
+      {/* CHATBOT DE APFINE */}
+      <df-messenger
+        intent="WELCOME"
+        chat-title="APFINE_CHATBOT"
+        agent-id="73db900f-9907-48a0-8768-6ff3a52fb1b3"
+        language-code="es"
+      ></df-messenger>
     </div>
   );
 };
