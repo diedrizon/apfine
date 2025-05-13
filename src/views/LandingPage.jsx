@@ -85,10 +85,23 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
+    // Agregar timestamp para asegurarnos de forzar la carga cada vez que se monta el componente
     const script = document.createElement("script");
-    script.src = "https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1";
+    script.src = "https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1&ts=" + Date.now();
     script.async = true;
     document.body.appendChild(script);
+
+    return () => {
+      // Remover el script al desmontar
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+      // Remover el componente df-messenger si existe
+      const messenger = document.querySelector("df-messenger");
+      if (messenger) {
+        messenger.remove();
+      }
+    };
   }, []);
 
   return (
