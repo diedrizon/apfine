@@ -1,0 +1,29 @@
+df-messenger::part(branding) {
+  display: none !important;
+}
+
+df-messenger {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  max-width: 90vw;
+  height: 65vh;
+  max-height: 70vh;
+  z-index: 9999;
+}
+
+df-messenger::part(chatbox) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 768px) {
+  df-messenger {
+    width: 100vw !important;
+    height: 100vh !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    border-radius: 0 !important;
+  }
+}

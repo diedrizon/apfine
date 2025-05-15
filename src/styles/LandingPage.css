@@ -784,28 +784,3 @@ body.dark-mode .landing-page .lp-benefits-faq .lp-section-title {
     display: block;
   }
 }
-
-/* Reducir tamaño general del cuadro de chat */
-df-messenger {
-  --df-messenger-font-size: 12px; /* Tamaño de fuente más pequeño */
-  --df-messenger-chat-background-color: #fff;
-  --df-messenger-button-titlebar-color: #007bff;
-  --df-messenger-titlebar-font-color: white;
-  --df-messenger-send-icon: #007bff;
-  --df-messenger-user-message: #007bff;
-  --df-messenger-bot-message: #f1f1f1;
-  z-index: 9999;
-}
-
-/* Reducción del tamaño del botón flotante */
-df-messenger .df-chat-icon {
-  transform: scale(0.75); /* Reduce el tamaño del ícono (1 = original) */
-  bottom: 10px !important; /* distancia desde el borde */
-  right: 10px !important;
-}
-
-/* Ajustar ancho y alto del chatbox */
-df-messenger::part(chatbox) {
-  width: 280px !important;   /* ancho original es 400px */
-  height: 450px !important;  /* altura original es 600px */
-}

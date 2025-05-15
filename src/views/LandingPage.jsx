@@ -17,6 +17,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import ModalInstalacionIOS from "../components/inicio/ModalInstalacionIOS";
+import Chatbot from "../components/chatbot/Chatbot";
 import "../styles/LandingPage.css";
 
 const LandingPage = () => {
@@ -26,13 +27,11 @@ const LandingPage = () => {
   // === PWA states ===
   const [solicitudInstalacion, setSolicitudInstalacion] = useState(null);
   const [esDispositivoIOS, setEsDispositivoIOS] = useState(false);
-  const [mostrarModalInstrucciones, setMostrarModalInstrucciones] =
-    useState(false);
+  const [mostrarModalInstrucciones, setMostrarModalInstrucciones] = useState(false);
 
   // Detectar iOS
   useEffect(() => {
-    const esIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     setEsDispositivoIOS(esIOS);
   }, []);
 
@@ -51,18 +50,14 @@ const LandingPage = () => {
   // Lanzar prompt instalación
   const instalacion = async () => {
     if (!solicitudInstalacion) {
-      alert(
-        "La instalación aún no está disponible. Intenta de nuevo en unos segundos."
-      );
+      alert("La instalación aún no está disponible. Intenta de nuevo en unos segundos.");
       return;
     }
     try {
       await solicitudInstalacion.prompt();
       const { outcome } = await solicitudInstalacion.userChoice;
       console.log(
-        outcome === "accepted"
-          ? "Instalación aceptada"
-          : "Instalación rechazada"
+        outcome === "accepted" ? "Instalación aceptada" : "Instalación rechazada"
       );
     } catch (err) {
       console.error("Error al intentar instalar la PWA:", err);
@@ -96,28 +91,6 @@ const LandingPage = () => {
     return () => obs.disconnect();
   }, []);
 
-  useEffect(() => {
-    // Agregar timestamp para asegurarnos de forzar la carga cada vez que se monta el componente
-    const script = document.createElement("script");
-    script.src =
-     "https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"+
-      Date.now();
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      // Remover el script al desmontar
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-      // Remover el componente df-messenger si existe
-      const messenger = document.querySelector("df-messenger");
-      if (messenger) {
-        messenger.remove();
-      }
-    };
-  }, []);
-
   return (
     <div className="landing-page">
       {/* NAVBAR */}
@@ -148,7 +121,7 @@ const LandingPage = () => {
                   esDispositivoIOS ? abrirModalInstrucciones() : instalacion()
                 }
               >
-                Instalar app APFINE
+                Instalar APFINE
               </Nav.Link>
               <Nav.Link onClick={() => navigate("/login")}>
                 Iniciar Sesión
@@ -214,7 +187,7 @@ const LandingPage = () => {
                 esDispositivoIOS ? abrirModalInstrucciones() : instalacion();
               }}
             >
-              Instalar app APFINE
+              Instalar APFINE
             </Nav.Link>
             <Nav.Link
               onClick={() => {
@@ -233,12 +206,10 @@ const LandingPage = () => {
         <div className="lp-hero-overlay"></div>
         <Container className="lp-hero-content text-center">
           <h1 className="lp-hero-title">
-            APFINE: Aplicación de Finanzas Eficientes para Emprendedores en
-            Nicaragua
+            APFINE: Aplicación de Finanzas Eficientes para Emprendedores en Nicaragua
           </h1>
           <p className="lp-hero-subtitle">
-            Controlá ingresos, gastos, inventario y metas financieras de tu
-            negocio con inteligencia artificial.
+            Controlá ingresos, gastos, inventario y metas financieras de tu negocio con inteligencia artificial.
           </p>
           <Button className="lp-hero-btn" onClick={() => navigate("/login")}>
             Empieza ahora gratis
@@ -262,15 +233,10 @@ const LandingPage = () => {
             <Col md={6}>
               <h2 className="lp-section-title">¿Quiénes Somos?</h2>
               <p className="lp-section-text">
-                APFINE es una plataforma nicaragüense que ayuda a emprendedores
-                a controlar sus finanzas sin necesidad de conocimientos
-                contables.
+                APFINE es una plataforma nicaragüense que ayuda a emprendedores a controlar sus finanzas sin necesidad de conocimientos contables.
               </p>
             </Col>
-            <Col
-              md={6}
-              className="d-flex align-items-center justify-content-center"
-            >
+            <Col md={6} className="d-flex align-items-center justify-content-center">
               <div className="lp-img-switch">
                 <img
                   src="/mujerazul_1.webp"
@@ -300,8 +266,7 @@ const LandingPage = () => {
                 <FaChartLine className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Finanzas Inteligentes</h4>
                 <p className="lp-card-text">
-                  Administra ingresos, egresos y presupuesto mensual con
-                  reportes automáticos.
+                  Administra ingresos, egresos y presupuesto mensual con reportes automáticos.
                 </p>
               </div>
             </Col>
@@ -310,8 +275,7 @@ const LandingPage = () => {
                 <FaBoxes className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Gestión de Inventario</h4>
                 <p className="lp-card-text">
-                  Controla productos y compras con alertas automáticas por
-                  niveles bajos.
+                  Controla productos y compras con alertas automáticas por niveles bajos.
                 </p>
               </div>
             </Col>
@@ -329,8 +293,7 @@ const LandingPage = () => {
                 <FaClipboardList className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Órdenes de Producción</h4>
                 <p className="lp-card-text">
-                  Organizá y hacé seguimiento de pedidos, controlando el consumo
-                  de materias primas.
+                  Organizá y hacé seguimiento de pedidos, controlando el consumo de materias primas.
                 </p>
               </div>
             </Col>
@@ -339,8 +302,7 @@ const LandingPage = () => {
                 <FaBullseye className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Metas Financieras</h4>
                 <p className="lp-card-text">
-                  Establecé metas de ahorro o inversión, y visualizá tu
-                  progreso.
+                  Establecé metas de ahorro o inversión, y visualizá tu progreso.
                 </p>
               </div>
             </Col>
@@ -349,8 +311,7 @@ const LandingPage = () => {
                 <FaUsers className="lp-card-icon-top" />
                 <h4 className="lp-card-title">Módulo Comunitario</h4>
                 <p className="lp-card-text">
-                  Conectate con otros emprendedores y fortalecé tu red
-                  profesional.
+                  Conectate con otros emprendedores y fortalecé tu red profesional.
                 </p>
               </div>
             </Col>
@@ -416,25 +377,21 @@ const LandingPage = () => {
                 <span>Juigalpa, Chontales, Nicaragua</span>
               </p>
               <p className="lp-footer-copy">
-                © {new Date().getFullYear()} APFINE. Todos los derechos
-                reservados.
+                © {new Date().getFullYear()} APFINE. Todos los derechos reservados.
               </p>
             </Col>
           </Row>
         </Container>
       </footer>
 
+      {/* Modal iOS PWA */}
       <ModalInstalacionIOS
         mostrar={mostrarModalInstrucciones}
         cerrar={cerrarModalInstrucciones}
       />
-      {/* CHATBOT DE APFINE */}
-      <df-messenger
-        intent="WELCOME"
-        chat-title="APFINE_CHATBOT"
-        agent-id="73db900f-9907-48a0-8768-6ff3a52fb1b3"
-        language-code="es"
-      ></df-messenger>
+
+      {/* CHATBOT: componente independiente */}
+      <Chatbot />
     </div>
   );
 };
