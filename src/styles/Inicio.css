@@ -1,21 +1,134 @@
-.App {
+/* Fondo base general */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--background); /* Aplica fondo dinámico */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Variables para modo claro */
+body.light-mode {
+  --background: #ffffff;
+  --icon-color: #0033cc;      /* Color para íconos en modo claro */
+  --input-border-color: #0033cc; /* Borde azul para la caja en modo claro */
+}
+
+/* Variables para modo oscuro */
+body.dark-mode {
+  --background: #1c1f2a; /* Puedes ajustar este valor */
+  --icon-color: #39d65c;      /* Color para íconos en modo oscuro */
+  --input-border-color: #39d65c; /* Borde verde para la caja en modo oscuro */
+}
+
+/* Contenedor general del chat */
+.chat-wrapper {
+  height: calc(100dvh - 50px); /* Altura útil, considerando header */
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  background-color: var(--background); /* Fondo uniforme modo claro/oscuro */
 }
 
-.main {
-  margin-top: 60px;
-  transition: margin-left 0.3s ease;
-  margin-left: 0;
+/* Contenedor que organiza mensajes + caja */
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--background); /* Asegura mismo fondo detrás de la caja */
 }
 
-.main.sidebar-open {
-  margin-left: 270px;
+/* Área de mensajes */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: var(--card-bg);
+  border-radius: 4px;
 }
 
-@media (max-width: 768px) {
-  .main.sidebar-open {
-    margin-left: 0;
-  }
+/* Mensaje inicial */
+.mensaje-placeholder {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Contenedor de la caja (zona inferior del chat) */
+.chat-footer-container {
+  background-color: var(--background);
+  padding: 0 0 32px;
+}
+
+/* Caja de entrada redondeada tipo ChatGPT */
+.chat-input-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  margin-inline: 16px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--input-border-color); /* Usa la variable actualizada */
+  border-radius: 20px;
+  gap: 6px;
+  transition: border 0.2s ease;
+}
+
+/* Textarea autoexpandible */
+.chat-textarea {
+  flex: 1;
+  resize: none;
+  overflow-y: auto; /* Permite que aparezca scroll vertical al exceder el max-height */
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  font-size: 14px;
+  padding: 6px 10px;
+  padding-right: 20px; /* Espacio extra a la derecha para el scrollbar */
+  border-radius: 16px;
+  outline: none;
+  max-height: 120px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--input-border-color) var(--card-bg);
+}
+
+/* Personalización de la barra de scroll en el textarea */
+.chat-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-textarea::-webkit-scrollbar-track {
+  background: var(--card-bg); /* Usamos el fondo de la tarjeta para integrarlo */
+}
+
+.chat-textarea::-webkit-scrollbar-thumb {
+  background-color: var(--input-border-color); /* O usa otra variable, según tus preferencias */
+  border-radius: 10px;
+}
+
+/* Botones con íconos */
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--icon-color); /* Asigna el color de ícono según el modo */
+  font-size: 16px;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover visual para íconos */
+.icon-btn:hover {
+  background-color: var(--hover-bg);
+}
+
+/* Botón enviar con color principal */
+.icon-btn.enviar {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.icon-btn.enviar:hover {
+  background-color: var(--primary-hover);
 }

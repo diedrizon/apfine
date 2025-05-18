@@ -95,7 +95,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
         </div>
 
         <div className="sidebar-body">
-          <button className="new-chat-btn">
+          <button className="new-chat-btn" onClick={() => handleNavigate("/inicio")}>
             <BiBarChartAlt2 /> Nuevo chat
           </button>
 
