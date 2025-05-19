@@ -17,6 +17,7 @@ import ModalEdicionGasto from "../components/gastos/ModalEdicionGasto";
 import ModalEliminacionGasto from "../components/gastos/ModalEliminacionGasto";
 import ModalDetalleGasto from "../components/gastos/ModalDetalleGasto";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 
 import "../styles/Gastos.css";
 
@@ -65,6 +66,17 @@ function Gastos() {
   const [gastoDetalle, setGastoDetalle] = useState(null);
 
   const [expandedId, setExpandedId] = useState(null);
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+
+  const handleCopy = (texto, mensaje) => {
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg(mensaje);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  };
 
   const gastosCollection = collection(db, "gastos");
   const categoriasCollection = collection(db, "categorias");
@@ -285,6 +297,19 @@ function Gastos() {
                 {isExpanded && (
                   <div className="gasto-actions-expanded">
                     <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopy(
+                          `Tipo: ${g.tipo_gasto}, Monto: C$${g.monto}, Fecha: ${g.fecha_gasto}, Categoría: ${g.categoria}`,
+                          "Gasto copiado"
+                        );
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
+                    <Button
                       variant="danger"
                       size="sm"
                       onClick={(e) => {
@@ -380,6 +405,8 @@ function Gastos() {
         handleClose={() => setShowModalMensaje(false)}
         message={mensaje}
       />
+
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

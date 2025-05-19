@@ -14,6 +14,7 @@ import ModalRegistroCategoria from "../components/categorias/ModalRegistroCatego
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 import "../styles/Categorias.css";
 import { onAuthStateChanged } from "firebase/auth";
 import ReactGA from "react-ga4";
@@ -30,6 +31,8 @@ function Categorias() {
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [showModalMensaje, setShowModalMensaje] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const [categoriaNueva, setCategoriaNueva] = useState({
     nombre: "",
@@ -252,6 +255,14 @@ function Categorias() {
     );
   }
 
+  function handleCopy(texto, mensaje) {
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg(mensaje);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   const totalCategorias = categorias.length;
   const mayorGasto = categorias[0] ? categorias[0].nombre : "N/A";
 
@@ -290,6 +301,19 @@ function Categorias() {
                       <strong>Aplicación:</strong>{" "}
                       {cat.aplicacion ? cat.aplicacion : "Sin definir"}
                     </p>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopy(
+                          `Nombre: ${cat.nombre}, Aplicación: ${cat.aplicacion || "Sin definir"}`,
+                          "Categoría copiada"
+                        );
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
                     <Button
                       variant="danger"
                       size="sm"
@@ -368,6 +392,7 @@ function Categorias() {
         handleClose={() => setShowModalMensaje(false)}
         message={mensaje}
       />
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

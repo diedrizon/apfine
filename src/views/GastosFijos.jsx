@@ -17,6 +17,7 @@ import ModalEdicionGastoFijo from "../components/gastosfijos/ModalEdicionGastoFi
 import ModalEliminacionGastoFijo from "../components/gastosfijos/ModalEliminacionGastoFijo";
 import ModalDetalleGastoFijo from "../components/gastosfijos/ModalDetalleGastoFijo";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 
 import "../styles/GastosFijos.css";
 
@@ -48,6 +49,9 @@ function GastosFijos() {
 
   const [mensaje, setMensaje] = useState("");
   const [showMsg, setShowMsg] = useState(false);
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const colRef = collection(db, "gastos_fijos");
 
@@ -159,6 +163,14 @@ function GastosFijos() {
     fetchGastosFijos();
   }
 
+  function handleCopy(texto, mensaje) {
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg(mensaje);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   function openDetalleModal(g) {
     setGastoFijoDetalle(g);
     setShowDetalle(true);
@@ -201,6 +213,19 @@ function GastosFijos() {
 
                 {isExpanded && (
                   <div className="acciones">
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopy(
+                          `Nombre: ${g.nombre_gasto}, Monto: C$${g.monto_mensual}, Frecuencia: ${g.frecuencia}, Próximo pago: ${g.proximo_pago}`,
+                          "Gasto fijo copiado"
+                        );
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
                     <Button
                       size="sm"
                       variant="info"
@@ -285,6 +310,7 @@ function GastosFijos() {
         handleClose={() => setShowMsg(false)}
         message={mensaje}
       />
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }
