@@ -17,6 +17,7 @@ import {
   FaEye,
   FaEdit,
   FaTrash,
+  FaClipboard,
 } from "react-icons/fa";
 
 import ModalRegistroMeta from "../components/metas/ModalRegistroMeta";
@@ -172,8 +173,7 @@ function Metas() {
                         handleCopyMeta(m);
                       }}
                     >
-                      <FaTrash style={{ display: "none" }} />
-                      <FaPercent />
+                      <FaClipboard />
                     </Button>
                     <Button
                       size="sm"
