@@ -13,6 +13,7 @@ import * as FaIcons from "react-icons/fa";
 import ModalEliminacionUsuario from "../components/gestionusuario/ModalElimacionUsuario";
 import ModalEdicionUsuario from "../components/gestionusuario/ModalEdicionUsuario";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 
 import "../styles/GestionUsuario.css";
 
@@ -39,6 +40,10 @@ function GestionUsuario() {
 
   // Mensajes
   const [mensaje, setMensaje] = useState("");
+
+  // Toast
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   // === Efectos ===
   useEffect(
@@ -110,6 +115,15 @@ function GestionUsuario() {
     fetchUsuarios();
   }
 
+  function handleCopyUsuario(u) {
+    const texto = `Nombre: ${u.nombre}, Correo: ${u.correo}, Teléfono: ${u.telefono}, Rol: ${u.rol}`;
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg("Usuario copiado");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   const toggleExpanded = (u) =>
     setExpandedId(expandedId === u.id ? null : u.id);
 
@@ -172,6 +186,26 @@ function GestionUsuario() {
                     >
                       <FaIcons.FaTrash />
                     </Button>
+                    <Button
+                      variant="info"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyUsuario(u);
+                      }}
+                    >
+                      <FaIcons.FaCopy />
+                    </Button>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyUsuario(u);
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
                   </div>
                 )}
               </div>
@@ -207,6 +241,8 @@ function GestionUsuario() {
         message={mensaje}
         handleClose={() => setMensaje("")}
       />
+
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

@@ -17,6 +17,7 @@ import ModalEdicionIngreso from "../components/ingresos/ModalEdicionIngreso";
 import ModalEliminacionIngreso from "../components/ingresos/ModalEliminacionIngreso";
 import ModalDetalleIngreso from "../components/ingresos/ModalDetalleIngreso";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 
 import "../styles/Ingresos.css";
 
@@ -49,6 +50,9 @@ function Ingresos() {
 
   const [expandedId, setExpandedId] = useState(null);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const ingresosCollection = collection(db, "ingresos");
   const categoriasCollection = collection(db, "categorias");
@@ -131,7 +135,8 @@ function Ingresos() {
     setIngresoEditado({ ...ing });
     setShowModalEdit(true);
   };
-  const closeEditModal = () => setShowModalEdit(false);
+  const closeEditModal = () => setShowModalEdit(false); 
+
 
   const openDeleteModal = (ing) => {
     setIngresoAEliminar(ing);
@@ -221,6 +226,15 @@ function Ingresos() {
     setExpandedId(expandedId === ingreso.id ? null : ingreso.id);
   }
 
+  function handleCopyIngreso(ing) {
+    const texto = `Tipo: ${ing.tipo_ingreso}, Monto: C$${ing.monto}, Fecha: ${ing.fecha_ingreso}, Categoría: ${ing.categoria}`;
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg("Ingreso copiado");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   const totalIngresos = ingresos.length;
 
   return (
@@ -288,6 +302,16 @@ function Ingresos() {
                     >
                       <FaIcons.FaEye /> Ver
                     </Button>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyIngreso(ing);
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
                   </div>
                 )}
               </div>
@@ -353,6 +377,8 @@ function Ingresos() {
         handleClose={() => setShowModalMensaje(false)}
         message={mensaje}
       />
+
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

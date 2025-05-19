@@ -24,6 +24,7 @@ import ModalEdicionMeta from "../components/metas/ModalEdicionMeta";
 import ModalEliminacionMeta from "../components/metas/ModalEliminacionMeta";
 import ModalDetalleMeta from "../components/metas/ModalDetalleMeta";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 
 import "../styles/Metas.css";
 
@@ -57,6 +58,9 @@ function Metas() {
 
   const [mensaje, setMensaje] = useState("");
   const [showMsg, setShowMsg] = useState(false);
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const colRef = collection(db, "metas");
 
@@ -99,6 +103,15 @@ function Metas() {
     setShowMsg(true);
     setShowDel(false);
     fetchMetas();
+  }
+
+  function handleCopyMeta(m) {
+    const texto = `Meta: ${m.nombre_meta}, Tipo: ${m.tipo}, Objetivo: C$${m.monto_objetivo}, Actual: C$${m.monto_actual}`;
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg("Meta copiada");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
   }
 
   function toggleExpanded(meta) {
@@ -151,6 +164,17 @@ function Metas() {
 
                 {isExpanded && (
                   <div className="acciones">
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyMeta(m);
+                      }}
+                    >
+                      <FaTrash style={{ display: "none" }} />
+                      <FaPercent />
+                    </Button>
                     <Button
                       size="sm"
                       variant="info"
@@ -235,6 +259,7 @@ function Metas() {
         handleClose={() => setShowMsg(false)}
         message={mensaje}
       />
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

@@ -22,6 +22,7 @@ import ModalEdicionOrden from "../components/ordenesproduccion/ModalEdicionOrden
 import ModalEliminacionOrden from "../components/ordenesproduccion/ModalEliminacionOrden";
 import ModalDetalleOrden from "../components/ordenesproduccion/ModalDetalleOrden";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 import "../styles/OrdenesProduccion.css";
 
 export default function OrdenesProduccion() {
@@ -39,6 +40,8 @@ export default function OrdenesProduccion() {
   const [edO, setEdO] = useState(null);
   const [rmO, setRmO] = useState(null);
   const [dtO, setDtO] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const col = collection(db, "ordenes_produccion");
 
@@ -190,6 +193,15 @@ export default function OrdenesProduccion() {
     load();
   }
 
+  function handleCopyOrden(o) {
+    const texto = `Orden: ${o.numero_orden}, Producto: ${o.producto}, Estado: ${o.estado}, Progreso: ${o.progreso}%`;
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg("Orden copiada");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   const etapas = [
     "Planificada",
     "En proceso",
@@ -248,6 +260,16 @@ export default function OrdenesProduccion() {
 
                 {expanded && (
                   <div className="orden-actions-expanded">
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyOrden(o);
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
                     <Button
                       size="sm"
                       variant="info"
@@ -353,6 +375,8 @@ export default function OrdenesProduccion() {
         handleClose={() => setSmsg(false)}
         message={msg}
       />
+
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }
