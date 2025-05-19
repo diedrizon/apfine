@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Encabezado.css";
 import { useAuth } from "../database/authcontext";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
-import { FiLogOut } from "react-icons/fi";
+import { FiBell, FiLogOut } from "react-icons/fi";
 import { BiSun, BiMoon, BiWifiOff } from "react-icons/bi";
+import NotificationsModal from "./NotificacionesModal";
 
 const Encabezado = ({
   isSidebarOpen,
@@ -15,6 +16,11 @@ const Encabezado = ({
   const { isLoggedIn, logout, isOffline, cargando } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isNotificationOpen, setNotificationsOpen] = useState(false);
+
+  const notifications = [
+    { title: "Bienvenido", message: "¡Gracias por usar APFINE!", time: "Ahora" }
+  ];
 
   const ocultarHeaderEn = [
     "/",
@@ -77,6 +83,17 @@ const Encabezado = ({
 
       {isLoggedIn && (
         <>
+          <button
+            className="notifications-button"
+            onClick={() => setNotificationsOpen(true)}
+          >
+            <div className="bell-wrapper">
+              <FiBell
+                className={`notifications-icon ${notifications.length > 0 ? "animate-bell" : ""
+                  }`}
+              />
+            </div>
+          </button>
           <button className="logout-button" onClick={handleLogout}>
             <FiLogOut className="logout-icon" />
           </button>
@@ -85,6 +102,12 @@ const Encabezado = ({
           </button>
         </>
       )}
+
+      <NotificationsModal
+        isOpen={isNotificationOpen}
+        onClose={() => setNotificationsOpen(false)}
+        notifications={notifications}
+      />
     </header>
   );
 };

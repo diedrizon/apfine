@@ -1,0 +1,109 @@
+/* Fondo semitransparente más oscuro */
+.notifications-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal más grande, fondo blanco y borde negro */
+.notifications-modal {
+  background: #fff;
+  color: #000;
+  width: 480px;
+  max-height: 90%;
+  border: 2px solid #000;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabecera negra con texto blanco */
+.notifications-header {
+  padding: 16px;
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Título */
+.notifications-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* Botón de cerrar */
+.close-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* Cuerpo del modal */
+.notifications-body {
+  padding: 16px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+/* Lista de notificaciones */
+.notifications-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Cada notificación */
+.notification-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #000;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Contenido de la notificación */
+.notification-content {
+  flex: 1;
+}
+
+/* Título de la notificación */
+.notification-title {
+  margin: 0 0 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #000;
+}
+
+/* Mensaje de la notificación */
+.notification-message {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Hora/timestamp */
+.notification-time {
+  margin-left: 12px;
+  font-size: 0.75rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* Mensaje cuando no hay notificaciones */
+.no-notifications {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  padding: 20px 0;
+}
