@@ -1,4 +1,3 @@
-/* Fondo semitransparente más oscuro */
 .notifications-modal-overlay {
   position: fixed;
   top: 0;
@@ -17,7 +16,7 @@
   background: #fff;
   color: #000;
   width: 480px;
-  max-height: 90%;
+  max-height: 90vh;
   border: 2px solid #000;
   border-radius: 8px;
   overflow: hidden;
@@ -33,6 +32,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 /* Título */
@@ -54,6 +54,7 @@
 .notifications-body {
   padding: 16px;
   background: #fff;
+  flex: 1 1 auto;
   overflow-y: auto;
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Encabezado.css";
 import { useAuth } from "../database/authcontext";
@@ -6,6 +6,7 @@ import { HiOutlineMenuAlt1 } from "react-icons/hi";
 import { FiBell, FiLogOut } from "react-icons/fi";
 import { BiSun, BiMoon, BiWifiOff } from "react-icons/bi";
 import NotificationsModal from "./NotificacionesModal";
+import { fetchUserNotifications } from "../database/notificationService";
 
 const Encabezado = ({
   isSidebarOpen,
@@ -13,14 +14,49 @@ const Encabezado = ({
   isDarkMode,
   toggleTheme,
 }) => {
-  const { isLoggedIn, logout, isOffline, cargando } = useAuth();
+  const { isLoggedIn, logout, isOffline, cargando, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isNotificationOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  // Nuevo estado para controlar la animación
+  const [shouldAnimate, setShouldAnimate] = useState(false);
 
-  const notifications = [
-    { title: "Bienvenido", message: "¡Gracias por usar APFINE!", time: "Ahora" }
-  ];
+  // Carga inicial de notificaciones
+  useEffect(() => {
+    if (cargando || !isLoggedIn || !user) return;
+    let mounted = true;
+
+    fetchUserNotifications(user.uid)
+      .then((notifs) => {
+        if (!mounted) return;
+        setNotifications(notifs);
+        // Si hay notificaciones, activamos la animación
+        if (notifs.length > 0) {
+          setShouldAnimate(true);
+        }
+      })
+      .catch(console.error);
+
+    return () => {
+      mounted = false;
+    };
+  }, [cargando, isLoggedIn, user]);
+
+  // Manejador al hacer clic en el botón de notificaciones
+  const handleNotificationsClick = () => {
+    // Desactivar la vibración
+    setShouldAnimate(false);
+    // Abrir modal
+    setNotificationsOpen(true);
+    // Volver a traer las notificaciones
+    if (user) {
+      fetchUserNotifications(user.uid)
+        .then(setNotifications)
+        .catch(console.error);
+    }
+  };
+
 
   const ocultarHeaderEn = [
     "/",
@@ -85,11 +121,11 @@ const Encabezado = ({
         <>
           <button
             className="notifications-button"
-            onClick={() => setNotificationsOpen(true)}
+            onClick={handleNotificationsClick}
           >
             <div className="bell-wrapper">
               <FiBell
-                className={`notifications-icon ${notifications.length > 0 ? "animate-bell" : ""
+                className={`notifications-icon ${shouldAnimate ? "animate-bell" : ""
                   }`}
               />
             </div>

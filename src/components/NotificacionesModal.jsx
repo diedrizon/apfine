@@ -1,4 +1,4 @@
-import "../Styles/Notificaciones.css";
+import "../styles/Notificaciones.css";
 import { FiX } from "react-icons/fi";
 
 const NotificationsModal = ({ isOpen, onClose, notifications }) => {
