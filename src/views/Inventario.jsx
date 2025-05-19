@@ -17,10 +17,11 @@ import ModalEdicionInventario from "../components/inventario/ModalEdicionInventa
 import ModalEliminacionInventario from "../components/inventario/ModalEliminacionInventario";
 import ModalDetalleInventario from "../components/inventario/ModalDetalleInventario";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 import "../styles/Inventario.css";
 
 const icono = (s, m) =>
-  s <= m ? <Fa.FaExclamationTriangle color="#ff9800" /> : <Fa.FaBox />;
+  Number(s) <= Number(m) ? <Fa.FaExclamationTriangle color="#ff9800" /> : <Fa.FaBox />;
 
 export default function Inventario() {
   const [userId, setUserId] = useState(null);
@@ -37,6 +38,8 @@ export default function Inventario() {
   const [editado, setEditado] = useState(null);
   const [aEliminar, setAEliminar] = useState(null);
   const [detalle, setDetalle] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
   const col = collection(db, "inventario");
 
   useEffect(() => onAuthStateChanged(auth, (u) => u && setUserId(u.uid)), []);
@@ -143,6 +146,15 @@ export default function Inventario() {
     setShowAdd(true);
   };
 
+  function handleCopyProducto(p) {
+    const texto = `Nombre: ${p.nombre_producto}, Stock: ${p.stock_actual}, Precio: C$${p.precio_venta}, SKU: ${p.SKU}`;
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg("Producto copiado");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   return (
     <Container fluid className="inv-container">
       <div className="inv-header">
@@ -174,6 +186,16 @@ export default function Inventario() {
                 </div>
                 {open && (
                   <div className="inv-actions">
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyProducto(p);
+                      }}
+                    >
+                      <Fa.FaClipboard />
+                    </Button>
                     <Button
                       size="sm"
                       variant="info"
@@ -267,6 +289,7 @@ export default function Inventario() {
         handleClose={() => setShowMsg(false)}
         message={msg}
       />
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

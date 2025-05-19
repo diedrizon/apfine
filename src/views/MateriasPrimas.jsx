@@ -17,6 +17,7 @@ import ModalEdicionMateria from "../components/materiasprimas/ModalEdicionMateri
 import ModalEliminacionMateria from "../components/materiasprimas/ModalEliminacionMateria";
 import ModalDetalleMateria from "../components/materiasprimas/ModalDetalleMateria";
 import ModalMensaje from "../components/ModalMensaje";
+import ToastFlotante from "../components/ui/ToastFlotante";
 import "../styles/MateriasPrimas.css";
 
 export default function MateriasPrimas() {
@@ -34,6 +35,8 @@ export default function MateriasPrimas() {
   const [editada, setEditada] = useState(null);
   const [aEliminar, setAEliminar] = useState(null);
   const [detalle, setDetalle] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
   const col = collection(db, "materias_primas");
 
   useEffect(() => {
@@ -149,6 +152,15 @@ export default function MateriasPrimas() {
     fetchMaterias();
   }
 
+  function handleCopyMateria(m) {
+    const texto = `Nombre: ${m.nombre}, Stock: ${m.stock_actual} ${m.unidad_medida}, Costo: C$${m.ultimo_precio || m.costo_unitario}`;
+    navigator.clipboard.writeText(texto).then(() => {
+      setToastMsg("Materia prima copiada");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
+    });
+  }
+
   const toggleExpanded = (m) =>
     setExpandedId(expandedId === m.id ? null : m.id);
 
@@ -221,6 +233,16 @@ export default function MateriasPrimas() {
                     >
                       <FaIcons.FaTrash />
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyMateria(m);
+                      }}
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
                   </div>
                 )}
               </div>
@@ -281,6 +303,7 @@ export default function MateriasPrimas() {
         handleClose={() => setShowMsg(false)}
         message={msg}
       />
+      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }
