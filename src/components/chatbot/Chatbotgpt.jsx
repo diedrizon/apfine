@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/Inicio.css";
 import { BsPaperclip, BsMicFill, BsSendFill } from "react-icons/bs";
-import { useAuth } from "../../database/AuthContext";
+import { useAuth } from "../../../src/database/authcontext";
 import { db } from "../../database/firebaseconfig";
 import { collection, addDoc } from "firebase/firestore";
 import { getIconGasto } from "../../views/Gastos";
