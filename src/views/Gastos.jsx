@@ -21,7 +21,7 @@ import ToastFlotante from "../components/ui/ToastFlotante";
 
 import "../styles/Gastos.css";
 
-function getIconGasto(tipo_gasto) {
+export function getIconGasto(tipo_gasto) {
   const clase =
     tipo_gasto === "Personal"
       ? "personal"
