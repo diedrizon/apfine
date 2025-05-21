@@ -23,6 +23,7 @@ export default function Chatbotgpt() {
   useEffect(scrollToBottom, [messages]);
 
   // ⬇️ ESTE USEEFFECT ES EL AGREGADO PARA DETECTAR TECLADO EN MÓVILES
+  /*
   useEffect(() => {
     const originalHeight = window.innerHeight;
     const wrapper = document.querySelector(".chat-wrapper");
@@ -41,6 +42,7 @@ export default function Chatbotgpt() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  */
   // ⬆️ FIN DEL USEEFFECT AGREGADO
 
   const parseExpenseData = (text, fileURL) => {
