@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { serverTimestamp } from "firebase/firestore";
+
 export default function ModalRegistroAvance({
   show,
   handleClose,
@@ -13,26 +14,29 @@ export default function ModalRegistroAvance({
     fecha: new Date().toISOString().split("T")[0],
     creada_en: serverTimestamp(),
   });
+
   const ch = (e) => setAv({ ...av, [e.target.name]: e.target.value });
+
   const submit = (e) => {
     e.preventDefault();
     if (!av.cantidad_producida) return;
     handleGuardarAvance(av);
     setAv({ ...av, cantidad_producida: "", horas_trabajadas: "", nota: "" });
   };
+
   return (
     <Modal
       show={show}
       onHide={handleClose}
       centered
-      dialogClassName="custom-modal"
+      dialogClassName="custom-modal" // Reutilizamos la clase del modal de registro
     >
       <Modal.Header closeButton>
         <Modal.Title>Avance de producción</Modal.Title>
       </Modal.Header>
       <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
-          <Form.Group>
+          <Form.Group className="modal-group">
             <Form.Label>Cantidad producida</Form.Label>
             <Form.Control
               type="number"
@@ -41,7 +45,7 @@ export default function ModalRegistroAvance({
               onChange={ch}
             />
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="modal-group">
             <Form.Label>Horas trabajadas</Form.Label>
             <Form.Control
               type="number"
@@ -50,7 +54,7 @@ export default function ModalRegistroAvance({
               onChange={ch}
             />
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="modal-group">
             <Form.Label>Fecha</Form.Label>
             <Form.Control
               type="date"
@@ -59,7 +63,7 @@ export default function ModalRegistroAvance({
               onChange={ch}
             />
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="modal-group">
             <Form.Label>Nota</Form.Label>
             <Form.Control
               as="textarea"

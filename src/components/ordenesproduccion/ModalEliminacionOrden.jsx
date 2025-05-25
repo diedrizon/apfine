@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { FaExclamationTriangle } from "react-icons/fa";
+
 export default function ModalEliminacionOrden({
   show,
   handleClose,
@@ -15,7 +16,8 @@ export default function ModalEliminacionOrden({
       </Modal.Header>
       <Modal.Body className="modal-warning-body">
         <FaExclamationTriangle className="warning-icon" />
-        <p>¿Eliminar la orden #{orden.id?.slice(-6)}?</p>
+        {/* Mostrar el nombre del producto en lugar del ID */}
+        <p>¿Eliminar la orden del producto "{orden.producto}"?</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

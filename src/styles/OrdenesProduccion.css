@@ -190,6 +190,9 @@
 
 .custom-modal .modal-content {
   margin: 0 auto;
+  background-color: var(--secondary-bg); /* Fondo del modal */
+  border-radius: 12px;
+  border: 1px solid var(--primary); /* Borde del modal */
 }
 
 /* === Modal de eliminación === */
@@ -225,9 +228,9 @@
 }
 
 .detalle-item {
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--primary); /* Línea de color en el borde izquierdo */
   padding: 0.5rem 1rem;
-  background-color: var(--secondary-bg);
+  background-color: var(--secondary-bg); /* Fondo de las cajas */
   border-radius: 8px;
 }
 
