@@ -212,7 +212,7 @@ export default function ModalEdicionOrden({
             </Row>
           )}
           <hr />
-          <Row className="align-items-end">
+          <Row className="g-3 align-items-center"> {/* Cambiado a align-items-center */}
             <Col md={7}>
               <Form.Group className="modal-group">
                 <Form.Label>Materia prima</Form.Label>
@@ -241,7 +241,7 @@ export default function ModalEdicionOrden({
                 />
               </Form.Group>
             </Col>
-            <Col md={2}>
+            <Col md={2} className="d-flex align-items-center"> {/* Cambiado a align-items-center */}
               <Button variant="success" className="w-100" onClick={addLinea}>
                 +
               </Button>

@@ -141,21 +141,29 @@
 }
 
 /* === Inputs y formularios === */
+.modal-group {
+  margin-bottom: 1rem; /* Espaciado entre grupos */
+}
+
 .modal-group label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-bottom: 0.35rem;
-  color: var(--text-title);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem; /* Reduce el espacio entre el label y el input */
+  display: block; /* Asegura que el label esté en una línea */
 }
 
 .modal-group input,
-.modal-group select,
-.modal-group textarea {
-  background-color: var(--secondary-bg);
+.modal-group select {
+  width: 100%;
+  min-height: 48px; /* Aumenta la altura de los campos */
+  font-size: 1rem;
+  padding: 0.5rem;
   border: 2px solid var(--primary);
-  border-radius: 10px;
-  padding: 0.6rem 0.85rem;
-  color: var(--text-title);
+  border-radius: 8px;
+}
+
+.modal-group input {
+  min-width: 100%; /* Asegura que los campos ocupen todo el ancho disponible */
 }
 
 .modal-group input:focus,
@@ -268,11 +276,13 @@
 
 /* Botón “+” más grande */
 .modal-body .btn-success {
-  padding: 0.6rem;
+  height: 48px; /* Igual a la altura de los inputs */
   font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0; /* Elimina el padding adicional */
+  margin-top: 0; /* Asegura que no haya margen superior */
 }
 
 /* Tarjetas de materias (igual que .orden-item de tu lista) */
@@ -359,11 +369,12 @@
 
 /* Botón “+” grande */
 .modal-body .btn-success {
-  padding: 0.6rem;
+  height: 48px; /* Igual a la altura de los inputs */
   font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0; /* Elimina el padding adicional */
 }
 
 /* Tarjetas de materias primas dentro del modal */
@@ -450,4 +461,39 @@
 }
 .progress-bar {
   background-color: var(--primary);
+}
+
+/* === Nueva sección: Inputs en filas === */
+.row-gap {
+  --bs-gutter-x: 0.75rem; /* Espaciado horizontal */
+  --bs-gutter-y: 1rem; /* Espaciado vertical */
+}
+
+.row-gap > .col,
+.row-gap > [class*="col-"] {
+  padding-left: var(--bs-gutter-x);
+  padding-right: var(--bs-gutter-x);
+  margin-bottom: var(--bs-gutter-y);
+}
+
+/* Estilos específicos para los inputs dentro de las filas */
+.row-gap .modal-group {
+  margin-bottom: 0;
+}
+
+.row-gap .modal-group label {
+  margin-bottom: 0.25rem;
+}
+
+.row-gap .modal-group input,
+.row-gap .modal-group select {
+  margin-bottom: 0.5rem;
+}
+
+/* Ejemplo de uso: */
+.Row {
+  @apply row-gap;
+}
+.modal-group input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-right: 5px; /* Agrega un margen entre el ícono y el texto */
 }

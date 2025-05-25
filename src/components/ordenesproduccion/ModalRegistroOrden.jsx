@@ -82,8 +82,8 @@ export default function ModalRegistroOrden({
               ))}
             </Form.Select>
           </Form.Group>
-          <Row>
-            <Col md={4}>
+          <Row className="g-3"> {/* Cantidad planeada y Proveedor actual en la misma fila */}
+            <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Cant. planeada</Form.Label>
                 <Form.Control
@@ -94,7 +94,19 @@ export default function ModalRegistroOrden({
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col md={6}>
+              <Form.Group className="modal-group">
+                <Form.Label>Proveedor actual</Form.Label>
+                <Form.Control
+                  name="proveedor_actual"
+                  value={op.proveedor_actual}
+                  onChange={ch}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row className="g-3"> {/* Fecha inicio y Fecha fin estimada en la misma fila */}
+            <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Fecha inicio</Form.Label>
                 <Form.Control
@@ -105,7 +117,7 @@ export default function ModalRegistroOrden({
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Fecha fin estimada</Form.Label>
                 <Form.Control
@@ -120,16 +132,6 @@ export default function ModalRegistroOrden({
           <Row>
             <Col md={6}>
               <Form.Group className="modal-group">
-                <Form.Label>Proveedor actual</Form.Label>
-                <Form.Control
-                  name="proveedor_actual"
-                  value={op.proveedor_actual}
-                  onChange={ch}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group className="modal-group">
                 <Form.Label>Costo estimado</Form.Label>
                 <Form.Control
                   type="number"
@@ -139,7 +141,7 @@ export default function ModalRegistroOrden({
                 />
               </Form.Group>
             </Col>
-            <Col md={3}>
+            <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Costo mano obra</Form.Label>
                 <Form.Control
@@ -173,8 +175,8 @@ export default function ModalRegistroOrden({
             </Row>
           )}
           <hr />
-          <Row className="align-items-end">
-            <Col md={7}>
+          <Row className="g-3 align-items-center"> {/* Alinea verticalmente los elementos */}
+            <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Materia prima</Form.Label>
                 <Form.Select
@@ -190,7 +192,7 @@ export default function ModalRegistroOrden({
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={3}>
+            <Col md={4}>
               <Form.Group className="modal-group">
                 <Form.Label>Cantidad</Form.Label>
                 <Form.Control
@@ -202,7 +204,7 @@ export default function ModalRegistroOrden({
                 />
               </Form.Group>
             </Col>
-            <Col md={2}>
+            <Col md={2} className="d-flex align-items-end"> {/* Alinea el botón al final */}
               <Button variant="success" className="w-100" onClick={addLinea}>
                 +
               </Button>
