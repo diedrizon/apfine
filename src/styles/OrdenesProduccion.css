@@ -1,103 +1,453 @@
-@import "./MateriasPrimas.css";
-.ordenes-container {
+/* === Contenedor Principal === */
+.op-container {
   padding: 20px;
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
 }
-.ordenes-header {
+
+.op-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
   color: var(--text-title);
 }
-.ordenes-content {
+
+.op-content {
   display: flex;
   gap: 20px;
 }
-.ordenes-list {
+
+.op-list {
   flex: 2;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.ordenes-summary {
+
+.op-summary {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
+
+/* === Tarjetas === */
+.op-item {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s;
+  background-color: var(--secondary-bg);
+  color: var(--text-normal);
+}
+
+.op-item.expanded {
+  background-color: var(--secondary-bg) !important;
+}
+
+.op-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.op-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background-color: var(--primary);
+}
+
+.op-name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text-title);
+}
+
+.op-status {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.op-sub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.op-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+/* === Tarjeta resumen === */
+.summary-card {
+  border: none;
+  border-radius: 12px;
+  background-color: var(--secondary-bg);
+  color: var(--text-title);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 12px;
+}
+
+.summary-card .card-title {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.summary-card .card-text {
+  font-size: 1rem !important;
+  color: var(--text-title);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .op-content {
+    flex-direction: column;
+  }
+
+  .op-summary {
+    order: -1;
+  }
+
+  .op-list {
+    order: 1;
+  }
+
+  .summary-card {
+    margin-bottom: 20px;
+  }
+}
+
+/* === Inputs y formularios === */
+.modal-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  color: var(--text-title);
+}
+
+.modal-group input,
+.modal-group select,
+.modal-group textarea {
+  background-color: var(--secondary-bg);
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  color: var(--text-title);
+}
+
+.modal-group input:focus,
+.modal-group select:focus,
+.modal-group textarea:focus {
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.2);
+}
+
+/* === Modal estructura === */
+.custom-modal .modal-body {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.custom-modal .modal-footer {
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.custom-modal .modal-dialog {
+  max-width: 500px;
+}
+
+.custom-modal .modal-content {
+  margin: 0 auto;
+}
+
+/* === Modal de eliminación === */
+.modal-warning-body {
+  text-align: center;
+  gap: 1rem;
+}
+
+.warning-icon {
+  font-size: 3rem;
+  color: var(--icon-error);
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* === Modal detalle === */
+.detalle-ingreso {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.detalle-item {
+  border-left: 4px solid var(--primary);
+  padding: 0.5rem 1rem;
+  background-color: var(--secondary-bg);
+  border-radius: 8px;
+}
+
+.detalle-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.detalle-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+/* === Modal mensaje === */
+.modal-mensaje .modal-content {
+  border: 1px solid var(--primary);
+  border-radius: 12px;
+}
+
+.modal-mensaje .modal-header {
+  background-color: var(--secondary-bg);
+  color: var(--text-title);
+}
+
+.modal-mensaje .modal-body {
+  font-size: 0.95rem;
+  color: var(--text-normal);
+}
+
+.modal-mensaje .btn {
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+/* Aumenta la altura y legibilidad de inputs */
+.modal-group input,
+.modal-group select {
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+/* Rejilla responsive: en xs todas full, en md agrupa tal como en el JSX */
+.modal-row-2col > [class*="col-"] {
+  margin-bottom: 1rem;
+}
+
+/* Botón “+” más grande */
+.modal-body .btn-success {
+  padding: 0.6rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tarjetas de materias (igual que .orden-item de tu lista) */
+.chip-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+/* Asegura que cada “tarjeta” ocupe todo el ancho */
+.chip-group .orden-item {
+  width: 100%;
+}
+
+/* Responsable de alinear icono, texto y botón */
+.orden-actions-expanded {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Tarjetas de materias primas dentro del modal */
+.chip-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
 .orden-item {
+  border: 2px solid var(--card-border);
   border-radius: 8px;
   padding: 10px;
-  background: var(--secondary-bg);
-  color: var(--text-normal);
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondary-bg);
 }
+
 .orden-top {
   display: flex;
   align-items: center;
-  margin-bottom: 4px;
+  gap: 10px;
 }
-.orden-num {
-  font-weight: 600;
-  margin-right: 8px;
-  color: var(--text-title);
+
+.op-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .orden-producto {
+  flex: 1;
   font-weight: 500;
   color: var(--text-title);
 }
+
 .orden-estado {
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
-.orden-subinfo {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  display: flex;
-  gap: 5px;
-}
+
 .orden-actions-expanded {
   margin-top: 6px;
   display: flex;
-  gap: 4px;
-}
-.summary-card {
-  background: var(--secondary-bg);
-  border: none;
-  border-radius: 12px;
-}
-.mp-list {
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.mp-input {
-  width: 80px;
-  margin-left: 6px;
-  border: 2px solid var(--primary);
-  border-radius: 8px;
-  background: var(--secondary-bg);
-  color: var(--text-title);
-}
-.badge-danger {
-  background: #d32f2f;
-}
-.badge-warning {
-  background: #fbc02d;
-}
-.badge-secondary {
-  background: #78909c;
-}
-@media (max-width: 768px) {
-  .ordenes-content {
-    flex-direction: column;
-  }
-  .ordenes-summary {
-    order: 1;
-  }
-  .ordenes-list {
-    order: 2;
-  }
-  .summary-card {
-    width: 100% !important;
-  }
+  justify-content: flex-end;
 }
 
+/* Aumenta la legibilidad de inputs y selects */
+.modal-group input,
+.modal-group select {
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+/* Espaciado responsive de columnas */
+.modal-row-2col > [class*="col-"] {
+  margin-bottom: 1rem;
+}
+
+/* Botón “+” grande */
+.modal-body .btn-success {
+  padding: 0.6rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tarjetas de materias primas dentro del modal */
+.chip-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.orden-item {
+  border: 2px solid var(--card-border);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondary-bg);
+}
+
+.orden-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.op-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orden-producto {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-title);
+}
+
+.orden-estado {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.orden-actions-expanded {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ... tu CSS actual ... */
+
+/* === Barra de progreso === */
+.op-progress {
+  margin: 0.5rem 0 1rem;
+}
+
+/* Botones “copy” y “play” en tarjeta */
+.op-copy,
+.op-play {
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+  font-size: 1.1rem;
+}
+.op-copy:hover,
+.op-play:hover {
+  color: var(--primary);
+}
+
+/* Ajuste para que no rompan el layout */
+.op-top .btn-link {
+  padding: 0;
+  line-height: 1;
+}
+
+/* Asegúrate de que el ProgressBar use tu tema */
+.progress {
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-bar {
+  background-color: var(--primary);
+}

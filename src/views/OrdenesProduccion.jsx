@@ -2,359 +2,364 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "../database/firebaseconfig";
 import {
   collection,
-  getDocs,
   addDoc,
+  getDocs,
   updateDoc,
   deleteDoc,
   doc,
-  getDoc,
-  runTransaction,
-  serverTimestamp,
-  query,
-  where,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { Container, Button, Card, ProgressBar, Badge } from "react-bootstrap";
-import * as FaIcons from "react-icons/fa";
+import { Container, Button, Card } from "react-bootstrap";
+import * as Fa from "react-icons/fa";
 import ModalRegistroOrden from "../components/ordenesproduccion/ModalRegistroOrden";
 import ModalEdicionOrden from "../components/ordenesproduccion/ModalEdicionOrden";
 import ModalEliminacionOrden from "../components/ordenesproduccion/ModalEliminacionOrden";
 import ModalDetalleOrden from "../components/ordenesproduccion/ModalDetalleOrden";
+import ModalRegistroAvance from "../components/ordenesproduccion/ModalRegistroAvance";
 import ModalMensaje from "../components/ModalMensaje";
-import ToastFlotante from "../components/ui/ToastFlotante";
 import "../styles/OrdenesProduccion.css";
 
 export default function OrdenesProduccion() {
-  const [uid, setUid] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [productosList, setProductosList] = useState([]);
+  const [materiasList, setMateriasList] = useState([]);
   const [ordenes, setOrdenes] = useState([]);
-  const [exp, setExp] = useState(null);
-  const [add, setAdd] = useState(false);
-  const [edit, setEdit] = useState(false);
-  const [del, setDel] = useState(false);
-  const [det, setDet] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDel, setShowDel] = useState(false);
+  const [showDet, setShowDet] = useState(false);
+  const [showAvance, setShowAvance] = useState(false);
+  const [nueva, setNueva] = useState(null);
+  const [editada, setEditada] = useState(null);
+  const [aEliminar, setAEliminar] = useState(null);
+  const [detalle, setDetalle] = useState(null);
+  const [avOrden, setAvOrden] = useState(null);
   const [msg, setMsg] = useState("");
-  const [smsg, setSmsg] = useState(false);
-  const [edO, setEdO] = useState(null);
-  const [rmO, setRmO] = useState(null);
-  const [dtO, setDtO] = useState(null);
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
+  const [showMsg, setShowMsg] = useState(false);
+  const [offline, setOffline] = useState(!navigator.onLine);
 
-  const col = collection(db, "ordenes_produccion");
-  const etapas = [
-    "Planificada",
-    "En proceso",
-    "Control calidad",
-    "Empaque",
-    "Completada",
-  ];
+  const colOrdenes = collection(db, "ordenes_produccion");
+  const colInventario = collection(db, "inventario");
+  const colMaterias = collection(db, "materias_primas");
 
+  useEffect(() => onAuthStateChanged(auth, (u) => u && setUserId(u.uid)), []);
   useEffect(() => {
-    onAuthStateChanged(auth, (u) => {
-      if (u) setUid(u.uid);
-    });
+    if (!userId) return;
+    loadProductos();
+    loadMaterias();
+    loadOrdenes();
+  }, [userId]);
+  useEffect(() => {
+    const on = () => setOffline(false);
+    const off = () => setOffline(true);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
   }, []);
 
-  useEffect(() => {
-    if (uid) loadOrders();
-  }, [uid]);
-
-  async function loadOrders() {
-    const snap = await getDocs(col);
-    setOrdenes(
-      snap.docs
+  const loadProductos = async () => {
+    const s = await getDocs(colInventario);
+    setProductosList(
+      s.docs
         .map((d) => ({ id: d.id, ...d.data() }))
-        .filter((o) => o.userId === uid)
+        .filter((p) => p.userId === userId)
     );
-  }
+  };
+  const loadMaterias = async () => {
+    const s = await getDocs(colMaterias);
+    setMateriasList(
+      s.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((m) => m.userId === userId)
+    );
+  };
+  const loadOrdenes = async () => {
+    const s = await getDocs(colOrdenes);
+    setOrdenes(
+      s.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((o) => o.userId === userId)
+    );
+  };
 
-  function calcularProgreso(estado) {
-    const idx = etapas.indexOf(estado);
-    return idx >= 0 ? idx * 25 : 0;
-  }
-
-  async function adjustMateriaPrima(order, mode, prevOrder = null) {
-    await runTransaction(db, async (t) => {
-      for (const m of order.materias_primas) {
-        const ref = doc(db, "materias_primas", m.id);
-        const snap = await t.get(ref);
-        if (snap.exists()) {
-          let stock = snap.data().stock_actual || 0;
-          let newQty = Number(m.cantidad_usada);
-
-          if (mode === "create") {
-            stock -= newQty;
-          } else if (mode === "edit") {
-            const prev = prevOrder?.materias_primas.find(
-              (pm) => pm.id === m.id
-            );
-            const prevQty = prev ? Number(prev.cantidad_usada) : 0;
-            stock -= newQty - prevQty;
-          } else if (mode === "delete") {
-            stock += newQty;
-          }
-
-          t.update(ref, { stock_actual: stock });
+  async function ajustarStocks(nuevaOrden, ordenPrev = null, tipo = "crear") {
+    const factor = tipo === "eliminar" ? -1 : 1;
+    const lista =
+      tipo === "editar" && ordenPrev
+        ? [
+            { ...ordenPrev, signo: -1 },
+            { ...nuevaOrden, signo: 1 },
+          ]
+        : [{ ...nuevaOrden, signo: factor }];
+    for (const ord of lista) {
+      if (ord.estado !== "Completada") continue;
+      const q = Number(ord.cantidad_real || 0) * ord.signo;
+      if (q) {
+        const qs = await getDocs(colInventario);
+        const pSnap = qs.docs.find(
+          (d) => d.data().nombre_producto === ord.producto
+        );
+        if (pSnap) {
+          const ref = doc(db, "inventario", pSnap.id);
+          const stockActual = Number(pSnap.data().stock_actual || 0);
+          await updateDoc(ref, { stock_actual: stockActual + q });
         }
       }
-    });
-  }
-
-  async function adjustInventario(order, mode, prevOrder = null) {
-    const q = query(
-      collection(db, "inventario"),
-      where("userId", "==", uid),
-      where("nombre_producto", "==", order.producto)
-    );
-    const ex = await getDocs(q);
-    if (!ex.empty) {
-      const ref = ex.docs[0].ref;
-      const current = ex.docs[0].data().stock_actual || 0;
-      let qty = Number(order.cantidad_real);
-      const prevQty = prevOrder ? Number(prevOrder.cantidad_real) : 0;
-
-      let finalStock = current;
-      if (mode === "create" && order.estado === "Completada") {
-        finalStock += qty;
-      } else if (mode === "edit") {
-        if (
-          order.estado === "Completada" &&
-          prevOrder.estado !== "Completada"
-        ) {
-          finalStock += qty;
-        } else if (
-          order.estado === "Completada" &&
-          prevOrder.estado === "Completada"
-        ) {
-          finalStock += qty - prevQty;
+      for (const mp of ord.materias_primas || []) {
+        const qs = await getDocs(colMaterias);
+        const mpSnap = qs.docs.find((d) => d.data().nombre === mp.nombre);
+        if (mpSnap) {
+          const ref = doc(db, "materias_primas", mpSnap.id);
+          const stockMp = Number(mpSnap.data().stock_actual || 0);
+          await updateDoc(ref, {
+            stock_actual: stockMp - mp.cantidad_utilizada * ord.signo,
+          });
         }
-      } else if (mode === "delete" && order.estado === "Completada") {
-        finalStock -= qty;
       }
-
-      await updateDoc(ref, { stock_actual: finalStock });
     }
   }
 
-  async function handleOrder(order, mode) {
-    order.progreso = calcularProgreso(order.estado);
-    order.cantidad_planeada = Number(order.cantidad_planeada) || 0;
-    order.cantidad_real = Number(order.cantidad_real) || 0;
-    order.horas_trabajadas = Number(order.horas_trabajadas) || 0;
-    order.costo_real = Number(order.costo_real) || 0;
-
-    if (mode === "create") {
-      const id = (
-        await addDoc(col, {
-          ...order,
-          userId: uid,
-          creada_en: serverTimestamp(),
-        })
-      ).id;
-
-      const fullOrderSnap = await getDoc(doc(db, "ordenes_produccion", id));
-      const fullOrder = fullOrderSnap.data();
-
-      await adjustMateriaPrima({ id, ...fullOrder }, "create");
-      await adjustInventario({ id, ...fullOrder }, "create");
-      setAdd(false);
-    } else if (mode === "edit") {
-      const prevSnap = await getDoc(doc(db, "ordenes_produccion", order.id));
-      const prevOrder = prevSnap.data();
-
-      await updateDoc(doc(db, "ordenes_produccion", order.id), order);
-      await adjustMateriaPrima(order, "edit", prevOrder);
-      await adjustInventario(order, "edit", prevOrder);
-      setEdit(false);
-    } else if (mode === "delete") {
-      const snap = await getDoc(doc(db, "ordenes_produccion", order.id));
-      const data = snap.data();
-
-      await adjustMateriaPrima(data, "delete");
-      await adjustInventario(data, "delete");
-      await deleteDoc(doc(db, "ordenes_produccion", order.id));
-      setDel(false);
+  const add = async (item) => {
+    setShowAdd(false);
+    if (offline) {
+      setOrdenes((o) => [...o, { ...item, id: `temp_${Date.now()}`, userId }]);
+      setMsg("Orden registrada offline");
+      setShowMsg(true);
+      return;
     }
+    const ref = await addDoc(colOrdenes, { ...item, userId });
+    await ajustarStocks({ ...item, id: ref.id }, null, "crear");
+    setMsg("Orden registrada");
+    setShowMsg(true);
+    loadOrdenes();
+  };
 
-    loadOrders();
-    setMsg(
-      `Orden ${
-        mode === "delete"
-          ? "eliminada"
-          : mode === "edit"
-          ? "actualizada"
-          : "registrada"
-      }`
+  const edit = async (item) => {
+    setShowEdit(false);
+    const prev = ordenes.find((o) => o.id === item.id);
+    if (offline) {
+      setOrdenes((o) => o.map((i) => (i.id === item.id ? item : i)));
+      setMsg("Orden actualizada offline");
+      setShowMsg(true);
+      return;
+    }
+    await updateDoc(doc(db, "ordenes_produccion", item.id), item);
+    await ajustarStocks(item, prev, "editar");
+    setMsg("Orden actualizada");
+    setShowMsg(true);
+    loadOrdenes();
+  };
+
+  const del = async () => {
+    if (!aEliminar) return;
+    setShowDel(false);
+    if (offline) {
+      setOrdenes((o) => o.filter((i) => i.id !== aEliminar.id));
+      setMsg("Orden eliminada offline");
+      setShowMsg(true);
+      return;
+    }
+    await deleteDoc(doc(db, "ordenes_produccion", aEliminar.id));
+    await ajustarStocks(aEliminar, null, "eliminar");
+    setMsg("Orden eliminada");
+    setShowMsg(true);
+    loadOrdenes();
+  };
+
+  const guardarAvance = async (av) => {
+    setShowAvance(false);
+    if (!avOrden) return;
+    const sub = collection(db, "ordenes_produccion", avOrden.id, "avances");
+    await addDoc(sub, av);
+    const cant = Number(av.cantidad_producida);
+    if (cant) {
+      const prevCantidad = Number(avOrden.cantidad_real || 0);
+      const nuevaCantidad = prevCantidad + cant;
+      await updateDoc(doc(db, "ordenes_produccion", avOrden.id), {
+        cantidad_real: nuevaCantidad,
+      });
+      if (avOrden.estado === "Completada") {
+        await ajustarStocks(
+          { ...avOrden, cantidad_real: nuevaCantidad },
+          { ...avOrden, cantidad_real: prevCantidad },
+          "editar"
+        );
+      }
+    }
+    setMsg("Avance registrado");
+    setShowMsg(true);
+    loadOrdenes();
+  };
+
+  const iconoEstado = (e) =>
+    e === "Completada" ? (
+      <Fa.FaCheckCircle color="#4caf50" />
+    ) : e === "En proceso" ? (
+      <Fa.FaCog />
+    ) : e === "Cancelada" ? (
+      <Fa.FaBan color="#f44336" />
+    ) : (
+      <Fa.FaClipboardList />
     );
-    setSmsg(true);
-  }
-
-  async function advanceStage(order) {
-    const idx = etapas.indexOf(order.estado);
-    if (idx < 0 || idx >= etapas.length - 1) return;
-
-    const newEstado = etapas[idx + 1];
-    const newProgreso = (idx + 1) * 25;
-
-    const updatedOrder = { ...order, estado: newEstado, progreso: newProgreso };
-    await handleOrder(updatedOrder, "edit");
-  }
-
-  function handleCopyOrden(o) {
-    const texto = `Orden: ${o.numero_orden}, Producto: ${o.producto}, Estado: ${o.estado}, Progreso: ${o.progreso}%`;
-    navigator.clipboard.writeText(texto).then(() => {
-      setToastMsg("Orden copiada");
-      setToastVisible(true);
-      setTimeout(() => setToastVisible(false), 2000);
+  const openAdd = () => {
+    setNueva({
+      producto: "",
+      cantidad_planeada: "",
+      fecha_inicio: new Date().toISOString().split("T")[0],
+      fecha_fin_estimada: "",
+      estado: "Planificada",
+      materias_primas: [],
     });
-  }
+    setShowAdd(true);
+  };
 
   return (
-    <Container fluid className="ordenes-container">
-      <div className="ordenes-header">
-        <h5>Órdenes de Producción</h5>
-        <Button onClick={() => setAdd(true)}>Nueva</Button>
-      </div>
-      <div className="ordenes-content">
-        <div className="ordenes-list">
-          {ordenes.map((o) => (
-            <div
-              key={o.id}
-              className={`orden-item ${exp === o.id ? "expanded" : ""}`}
-              onClick={() => setExp(exp === o.id ? null : o.id)}
-            >
-              <div className="orden-top">
-                <Badge
-                  bg={
-                    o.prioridad === "Alta"
-                      ? "danger"
-                      : o.prioridad === "Baja"
-                      ? "secondary"
-                      : "warning"
-                  }
-                  className="me-2"
-                >
-                  {o.prioridad}
-                </Badge>
-                <span className="orden-num">{o.numero_orden}</span>
-                <span className="orden-producto flex-grow-1">{o.producto}</span>
-                <span className="orden-estado">{o.estado}</span>
-              </div>
-              <ProgressBar now={o.progreso} className="mb-1" />
-              <div className="orden-subinfo">
-                <span>{o.proceso || "—"}</span>
-                <span className="mx-2">|</span>
-                <span>{o.responsable || "—"}</span>
-              </div>
-              {exp === o.id && (
-                <div className="orden-actions-expanded">
-                  <Button
-                    size="sm"
-                    variant="outline-primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCopyOrden(o);
-                    }}
-                  >
-                    <FaIcons.FaClipboard />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="info"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDtO(o);
-                      setDet(true);
-                    }}
-                  >
-                    <FaIcons.FaEye />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="success"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      advanceStage(o);
-                    }}
-                  >
-                    <FaIcons.FaForward />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEdO(o);
-                      setEdit(true);
-                    }}
-                  >
-                    <FaIcons.FaEdit />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setRmO(o);
-                      setDel(true);
-                    }}
-                  >
-                    <FaIcons.FaTrash />
-                  </Button>
+    <Container fluid className="op-container">
+      <header className="op-header">
+        <h4>Órdenes de Producción</h4>
+        <Button onClick={openAdd}>Agregar</Button>
+      </header>
+      <div className="op-content">
+        <section className="op-list">
+          {ordenes.map((op) => {
+            const open = expandedId === op.id;
+            return (
+              <div
+                key={op.id}
+                className={`op-item ${open ? "expanded" : ""}`}
+                onClick={() => setExpandedId(open ? null : op.id)}
+              >
+                <div className="op-top">
+                  <div className="op-icon">{iconoEstado(op.estado)}</div>
+                  <span className="op-name">{op.producto}</span>
+                  <span className="op-state">{op.estado}</span>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="ordenes-summary">
+                <div className="op-sub">
+                  {`${op.cantidad_planeada} plan | ${
+                    op.cantidad_real || 0
+                  } real`}
+                  <span className="mx-2">|</span>
+                  {`Inicio ${op.fecha_inicio}`}
+                </div>
+                {open && (
+                  <div className="op-actions">
+                    <Button
+                      size="sm"
+                      variant="info"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetalle(op);
+                        setShowDet(true);
+                      }}
+                    >
+                      <Fa.FaEye />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAvOrden(op);
+                        setShowAvance(true);
+                      }}
+                    >
+                      <Fa.FaPlus />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditada(op);
+                        setShowEdit(true);
+                      }}
+                    >
+                      <Fa.FaEdit />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAEliminar(op);
+                        setShowDel(true);
+                      }}
+                    >
+                      <Fa.FaTrash />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </section>
+        <aside className="op-summary">
           <Card className="summary-card">
             <Card.Body>
-              <Card.Title>Total Órdenes</Card.Title>
+              <Card.Title>Total</Card.Title>
               <Card.Text>{ordenes.length}</Card.Text>
             </Card.Body>
           </Card>
-        </div>
+        </aside>
       </div>
-      {add && (
+      {showAdd && (
         <ModalRegistroOrden
-          show={add}
-          close={() => setAdd(false)}
-          save={(o) => handleOrder(o, "create")}
-          uid={uid}
+          show={showAdd}
+          handleClose={() => setShowAdd(false)}
+          handleAdd={add}
+          nueva={nueva} // Pasamos el estado nueva
+          setNueva={setNueva} // Pasamos setNueva para actualizarlo
+          setMsg={setMsg}
+          setShowMsg={setShowMsg}
+          productosList={productosList}
+          materiasList={materiasList}
         />
       )}
-      {edit && edO && (
+      {showEdit && editada && (
         <ModalEdicionOrden
-          show={edit}
-          close={() => setEdit(false)}
-          data={edO}
-          setData={setEdO}
-          update={(o) => handleOrder(o, "edit")}
-          uid={uid}
+          show={showEdit}
+          handleClose={() => setShowEdit(false)}
+          orden={editada}
+          setOrden={setEditada}
+          handleEdit={edit}
+          setMsg={setMsg}
+          setShowMsg={setShowMsg}
+          productosList={productosList}
+          materiasList={materiasList}
         />
       )}
-      {del && rmO && (
+      {showDel && aEliminar && (
         <ModalEliminacionOrden
-          show={del}
-          close={() => setDel(false)}
-          data={rmO}
-          confirm={() => handleOrder(rmO, "delete")}
+          show={showDel}
+          handleClose={() => setShowDel(false)}
+          orden={aEliminar}
+          handleDelete={del}
         />
       )}
-      {det && dtO && (
+      {showDet && detalle && (
         <ModalDetalleOrden
-          show={det}
-          close={() => setDet(false)}
-          data={dtO}
-          refresh={loadOrders}
+          show={showDet}
+          handleClose={() => setShowDet(false)}
+          orden={detalle}
+        />
+      )}
+      {showAvance && avOrden && (
+        <ModalRegistroAvance
+          show={showAvance}
+          handleClose={() => setShowAvance(false)}
+          orden={avOrden}
+          handleGuardarAvance={guardarAvance}
         />
       )}
       <ModalMensaje
-        show={smsg}
-        handleClose={() => setSmsg(false)}
+        show={showMsg}
+        handleClose={() => setShowMsg(false)}
         message={msg}
       />
-      <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }

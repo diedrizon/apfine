@@ -1,145 +1,68 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import {
-  FaClipboardList,
-  FaCubes,
-  FaCalendarAlt,
-  FaUser,
-  FaWeight,
-  FaFlask,
-  FaTasks,
-  FaHistory
-} from "react-icons/fa";
 
-export default function ModalDetalleOrden({ show, close, data }) {
-  if (!data) return null;
+const Row = ({ l, v }) => (
+  <div className="detalle-item">
+    <span className="detalle-label">{l}</span>
+    <span className="detalle-value">{v ?? "—"}</span>
+  </div>
+);
 
-  const fmtFecha = (fecha) => {
-    if (!fecha) return "—";
-    const d = fecha.toDate ? fecha.toDate() : new Date(fecha);
-    return d.toLocaleDateString("es-NI", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric"
-    });
-  };
+export default function ModalDetalleOrden({ show, handleClose, orden }) {
+  if (!orden) return null;
 
   return (
-    <Modal show={show} onHide={close} centered className="custom-modal">
+    <Modal
+      show={show}
+      onHide={handleClose}
+      centered
+      dialogClassName="custom-modal"
+    >
       <Modal.Header closeButton>
-        <Modal.Title>Detalle de Orden de Producción</Modal.Title>
+        <Modal.Title>Detalle de la Orden</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="modal-body">
 
-        <div className="detalle-item">
-          <span className="detalle-label"><FaClipboardList /> Producto:</span>
-          <span className="detalle-value">{data.producto || "—"}</span>
-        </div>
+      <Modal.Body className="detalle-ingreso">
+        {/* Datos generales */}
+        <Row l="Producto" v={orden.producto} />
+        <Row l="Cantidad planeada" v={orden.cantidad_planeada} />
+        <Row l="Cantidad real" v={orden.cantidad_real} />
+        <Row l="Estado" v={orden.estado} />
 
-        <div className="detalle-item">
-          <span className="detalle-label"><FaTasks /> Proceso:</span>
-          <span className="detalle-value">{data.proceso || "—"}</span>
-        </div>
+        {/* Fechas */}
+        <Row l="Fecha de inicio" v={orden.fecha_inicio} />
+        <Row l="Fecha fin estimada" v={orden.fecha_fin_estimada} />
+        <Row l="Fecha fin real" v={orden.fecha_fin_real} />
 
-        <div className="detalle-item">
-          <span className="detalle-label"><FaUser /> Responsable:</span>
-          <span className="detalle-value">{data.responsable || "—"}</span>
-        </div>
+        {/* Costos */}
+        <Row l="Costo estimado" v={orden.costo_estimado} />
+        <Row l="Costo real" v={orden.costo_real} />
+        <Row l="Costo mano de obra" v={orden.costo_mano_obra} />
 
-        <div className="detalle-item">
-          <span className="detalle-label"><FaCubes /> Cantidad planeada:</span>
-          <span className="detalle-value">{data.cantidad_planeada ?? "—"}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaCubes /> Cantidad real:</span>
-          <span className="detalle-value">{data.cantidad_real ?? "—"}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaCalendarAlt /> Fecha de inicio:</span>
-          <span className="detalle-value">{fmtFecha(data.fecha_inicio)}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaCalendarAlt /> Fin estimada:</span>
-          <span className="detalle-value">{fmtFecha(data.fecha_fin_estimada)}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaCalendarAlt /> Fin real:</span>
-          <span className="detalle-value">{fmtFecha(data.fecha_fin_real)}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaTasks /> Estado:</span>
-          <span className="detalle-value">{data.estado || "—"}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaWeight /> Costo estimado (C$):</span>
-          <span className="detalle-value">{data.costo_estimado ?? "—"}</span>
-        </div>
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaWeight /> Costo real (C$):</span>
-          <span className="detalle-value">{data.costo_real ?? "—"}</span>
-        </div>
-
-        {data.es_reproceso && (
+        {/* Horas y reproceso */}
+        <Row l="Horas trabajadas" v={orden.horas_trabajadas} />
+        {orden.es_reproceso && (
           <>
-            <div className="detalle-item">
-              <span className="detalle-label"><FaTasks /> Es reproceso:</span>
-              <span className="detalle-value">Sí</span>
-            </div>
-            <div className="detalle-item">
-              <span className="detalle-label"><FaCubes /> Cantidad reprocesada:</span>
-              <span className="detalle-value">{data.cantidad_reprocesada ?? "—"}</span>
-            </div>
-            <div className="detalle-item">
-              <span className="detalle-label"><FaTasks /> Motivo:</span>
-              <span className="detalle-value">{data.motivo_reproceso || "—"}</span>
-            </div>
+            <Row l="Cantidad reprocesada" v={orden.cantidad_reprocesada} />
+            <Row l="Motivo del reproceso" v={orden.motivo_reproceso} />
           </>
         )}
 
+        {/* Materias primas */}
         <div className="detalle-item">
-          <span className="detalle-label"><FaFlask /> Insumos utilizados:</span>
+          <strong>Materias primas utilizadas</strong>
         </div>
-
-        {data.materias_primas?.length > 0 ? (
-          <ul className="detalle-sublista">
-            {data.materias_primas.map((m, i) => (
-              <li key={i}>
-                {m.nombre} – {m.cantidad_usada} unidades
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="detalle-value">Sin insumos registrados.</p>
-        )}
-
-        <div className="detalle-item">
-          <span className="detalle-label"><FaHistory /> Historial de avances:</span>
-        </div>
-
-        {data.avances && data.avances.length > 0 ? (
-          <ul className="detalle-sublista">
-            {data.avances.map((a, i) => (
-              <li key={i}>
-                {a.fecha?.toDate?.().toLocaleDateString("es-NI") || "Fecha desconocida"} –{" "}
-                {a.cantidad ?? "—"} unidades – {a.estado || "—"}
-                {a.horas ? ` – ${a.horas} h` : ""}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="detalle-value">Sin historial registrado.</p>
-        )}
-
+        {orden.materias_primas?.map((m, i) => (
+          <Row
+            key={i}
+            l={m.nombre}
+            v={`${m.cantidad_utilizada} ${m.unidad_medida}`}
+          />
+        ))}
       </Modal.Body>
-      <Modal.Footer className="modal-footer">
-        <Button variant="secondary" onClick={close}>
+
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
           Cerrar
         </Button>
       </Modal.Footer>

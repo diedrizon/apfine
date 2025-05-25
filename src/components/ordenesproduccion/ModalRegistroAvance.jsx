@@ -1,107 +1,81 @@
 import React, { useState } from "react";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
-
+import { Modal, Button, Form } from "react-bootstrap";
+import { serverTimestamp } from "firebase/firestore";
 export default function ModalRegistroAvance({
   show,
-  close,
-  orden,
-  saveAvance,
+  handleClose,
+  handleGuardarAvance,
 }) {
-  const [avance, setAvance] = useState({
-    cantidad_real: orden?.cantidad_real || "",
-    fecha_fin_real: orden?.fecha_fin_real?.split("T")?.[0] || "",
-    horas_trabajadas: orden?.horas_trabajadas || "",
-    costo_real: orden?.costo_real || "",
-    estado: orden?.estado || "En proceso",
+  const [av, setAv] = useState({
+    cantidad_producida: "",
+    horas_trabajadas: "",
+    nota: "",
+    fecha: new Date().toISOString().split("T")[0],
+    creada_en: serverTimestamp(),
   });
-
-  const change = (e) => {
-    setAvance({ ...avance, [e.target.name]: e.target.value });
+  const ch = (e) => setAv({ ...av, [e.target.name]: e.target.value });
+  const submit = (e) => {
+    e.preventDefault();
+    if (!av.cantidad_producida) return;
+    handleGuardarAvance(av);
+    setAv({ ...av, cantidad_producida: "", horas_trabajadas: "", nota: "" });
   };
-
-  const validar = () => {
-    if (!avance.cantidad_real || parseFloat(avance.cantidad_real) < 0)
-      return false;
-    if (!avance.fecha_fin_real) return false;
-    return true;
-  };
-
-  const guardar = () => {
-    if (!validar()) return;
-    saveAvance(avance);
-  };
-
   return (
-    <Modal show={show} onHide={close} centered className="custom-modal">
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          guardar();
-        }}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Registrar Avance de Producción</Modal.Title>
-        </Modal.Header>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      centered
+      dialogClassName="custom-modal"
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Avance de producción</Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
-          <Row className="modal-row-2col">
-            <Col className="modal-group">
-              <Form.Label>Cantidad real producida*</Form.Label>
-              <Form.Control
-                type="number"
-                name="cantidad_real"
-                value={avance.cantidad_real}
-                onChange={change}
-              />
-            </Col>
-            <Col className="modal-group">
-              <Form.Label>Fecha fin real*</Form.Label>
-              <Form.Control
-                type="date"
-                name="fecha_fin_real"
-                value={avance.fecha_fin_real}
-                onChange={change}
-              />
-            </Col>
-          </Row>
-
-          <Row className="modal-row-2col">
-            <Col className="modal-group">
-              <Form.Label>Horas trabajadas</Form.Label>
-              <Form.Control
-                type="number"
-                name="horas_trabajadas"
-                value={avance.horas_trabajadas}
-                onChange={change}
-              />
-            </Col>
-            <Col className="modal-group">
-              <Form.Label>Costo real (C$)</Form.Label>
-              <Form.Control
-                type="number"
-                name="costo_real"
-                value={avance.costo_real}
-                onChange={change}
-              />
-            </Col>
-          </Row>
-
-          <Form.Group className="modal-group">
-            <Form.Label>Estado actual</Form.Label>
-            <Form.Select name="estado" value={avance.estado} onChange={change}>
-              <option>En proceso</option>
-              <option>Finalizada</option>
-              <option>Cancelada</option>
-              <option>Pausada</option>
-            </Form.Select>
+          <Form.Group>
+            <Form.Label>Cantidad producida</Form.Label>
+            <Form.Control
+              type="number"
+              name="cantidad_producida"
+              value={av.cantidad_producida}
+              onChange={ch}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Horas trabajadas</Form.Label>
+            <Form.Control
+              type="number"
+              name="horas_trabajadas"
+              value={av.horas_trabajadas}
+              onChange={ch}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Fecha</Form.Label>
+            <Form.Control
+              type="date"
+              name="fecha"
+              value={av.fecha}
+              onChange={ch}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Nota</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={2}
+              name="nota"
+              value={av.nota}
+              onChange={ch}
+            />
           </Form.Group>
         </Modal.Body>
-
         <Modal.Footer className="modal-footer">
-          <Button variant="secondary" onClick={close}>
+          <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button type="submit" variant="primary">
-            Guardar avance
+            Guardar
           </Button>
         </Modal.Footer>
       </Form>
