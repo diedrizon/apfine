@@ -19,7 +19,7 @@ import {
   BiBell,
   BiUser,
   BiBook,
-  BiBookOpen,
+  // BiBookOpen,
 } from "react-icons/bi";
 import "../styles/Panel.css";
 
@@ -147,7 +147,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "produccion" && (
               <ul className="submenu">
-                {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => {})}
+                {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => { })}
                 {renderSubItem(<BiCube />, "Materias primas", () =>
                   handleNavigate("/materias-primas")
                 )}
@@ -174,14 +174,14 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "reportes" && (
               <ul className="submenu">
-                {renderSubItem(<BiPackage />, "Dashboard", () => {})}
+                {renderSubItem(<BiPackage />, "Dashboard", () => { })}
                 {renderSubItem(
                   <BiBarChartAlt2 />,
                   "Datos / Reportes",
-                  () => {}
+                  () => { }
                 )}
-                {renderSubItem(<BiCube />, "Exportar", () => {})}
-                {renderSubItem(<BiBell />, "Alertas", () => {})}
+                {renderSubItem(<BiCube />, "Exportar", () => { })}
+                {renderSubItem(<BiBell />, "Alertas", () => { })}
               </ul>
             )}
 
@@ -200,9 +200,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "comunidad" && (
               <ul className="submenu">
-                {renderSubItem(<BiUser />, "Comunidad", () => {})}
-                {renderSubItem(<BiBook />, "Educación", () => {})}
-                {renderSubItem(<BiBookOpen />, "Tutoriales / Quiz", () => {})}
+                {renderSubItem(<BiUser />, "Comunidad", () => { })}
+                {renderSubItem(<BiBook />, "Educación", () => { handleNavigate("/educacion") })}
+                {/* {renderSubItem(<BiBookOpen />, "Tutoriales", () => { })} */}
               </ul>
             )}
 
@@ -233,17 +233,17 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                     {renderSubItem(
                       <BiTargetLock />,
                       "Roles y permisos",
-                      () => {}
+                      () => { }
                     )}
                     {renderSubItem(
                       <BiBulb />,
                       "Supervisión de IA",
-                      () => {}
+                      () => { }
                     )}
                     {renderSubItem(
                       <BiCog />,
                       "Monitoreo / Configuración",
-                      () => {}
+                      () => { }
                     )}
                   </ul>
                 )}

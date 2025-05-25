@@ -26,6 +26,7 @@ import MateriasPrimas from "./views/MateriasPrimas";
 import GestionUsuario from "./views/GestionUsuarios";
 import Inventario from "./views/Inventario";
 import OrdenesProduccion from "./views/OrdenesProduccion";
+import Educacion from "./views/Educacion";
 
 import "./App.css";
 import ReactGA from "react-ga4";
@@ -117,15 +118,13 @@ function AppContent() {
       )}
 
       <main
-        className={`main ${
-          isSidebarOpen &&
+        className={`main ${isSidebarOpen &&
           !isMobile &&
           !sinEncabezado.includes(location.pathname)
-            ? "sidebar-open"
-            : ""
-        } ${
-          sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
-        }`}
+          ? "sidebar-open"
+          : ""
+          } ${sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
+          }`}
       >
         <Routes>
           {/* Rutas públicas */}
@@ -135,6 +134,10 @@ function AppContent() {
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/terminos-condiciones" element={<Terminos />} />
           {/* Rutas protegidas */}
+          <Route
+            path="/educacion"
+            element={<ProtectedRoute element={<Educacion />} />}
+          />
           <Route
             path="/inicio"
             element={<ProtectedRoute element={<Inicio />} />}
@@ -163,9 +166,9 @@ function AppContent() {
             path="/recomendaciones"
             element={<ProtectedRoute element={<Recomendaciones />} />}
           />
-                  
-      
-         {/*Produccion*/}
+
+
+          {/*Produccion*/}
           <Route
             path="/materias-primas"
             element={<ProtectedRoute element={<MateriasPrimas />} />}
@@ -184,7 +187,7 @@ function AppContent() {
             path="/gestion-usuarios"
             element={<ProtectedRoute element={<GestionUsuario />} />}
           />
-          
+
           {/* Página no encontrada */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
