@@ -144,13 +144,13 @@ function GestionUsuario() {
                 className={`usuario-item ${isExpanded ? "expanded" : ""}`}
                 onClick={() => toggleExpanded(u)}
               >
-               <div className="usuario-top">
-  <div className="usuario-icon">{getIconFijo()}</div>
-  <div className="usuario-texto">
-    <span className="usuario-nombre">{u.nombre}</span>
-    <span className="usuario-email">{u.correo}</span>
-  </div>
-</div>
+                <div className="usuario-top">
+                  <div className="usuario-icon">{getIconFijo()}</div>
+                  <div className="usuario-texto">
+                    <span className="usuario-nombre">{u.nombre}</span>
+                    <span className="usuario-email">{u.correo}</span>
+                  </div>
+                </div>
 
                 <div className="usuario-subinfo">
                   <span>{u.telefono || "Sin teléfono"}</span>
