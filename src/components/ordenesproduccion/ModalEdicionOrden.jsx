@@ -1,6 +1,9 @@
+// ModalEdicionOrden.jsx
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Typeahead } from "react-bootstrap-typeahead";
 import * as Fa from "react-icons/fa";
+import "react-bootstrap-typeahead/css/Typeahead.css";
 
 export default function ModalEdicionOrden({
   show,
@@ -14,16 +17,20 @@ export default function ModalEdicionOrden({
   materiasList,
 }) {
   const [mp, setMp] = useState({ nombre: "", cantidad_utilizada: "" });
+
   useEffect(() => {
     if (show) setMp({ nombre: "", cantidad_utilizada: "" });
   }, [show]);
+
   if (!orden) return null;
+
   const ch = (e) =>
     setOrden({
       ...orden,
       [e.target.name]:
         e.target.type === "checkbox" ? e.target.checked : e.target.value,
     });
+
   const addLinea = () => {
     if (!mp.nombre || !mp.cantidad_utilizada) return;
     const unidad =
@@ -37,11 +44,13 @@ export default function ModalEdicionOrden({
     });
     setMp({ nombre: "", cantidad_utilizada: "" });
   };
+
   const delLinea = (i) =>
     setOrden({
       ...orden,
       materias_primas: orden.materias_primas.filter((_, idx) => idx !== i),
     });
+
   const submit = (e) => {
     e.preventDefault();
     if (!orden.producto || !orden.cantidad_planeada) {
@@ -51,6 +60,13 @@ export default function ModalEdicionOrden({
     }
     handleEdit(orden);
   };
+
+  // menú desplegable de sólo 3 filas + scroll interno
+  const MENU_STYLE = {
+    maxHeight: "144px",    // 3 × ~48px
+    overflowY: "auto"
+  };
+
   return (
     <Modal
       show={show}
@@ -61,20 +77,47 @@ export default function ModalEdicionOrden({
       <Modal.Header closeButton>
         <Modal.Title>Editar Orden</Modal.Title>
       </Modal.Header>
+
       <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
+
+          {/* === Producto con búsqueda y scroll interno === */}
           <Form.Group className="modal-group">
             <Form.Label>Producto</Form.Label>
-            <Form.Select name="producto" value={orden.producto} onChange={ch}>
-              <option value="">— Seleccionar —</option>
-              {productosList.map((p) => (
-                <option key={p.id} value={p.nombre_producto}>
-                  {p.nombre_producto}
-                </option>
-              ))}
-            </Form.Select>
+            <Typeahead
+              id="producto-edit"
+              labelKey="nombre_producto"
+              options={productosList}
+              placeholder="— Seleccionar o buscar —"
+              selected={
+                orden.producto
+                  ? productosList.filter(
+                      p => p.nombre_producto === orden.producto
+                    )
+                  : []
+              }
+              onChange={sel =>
+                setOrden(o => ({
+                  ...o,
+                  producto: sel[0]?.nombre_producto || ""
+                }))
+              }
+              renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
+                <Form.Control
+                  {...inputProps}
+                  ref={ref => {
+                    inputRef(ref);
+                    referenceElementRef(ref);
+                  }}
+                />
+              )}
+              menuContainerStyle={{ width: "100%" }}
+              menuStyle={MENU_STYLE}
+            />
           </Form.Group>
-          <Row>
+
+          {/* Cantidades y Estado */}
+          <Row className="g-3">
             <Col md={4}>
               <Form.Group className="modal-group">
                 <Form.Label>Cant. planeada</Form.Label>
@@ -100,7 +143,11 @@ export default function ModalEdicionOrden({
             <Col md={4}>
               <Form.Group className="modal-group">
                 <Form.Label>Estado</Form.Label>
-                <Form.Select name="estado" value={orden.estado} onChange={ch}>
+                <Form.Select
+                  name="estado"
+                  value={orden.estado}
+                  onChange={ch}
+                >
                   <option>Planificada</option>
                   <option>En proceso</option>
                   <option>Completada</option>
@@ -109,7 +156,9 @@ export default function ModalEdicionOrden({
               </Form.Group>
             </Col>
           </Row>
-          <Row>
+
+          {/* Fechas y Horas */}
+          <Row className="g-3">
             <Col md={4}>
               <Form.Group className="modal-group">
                 <Form.Label>Fecha fin estimada</Form.Label>
@@ -144,7 +193,9 @@ export default function ModalEdicionOrden({
               </Form.Group>
             </Col>
           </Row>
-          <Row>
+
+          {/* Costos */}
+          <Row className="g-3">
             <Col md={4}>
               <Form.Group className="modal-group">
                 <Form.Label>Costo estimado</Form.Label>
@@ -179,6 +230,8 @@ export default function ModalEdicionOrden({
               </Form.Group>
             </Col>
           </Row>
+
+          {/* Reproceso */}
           <Form.Check
             className="mt-2"
             label="¿Reproceso?"
@@ -187,7 +240,7 @@ export default function ModalEdicionOrden({
             onChange={ch}
           />
           {orden.es_reproceso && (
-            <Row>
+            <Row className="g-3">
               <Col md={6}>
                 <Form.Group className="modal-group">
                   <Form.Label>Motivo reproceso</Form.Label>
@@ -211,22 +264,39 @@ export default function ModalEdicionOrden({
               </Col>
             </Row>
           )}
+
           <hr />
-          <Row className="g-3 align-items-center"> {/* Cambiado a align-items-center */}
+
+          {/* === Materia prima con búsqueda y scroll interno === */}
+          <Row className="g-3 align-items-center">
             <Col md={7}>
               <Form.Group className="modal-group">
                 <Form.Label>Materia prima</Form.Label>
-                <Form.Select
-                  value={mp.nombre}
-                  onChange={(e) => setMp({ ...mp, nombre: e.target.value })}
-                >
-                  <option value="">— seleccionar —</option>
-                  {materiasList.map((m) => (
-                    <option key={m.id} value={m.nombre}>
-                      {m.nombre}
-                    </option>
-                  ))}
-                </Form.Select>
+                <Typeahead
+                  id="materia-edit"
+                  labelKey="nombre"
+                  options={materiasList}
+                  placeholder="— Seleccionar o buscar —"
+                  selected={
+                    mp.nombre
+                      ? materiasList.filter(m => m.nombre === mp.nombre)
+                      : []
+                  }
+                  onChange={sel =>
+                    setMp(m => ({ ...m, nombre: sel[0]?.nombre || "" }))
+                  }
+                  renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
+                    <Form.Control
+                      {...inputProps}
+                      ref={ref => {
+                        inputRef(ref);
+                        referenceElementRef(ref);
+                      }}
+                    />
+                  )}
+                  menuContainerStyle={{ width: "100%" }}
+                  menuStyle={MENU_STYLE}
+                />
               </Form.Group>
             </Col>
             <Col md={3}>
@@ -235,18 +305,20 @@ export default function ModalEdicionOrden({
                 <Form.Control
                   type="number"
                   value={mp.cantidad_utilizada}
-                  onChange={(e) =>
-                    setMp({ ...mp, cantidad_utilizada: e.target.value })
+                  onChange={e =>
+                    setMp(m => ({ ...m, cantidad_utilizada: e.target.value }))
                   }
                 />
               </Form.Group>
             </Col>
-            <Col md={2} className="d-flex align-items-center"> {/* Cambiado a align-items-center */}
+            <Col md={2} className="d-flex align-items-center">
               <Button variant="success" className="w-100" onClick={addLinea}>
                 +
               </Button>
             </Col>
           </Row>
+
+          {/* Lista de materias agregadas */}
           {orden.materias_primas.length > 0 && (
             <div className="chip-group">
               {orden.materias_primas.map((m, i) => (
@@ -273,6 +345,7 @@ export default function ModalEdicionOrden({
               ))}
             </div>
           )}
+
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

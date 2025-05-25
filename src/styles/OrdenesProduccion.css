@@ -506,3 +506,9 @@
 .modal-group input[type="date"]::-webkit-calendar-picker-indicator {
   margin-right: 5px; /* Agrega un margen entre el ícono y el texto */
 }
+
+/* Asegura scroll sólo dentro del menú */
+.rbt-menu {
+  max-height: 144px !important; /* 3 filas ≈ 48px cada una */
+  overflow-y: auto !important;
+}

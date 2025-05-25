@@ -1,7 +1,10 @@
+// ModalRegistroOrden.jsx
 import React, { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { serverTimestamp } from "firebase/firestore";
+import { Typeahead } from "react-bootstrap-typeahead";
 import * as Fa from "react-icons/fa";
+import "react-bootstrap-typeahead/css/Typeahead.css";
 
 export default function ModalRegistroOrden({
   show,
@@ -26,12 +29,14 @@ export default function ModalRegistroOrden({
     created_at: serverTimestamp(),
   });
   const [mp, setMp] = useState({ nombre: "", cantidad_utilizada: "" });
+
   const ch = (e) =>
     setOp({
       ...op,
       [e.target.name]:
         e.target.type === "checkbox" ? e.target.checked : e.target.value,
     });
+
   const addLinea = () => {
     if (!mp.nombre || !mp.cantidad_utilizada) return;
     const unidad =
@@ -45,11 +50,13 @@ export default function ModalRegistroOrden({
     });
     setMp({ nombre: "", cantidad_utilizada: "" });
   };
+
   const delLinea = (i) =>
     setOp({
       ...op,
       materias_primas: op.materias_primas.filter((_, idx) => idx !== i),
     });
+
   const submit = (e) => {
     e.preventDefault();
     if (!op.producto || !op.cantidad_planeada) {
@@ -59,6 +66,13 @@ export default function ModalRegistroOrden({
     }
     handleAdd(op);
   };
+
+  // Estilos de menú: 3 filas * ~48px = 144px, scroll interno
+  const MENU_STYLE = {
+    maxHeight: "144px",
+    overflowY: "auto"
+  };
+
   return (
     <Modal
       show={show}
@@ -69,20 +83,43 @@ export default function ModalRegistroOrden({
       <Modal.Header closeButton>
         <Modal.Title>Nueva Orden</Modal.Title>
       </Modal.Header>
+
       <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
+          {/* === Producto con búsqueda y scroll interno === */}
           <Form.Group className="modal-group">
             <Form.Label>Producto</Form.Label>
-            <Form.Select name="producto" value={op.producto} onChange={ch}>
-              <option value="">— Seleccionar —</option>
-              {productosList.map((p) => (
-                <option key={p.id} value={p.nombre_producto}>
-                  {p.nombre_producto}
-                </option>
-              ))}
-            </Form.Select>
+            <Typeahead
+              id="producto-search"
+              labelKey="nombre_producto"
+              options={productosList}
+              placeholder="— Seleccionar o buscar —"
+              selected={
+                op.producto
+                  ? productosList.filter(
+                      (p) => p.nombre_producto === op.producto
+                    )
+                  : []
+              }
+              onChange={(sel) =>
+                setOp({ ...op, producto: sel[0]?.nombre_producto || "" })
+              }
+              renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
+                <Form.Control
+                  {...inputProps}
+                  ref={(ref) => {
+                    inputRef(ref);
+                    referenceElementRef(ref);
+                  }}
+                />
+              )}
+              menuContainerStyle={{ width: "100%" }}
+              menuStyle={MENU_STYLE}
+            />
           </Form.Group>
-          <Row className="g-3"> {/* Cantidad planeada y Proveedor actual en la misma fila */}
+
+          {/* Cantidad planeada y Proveedor actual */}
+          <Row className="g-3">
             <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Cant. planeada</Form.Label>
@@ -105,7 +142,9 @@ export default function ModalRegistroOrden({
               </Form.Group>
             </Col>
           </Row>
-          <Row className="g-3"> {/* Fecha inicio y Fecha fin estimada en la misma fila */}
+
+          {/* Fecha inicio / Fecha fin estimada */}
+          <Row className="g-3">
             <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Fecha inicio</Form.Label>
@@ -129,7 +168,9 @@ export default function ModalRegistroOrden({
               </Form.Group>
             </Col>
           </Row>
-          <Row>
+
+          {/* Costos */}
+          <Row className="g-3">
             <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Costo estimado</Form.Label>
@@ -153,6 +194,8 @@ export default function ModalRegistroOrden({
               </Form.Group>
             </Col>
           </Row>
+
+          {/* Reproceso */}
           <Form.Check
             className="mt-2"
             label="¿Reproceso?"
@@ -161,7 +204,7 @@ export default function ModalRegistroOrden({
             onChange={ch}
           />
           {op.es_reproceso && (
-            <Row>
+            <Row className="g-3">
               <Col md={6}>
                 <Form.Group className="modal-group">
                   <Form.Label>Motivo reproceso</Form.Label>
@@ -174,22 +217,35 @@ export default function ModalRegistroOrden({
               </Col>
             </Row>
           )}
+
           <hr />
-          <Row className="g-3 align-items-center"> {/* Alinea verticalmente los elementos */}
+
+          {/* === Materia prima con búsqueda y scroll interno === */}
+          <Row className="g-3 align-items-center">
             <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Materia prima</Form.Label>
-                <Form.Select
-                  value={mp.nombre}
-                  onChange={(e) => setMp({ ...mp, nombre: e.target.value })}
-                >
-                  <option value="">— seleccionar —</option>
-                  {materiasList.map((m) => (
-                    <option key={m.id} value={m.nombre}>
-                      {m.nombre}
-                    </option>
-                  ))}
-                </Form.Select>
+                <Typeahead
+                  id="materia-search"
+                  labelKey="nombre"
+                  options={materiasList}
+                  placeholder="— Seleccionar o buscar —"
+                  selected={
+                    mp.nombre ? materiasList.filter(m => m.nombre === mp.nombre) : []
+                  }
+                  onChange={(sel) => setMp(m => ({ ...m, nombre: sel[0]?.nombre || "" }))}
+                  renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
+                    <Form.Control
+                      {...inputProps}
+                      ref={(ref) => {
+                        inputRef(ref);
+                        referenceElementRef(ref);
+                      }}
+                    />
+                  )}
+                  menuContainerStyle={{ width: "100%" }}
+                  menuStyle={MENU_STYLE}
+                />
               </Form.Group>
             </Col>
             <Col md={4}>
@@ -199,17 +255,19 @@ export default function ModalRegistroOrden({
                   type="number"
                   value={mp.cantidad_utilizada}
                   onChange={(e) =>
-                    setMp({ ...mp, cantidad_utilizada: e.target.value })
+                    setMp(m => ({ ...m, cantidad_utilizada: e.target.value }))
                   }
                 />
               </Form.Group>
             </Col>
-            <Col md={2} className="d-flex align-items-end"> {/* Alinea el botón al final */}
+            <Col md={2} className="d-flex align-items-end">
               <Button variant="success" className="w-100" onClick={addLinea}>
                 +
               </Button>
             </Col>
           </Row>
+
+          {/* Lista de materias agregadas */}
           {op.materias_primas.length > 0 && (
             <div className="chip-group">
               {op.materias_primas.map((m, i) => (
@@ -224,11 +282,7 @@ export default function ModalRegistroOrden({
                     </span>
                   </div>
                   <div className="orden-actions-expanded">
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => delLinea(i)}
-                    >
+                    <Button variant="danger" size="sm" onClick={() => delLinea(i)}>
                       ×
                     </Button>
                   </div>
@@ -237,6 +291,7 @@ export default function ModalRegistroOrden({
             </div>
           )}
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
