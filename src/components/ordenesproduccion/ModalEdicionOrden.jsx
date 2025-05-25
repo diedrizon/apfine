@@ -19,7 +19,9 @@ export default function ModalEdicionOrden({
   const [mp, setMp] = useState({ nombre: "", cantidad_utilizada: "" });
 
   useEffect(() => {
-    if (show) setMp({ nombre: "", cantidad_utilizada: "" });
+    if (show) {
+      setMp({ nombre: "", cantidad_utilizada: "" });
+    }
   }, [show]);
 
   if (!orden) return null;
@@ -61,10 +63,9 @@ export default function ModalEdicionOrden({
     handleEdit(orden);
   };
 
-  // menú desplegable de sólo 3 filas + scroll interno
   const MENU_STYLE = {
-    maxHeight: "144px",    // 3 × ~48px
-    overflowY: "auto"
+    maxHeight: "144px",
+    overflowY: "auto",
   };
 
   return (
@@ -77,11 +78,9 @@ export default function ModalEdicionOrden({
       <Modal.Header closeButton>
         <Modal.Title>Editar Orden</Modal.Title>
       </Modal.Header>
-
       <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
-
-          {/* === Producto con búsqueda y scroll interno === */}
+          {/* Producto */}
           <Form.Group className="modal-group">
             <Form.Label>Producto</Form.Label>
             <Typeahead
@@ -92,20 +91,20 @@ export default function ModalEdicionOrden({
               selected={
                 orden.producto
                   ? productosList.filter(
-                      p => p.nombre_producto === orden.producto
+                      (p) => p.nombre_producto === orden.producto
                     )
                   : []
               }
-              onChange={sel =>
-                setOrden(o => ({
+              onChange={(sel) =>
+                setOrden((o) => ({
                   ...o,
-                  producto: sel[0]?.nombre_producto || ""
+                  producto: sel[0]?.nombre_producto || "",
                 }))
               }
               renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
                 <Form.Control
                   {...inputProps}
-                  ref={ref => {
+                  ref={(ref) => {
                     inputRef(ref);
                     referenceElementRef(ref);
                   }}
@@ -143,11 +142,7 @@ export default function ModalEdicionOrden({
             <Col md={4}>
               <Form.Group className="modal-group">
                 <Form.Label>Estado</Form.Label>
-                <Form.Select
-                  name="estado"
-                  value={orden.estado}
-                  onChange={ch}
-                >
+                <Form.Select name="estado" value={orden.estado} onChange={ch}>
                   <option>Planificada</option>
                   <option>En proceso</option>
                   <option>Completada</option>
@@ -267,7 +262,7 @@ export default function ModalEdicionOrden({
 
           <hr />
 
-          {/* === Materia prima con búsqueda y scroll interno === */}
+          {/* Nueva materia */}
           <Row className="g-3 align-items-center">
             <Col md={7}>
               <Form.Group className="modal-group">
@@ -275,20 +270,19 @@ export default function ModalEdicionOrden({
                 <Typeahead
                   id="materia-edit"
                   labelKey="nombre"
-                  options={materiasList}
+                  options={materiasList.filter(
+                    (m) =>
+                      !orden.materias_primas.some((mp) => mp.nombre === m.nombre)
+                  )}
                   placeholder="— Seleccionar o buscar —"
-                  selected={
-                    mp.nombre
-                      ? materiasList.filter(m => m.nombre === mp.nombre)
-                      : []
+                  selected={[]}
+                  onChange={(sel) =>
+                    setMp({ nombre: sel[0]?.nombre || "", cantidad_utilizada: "" })
                   }
-                  onChange={sel =>
-                    setMp(m => ({ ...m, nombre: sel[0]?.nombre || "" }))
-                  }
-                  renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
+                  renderInput={({ inputRef, referenceElementRef, ...props }) => (
                     <Form.Control
-                      {...inputProps}
-                      ref={ref => {
+                      {...props}
+                      ref={(ref) => {
                         inputRef(ref);
                         referenceElementRef(ref);
                       }}
@@ -305,8 +299,8 @@ export default function ModalEdicionOrden({
                 <Form.Control
                   type="number"
                   value={mp.cantidad_utilizada}
-                  onChange={e =>
-                    setMp(m => ({ ...m, cantidad_utilizada: e.target.value }))
+                  onChange={(e) =>
+                    setMp({ ...mp, cantidad_utilizada: e.target.value })
                   }
                 />
               </Form.Group>
@@ -323,30 +317,48 @@ export default function ModalEdicionOrden({
             <div className="chip-group">
               {orden.materias_primas.map((m, i) => (
                 <div className="orden-item" key={i}>
-                  <div className="orden-top">
-                    <div className="op-icon">
-                      <Fa.FaCube />
+                  <div className="orden-top d-flex align-items-center justify-content-between">
+                    <div className="d-flex align-items-center">
+                      <div className="op-icon">
+                        <Fa.FaCube />
+                      </div>
+                      <span className="orden-producto">{m.nombre}</span>
                     </div>
-                    <span className="orden-producto">{m.nombre}</span>
-                    <span className="orden-estado">
-                      {m.cantidad_utilizada} {m.unidad_medida}
-                    </span>
-                  </div>
-                  <div className="orden-actions-expanded">
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => delLinea(i)}
-                    >
-                      ×
-                    </Button>
+                    <div className="d-flex align-items-center">
+                      <Form.Control
+                        type="number"
+                        min="0"
+                        value={m.cantidad_utilizada}
+                        onChange={(e) => {
+                          const nueva = e.target.value;
+                          setOrden((prev) => ({
+                            ...prev,
+                            materias_primas: prev.materias_primas.map(
+                              (item, idx) =>
+                                idx === i
+                                  ? { ...item, cantidad_utilizada: nueva }
+                                  : item
+                            ),
+                          }));
+                        }}
+                        className="orden-cantidad"
+                        style={{ width: "80px", marginRight: "0.5rem" }}
+                      />
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => delLinea(i)}
+                      >
+                        ×
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
-
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar

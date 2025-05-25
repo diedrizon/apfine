@@ -52,7 +52,9 @@
 .op-top {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* icono+nombre ↔ cantidad+botón */
   margin-bottom: 5px;
+  gap: 0.5rem;
 }
 
 .op-icon {
@@ -333,7 +335,8 @@
 .orden-top {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between; /* icono+nombre ↔ cantidad+botón */
+  gap: 0.5rem;
 }
 
 .op-icon {
@@ -356,6 +359,11 @@
 .orden-estado {
   font-size: 0.9rem;
   color: var(--text-secondary);
+}
+
+.orden-cantidad {
+  margin: 0;                  /* Eliminamos marginLeft:auto */
+  text-align: right;
 }
 
 .orden-actions-expanded {
@@ -406,7 +414,8 @@
 .orden-top {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between; /* icono+nombre ↔ cantidad+botón */
+  gap: 0.5rem;
 }
 
 .op-icon {
@@ -512,3 +521,4 @@
   max-height: 144px !important; /* 3 filas ≈ 48px cada una */
   overflow-y: auto !important;
 }
+

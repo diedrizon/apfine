@@ -1,5 +1,5 @@
 // ModalRegistroOrden.jsx
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { serverTimestamp } from "firebase/firestore";
 import { Typeahead } from "react-bootstrap-typeahead";
@@ -29,6 +29,7 @@ export default function ModalRegistroOrden({
     created_at: serverTimestamp(),
   });
   const [mp, setMp] = useState({ nombre: "", cantidad_utilizada: "" });
+  const materiaRef = useRef(null);
 
   const ch = (e) =>
     setOp({
@@ -41,21 +42,23 @@ export default function ModalRegistroOrden({
     if (!mp.nombre || !mp.cantidad_utilizada) return;
     const unidad =
       materiasList.find((m) => m.nombre === mp.nombre)?.unidad_medida || "";
-    setOp({
-      ...op,
+    setOp((prev) => ({
+      ...prev,
       materias_primas: [
-        ...op.materias_primas,
+        ...prev.materias_primas,
         { ...mp, unidad_medida: unidad },
       ],
-    });
+    }));
+    // limpiar input de materia prima
     setMp({ nombre: "", cantidad_utilizada: "" });
+    materiaRef.current.clear();
   };
 
   const delLinea = (i) =>
-    setOp({
-      ...op,
-      materias_primas: op.materias_primas.filter((_, idx) => idx !== i),
-    });
+    setOp((prev) => ({
+      ...prev,
+      materias_primas: prev.materias_primas.filter((_, idx) => idx !== i),
+    }));
 
   const submit = (e) => {
     e.preventDefault();
@@ -67,10 +70,9 @@ export default function ModalRegistroOrden({
     handleAdd(op);
   };
 
-  // Estilos de menú: 3 filas * ~48px = 144px, scroll interno
   const MENU_STYLE = {
     maxHeight: "144px",
-    overflowY: "auto"
+    overflowY: "auto",
   };
 
   return (
@@ -86,7 +88,7 @@ export default function ModalRegistroOrden({
 
       <Form onSubmit={submit}>
         <Modal.Body className="modal-body">
-          {/* === Producto con búsqueda y scroll interno === */}
+          {/* === Producto === */}
           <Form.Group className="modal-group">
             <Form.Label>Producto</Form.Label>
             <Typeahead
@@ -118,7 +120,7 @@ export default function ModalRegistroOrden({
             />
           </Form.Group>
 
-          {/* Cantidad planeada y Proveedor actual */}
+          {/* Cant. planeada & Proveedor */}
           <Row className="g-3">
             <Col md={6}>
               <Form.Group className="modal-group">
@@ -220,20 +222,31 @@ export default function ModalRegistroOrden({
 
           <hr />
 
-          {/* === Materia prima con búsqueda y scroll interno === */}
+          {/* === Materia prima + Cantidad + Botón “+” === */}
           <Row className="g-3 align-items-center">
             <Col md={6}>
               <Form.Group className="modal-group">
                 <Form.Label>Materia prima</Form.Label>
                 <Typeahead
                   id="materia-search"
+                  ref={materiaRef}
                   labelKey="nombre"
-                  options={materiasList}
+                  options={materiasList.filter(
+                    (m) =>
+                      !op.materias_primas.some((mp) => mp.nombre === m.nombre)
+                  )}
                   placeholder="— Seleccionar o buscar —"
                   selected={
-                    mp.nombre ? materiasList.filter(m => m.nombre === mp.nombre) : []
+                    mp.nombre
+                      ? materiasList.filter((m) => m.nombre === mp.nombre)
+                      : []
                   }
-                  onChange={(sel) => setMp(m => ({ ...m, nombre: sel[0]?.nombre || "" }))}
+                  onChange={(sel) =>
+                    setMp((m) => ({
+                      ...m,
+                      nombre: sel[0]?.nombre || "",
+                    }))
+                  }
                   renderInput={({ inputRef, referenceElementRef, ...inputProps }) => (
                     <Form.Control
                       {...inputProps}
@@ -255,7 +268,10 @@ export default function ModalRegistroOrden({
                   type="number"
                   value={mp.cantidad_utilizada}
                   onChange={(e) =>
-                    setMp(m => ({ ...m, cantidad_utilizada: e.target.value }))
+                    setMp((m) => ({
+                      ...m,
+                      cantidad_utilizada: e.target.value,
+                    }))
                   }
                 />
               </Form.Group>
@@ -272,19 +288,27 @@ export default function ModalRegistroOrden({
             <div className="chip-group">
               {op.materias_primas.map((m, i) => (
                 <div className="orden-item" key={i}>
-                  <div className="orden-top">
-                    <div className="op-icon">
-                      <Fa.FaCube />
+                  <div className="orden-top d-flex align-items-center justify-content-between">
+                    {/* Icono + Nombre */}
+                    <div className="d-flex align-items-center">
+                      <div className="op-icon">
+                        <Fa.FaCube />
+                      </div>
+                      <span className="orden-producto">{m.nombre}</span>
                     </div>
-                    <span className="orden-producto">{m.nombre}</span>
-                    <span className="orden-estado">
-                      {m.cantidad_utilizada} {m.unidad_medida}
-                    </span>
-                  </div>
-                  <div className="orden-actions-expanded">
-                    <Button variant="danger" size="sm" onClick={() => delLinea(i)}>
-                      ×
-                    </Button>
+                    {/* Cantidad + Botón eliminar */}
+                    <div className="d-flex align-items-center">
+                      <span className="me-2">
+                        {m.cantidad_utilizada} {m.unidad_medida}
+                      </span>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => delLinea(i)}
+                      >
+                        ×
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
