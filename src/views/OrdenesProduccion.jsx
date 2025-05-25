@@ -197,7 +197,7 @@ export default function OrdenesProduccion() {
 
   const iconoEstado = (e) =>
     e === "Completada" ? (
-      <Fa.FaCheckCircle color="#4caf50" />
+      <Fa.FaCheckCircle className="completed" />
     ) : e === "En proceso" ? (
       <Fa.FaCog />
     ) : e === "Cancelada" ? (

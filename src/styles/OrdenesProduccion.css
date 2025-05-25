@@ -67,6 +67,12 @@
   background-color: var(--primary);
 }
 
+/* Estilo para el ícono de estado "Completada" */
+.op-icon.completed {
+  background-color: #4caf50; /* Fondo verde */
+  color: #fff; /* Ícono blanco */
+}
+
 .op-name {
   flex: 1;
   font-weight: 500;
