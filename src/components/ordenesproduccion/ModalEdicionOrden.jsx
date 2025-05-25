@@ -180,9 +180,7 @@ export default function ModalEdicionOrden({
       "Completada": 100,
     };
 
-    // Actualiza el progreso en base al estado seleccionado
     const updatedData = { ...data, progreso: stageProgress[data.estado] || 0 };
-
     update(updatedData);
   };
 

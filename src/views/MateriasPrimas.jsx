@@ -7,7 +7,6 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  serverTimestamp,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { Container, Button, Card } from "react-bootstrap";
@@ -78,53 +77,26 @@ export default function MateriasPrimas() {
 
   async function handleAddMateria(data, esUpdate) {
     setShowAdd(false);
+
     if (esUpdate) {
-      if (isOffline)
-        setMaterias((p) => p.map((m) => (m.id === data.id ? data : m)));
-      setMsg("Stock actualizado correctamente.");
-      setShowMsg(true);
-      if (!data.id.startsWith("temp_")) {
-        await updateDoc(doc(db, "materias_primas", data.id), {
-          nombre: data.nombre,
-          unidad_medida: data.unidad_medida,
-          stock_minimo: data.stock_minimo,
-          costo_unitario: data.costo_unitario,
-          proveedor: data.proveedor,
-          ultima_compra: data.ultima_compra,
-        });
-      }
+      await updateDoc(doc(db, "materias_primas", data.id), {
+        stock_actual: Number(data.stock_actual),
+        // otros campos...
+      });
     } else {
-      // Aseguramos que el stock_actual venga definido en el objeto data
-      const initialStock = Number(data.stock_actual) || 0;
-      const payload = { 
-        ...data, 
-        userId, 
-        stock_actual: initialStock, 
-        // para que en la vista se muestre el costo unitario de la última entrada
-        ultimo_precio: initialStock > 0 ? parseFloat(data.costo_unitario) : "", 
-        proveedor_reciente: data.proveedor || "" 
+      const payload = {
+        ...data,
+        userId,
+        stock_actual: Number(data.stock_actual) || 0,
       };
 
       if (isOffline) {
-        const tempId = `temp_${Date.now()}`;
-        setMaterias((p) => [...p, { ...payload, id: tempId }]);
+        setMaterias((prev) => [...prev, { ...payload, id: `temp_${Date.now()}` }]);
       } else {
-        // Primero, registra el insumo principal con los datos iniciales
-        const docRef = await addDoc(col, payload);
-        // Luego, crea una entrada inicial que refleje el stock inicial
-        if (initialStock > 0) {
-          await addDoc(collection(db, "materias_primas", docRef.id, "entradas"), {
-            cantidad: initialStock,
-            proveedor: data.proveedor || "",
-            costo_unitario: parseFloat(data.costo_unitario),
-            fecha: data.ultima_compra || new Date().toISOString().split("T")[0],
-            creada_en: serverTimestamp(),
-          });
-        }
+        await addDoc(col, payload);
       }
-      setMsg("Insumo registrado correctamente.");
-      setShowMsg(true);
     }
+
     fetchMaterias();
   }
 

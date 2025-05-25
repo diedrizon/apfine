@@ -1,5 +1,3 @@
-// src/views/OrdenesProduccion.jsx
-
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../database/firebaseconfig";
 import {
@@ -9,8 +7,9 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  serverTimestamp,
+  getDoc,
   runTransaction,
+  serverTimestamp,
   query,
   where,
 } from "firebase/firestore";
@@ -29,14 +28,12 @@ export default function OrdenesProduccion() {
   const [uid, setUid] = useState(null);
   const [ordenes, setOrdenes] = useState([]);
   const [exp, setExp] = useState(null);
-  const [off, setOff] = useState(!navigator.onLine);
   const [add, setAdd] = useState(false);
   const [edit, setEdit] = useState(false);
   const [del, setDel] = useState(false);
   const [det, setDet] = useState(false);
   const [msg, setMsg] = useState("");
   const [smsg, setSmsg] = useState(false);
-  const [newO, setNewO] = useState(null);
   const [edO, setEdO] = useState(null);
   const [rmO, setRmO] = useState(null);
   const [dtO, setDtO] = useState(null);
@@ -44,6 +41,13 @@ export default function OrdenesProduccion() {
   const [toastMsg, setToastMsg] = useState("");
 
   const col = collection(db, "ordenes_produccion");
+  const etapas = [
+    "Planificada",
+    "En proceso",
+    "Control calidad",
+    "Empaque",
+    "Completada",
+  ];
 
   useEffect(() => {
     onAuthStateChanged(auth, (u) => {
@@ -52,21 +56,10 @@ export default function OrdenesProduccion() {
   }, []);
 
   useEffect(() => {
-    const goOnline = () => setOff(false);
-    const goOffline = () => setOff(true);
-    window.addEventListener("online", goOnline);
-    window.addEventListener("offline", goOffline);
-    return () => {
-      window.removeEventListener("online", goOnline);
-      window.removeEventListener("offline", goOffline);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (uid) load();
+    if (uid) loadOrders();
   }, [uid]);
 
-  async function load() {
+  async function loadOrders() {
     const snap = await getDocs(col);
     setOrdenes(
       snap.docs
@@ -75,122 +68,136 @@ export default function OrdenesProduccion() {
     );
   }
 
-  function idGen() {
-    return `OP-${Date.now().toString().slice(-6)}`;
+  function calcularProgreso(estado) {
+    const idx = etapas.indexOf(estado);
+    return idx >= 0 ? idx * 25 : 0;
   }
 
-  function openAdd() {
-    setNewO({
-      numero_orden: idGen(),
-      producto: "",
-      prioridad: "Media",
-      proceso: "",
-      responsable: "",
-      cantidad_planeada: "",
-      fecha_inicio: new Date().toISOString().split("T")[0],
-      fecha_fin_estimada: "",
-      estado: "Planificada",
-      progreso: 0,
-      materias_primas: [],
-    });
-    setAdd(true);
-  }
-
-  async function handleAdd(o) {
-    setAdd(false);
-    // Asegura convertir a número los campos numéricos
-    o.costo_estimado = Number(o.costo_estimado) || 0;
-    o.costo_real = Number(o.costo_real) || 0;
-    o.horas_trabajadas = Number(o.horas_trabajadas) || 0;
-    o.cantidad_planeada = Number(o.cantidad_planeada) || 0;
-    o.cantidad_real = Number(o.cantidad_real) || 0;
-
-    const stageProgress = {
-      "Planificada": 0,
-      "En proceso": 25,
-      "Control calidad": 50,
-      "Empaque": 75,
-      "Completada": 100,
-    };
-    o.progreso = stageProgress[o.estado] || 0;
-
-    const payload = {
-      ...o,
-      userId: uid,
-      creada_en: serverTimestamp(),
-      // se pueden mantener campos adicionales...
-    };
-
-    if (off) {
-      setOrdenes((prev) => [...prev, { ...payload, id: `tmp_${Date.now()}` }]);
-    } else {
-      await addDoc(col, payload);
-    }
-    setMsg("Orden registrada");
-    setSmsg(true);
-    load();
-  }
-
-  async function stocks(o) {
-    if (o.estado !== "Completada") return;
+  async function adjustMateriaPrima(order, mode, prevOrder = null) {
     await runTransaction(db, async (t) => {
-      for (const m of o.materias_primas) {
-        const refM = doc(db, "materias_primas", m.id);
-        const snapM = await t.get(refM);
-        if (!snapM.exists()) continue;
-        t.update(refM, {
-          stock_actual: (snapM.data().stock_actual || 0) - Number(m.cantidad_usada),
-        });
+      for (const m of order.materias_primas) {
+        const ref = doc(db, "materias_primas", m.id);
+        const snap = await t.get(ref);
+        if (snap.exists()) {
+          let stock = snap.data().stock_actual || 0;
+          let newQty = Number(m.cantidad_usada);
+
+          if (mode === "create") {
+            stock -= newQty;
+          } else if (mode === "edit") {
+            const prev = prevOrder?.materias_primas.find(
+              (pm) => pm.id === m.id
+            );
+            const prevQty = prev ? Number(prev.cantidad_usada) : 0;
+            stock -= newQty - prevQty;
+          } else if (mode === "delete") {
+            stock += newQty;
+          }
+
+          t.update(ref, { stock_actual: stock });
+        }
       }
     });
+  }
+
+  async function adjustInventario(order, mode, prevOrder = null) {
     const q = query(
       collection(db, "inventario"),
-      where("usuario_id", "==", uid),
-      where("nombre_producto", "==", o.producto)
+      where("userId", "==", uid),
+      where("nombre_producto", "==", order.producto)
     );
     const ex = await getDocs(q);
-    if (ex.empty) {
-      await addDoc(collection(db, "inventario"), {
-        usuario_id: uid,
-        nombre_producto: o.producto,
-        stock_actual: o.cantidad_real,
-        stock_mínimo: 0,
-        costo_unitario: o.costo_real / o.cantidad_real,
-        precio_venta: 0,
-      });
-    } else {
-      await updateDoc(ex.docs[0].ref, {
-        stock_actual: (ex.docs[0].data().stock_actual || 0) + o.cantidad_real,
-      });
+    if (!ex.empty) {
+      const ref = ex.docs[0].ref;
+      const current = ex.docs[0].data().stock_actual || 0;
+      let qty = Number(order.cantidad_real);
+      const prevQty = prevOrder ? Number(prevOrder.cantidad_real) : 0;
+
+      let finalStock = current;
+      if (mode === "create" && order.estado === "Completada") {
+        finalStock += qty;
+      } else if (mode === "edit") {
+        if (
+          order.estado === "Completada" &&
+          prevOrder.estado !== "Completada"
+        ) {
+          finalStock += qty;
+        } else if (
+          order.estado === "Completada" &&
+          prevOrder.estado === "Completada"
+        ) {
+          finalStock += qty - prevQty;
+        }
+      } else if (mode === "delete" && order.estado === "Completada") {
+        finalStock -= qty;
+      }
+
+      await updateDoc(ref, { stock_actual: finalStock });
     }
   }
 
-  async function handleEdit(o) {
-    setEdit(false);
-    // Actualización inmediata en UI
-    setOrdenes((prev) => prev.map((x) => (x.id === o.id ? o : x)));
-    setMsg("Orden actualizada");
-    setSmsg(true);
+  async function handleOrder(order, mode) {
+    order.progreso = calcularProgreso(order.estado);
+    order.cantidad_planeada = Number(order.cantidad_planeada) || 0;
+    order.cantidad_real = Number(order.cantidad_real) || 0;
+    order.horas_trabajadas = Number(order.horas_trabajadas) || 0;
+    order.costo_real = Number(order.costo_real) || 0;
 
-    if (!o.id.startsWith("tmp_")) {
-      await updateDoc(doc(db, "ordenes_produccion", o.id), o);
-      await stocks(o);
-      // opcional: await load();
+    if (mode === "create") {
+      const id = (
+        await addDoc(col, {
+          ...order,
+          userId: uid,
+          creada_en: serverTimestamp(),
+        })
+      ).id;
+
+      const fullOrderSnap = await getDoc(doc(db, "ordenes_produccion", id));
+      const fullOrder = fullOrderSnap.data();
+
+      await adjustMateriaPrima({ id, ...fullOrder }, "create");
+      await adjustInventario({ id, ...fullOrder }, "create");
+      setAdd(false);
+    } else if (mode === "edit") {
+      const prevSnap = await getDoc(doc(db, "ordenes_produccion", order.id));
+      const prevOrder = prevSnap.data();
+
+      await updateDoc(doc(db, "ordenes_produccion", order.id), order);
+      await adjustMateriaPrima(order, "edit", prevOrder);
+      await adjustInventario(order, "edit", prevOrder);
+      setEdit(false);
+    } else if (mode === "delete") {
+      const snap = await getDoc(doc(db, "ordenes_produccion", order.id));
+      const data = snap.data();
+
+      await adjustMateriaPrima(data, "delete");
+      await adjustInventario(data, "delete");
+      await deleteDoc(doc(db, "ordenes_produccion", order.id));
+      setDel(false);
     }
+
+    loadOrders();
+    setMsg(
+      `Orden ${
+        mode === "delete"
+          ? "eliminada"
+          : mode === "edit"
+          ? "actualizada"
+          : "registrada"
+      }`
+    );
+    setSmsg(true);
   }
 
-  async function handleDel() {
-    setDel(false);
-    if (!rmO) return;
-    if (off) {
-      setOrdenes((prev) => prev.filter((x) => x.id !== rmO.id));
-    }
-    setMsg("Orden eliminada");
-    setSmsg(true);
-    if (!rmO.id.startsWith("tmp_")) {
-      await deleteDoc(doc(db, "ordenes_produccion", rmO.id));
-    }
-    load();
+  async function advanceStage(order) {
+    const idx = etapas.indexOf(order.estado);
+    if (idx < 0 || idx >= etapas.length - 1) return;
+
+    const newEstado = etapas[idx + 1];
+    const newProgreso = (idx + 1) * 25;
+
+    const updatedOrder = { ...order, estado: newEstado, progreso: newProgreso };
+    await handleOrder(updatedOrder, "edit");
   }
 
   function handleCopyOrden(o) {
@@ -202,124 +209,103 @@ export default function OrdenesProduccion() {
     });
   }
 
-  const etapas = [
-    "Planificada",
-    "En proceso",
-    "Control calidad",
-    "Empaque",
-    "Completada",
-  ];
-
-  function next(o) {
-    const idx = etapas.indexOf(o.estado);
-    if (idx < 0 || idx === etapas.length - 1) return;
-    const nuevoEstado = etapas[idx + 1];
-    const nuevoProgreso = Math.min(o.progreso + 25, 100);
-    handleEdit({ ...o, estado: nuevoEstado, progreso: nuevoProgreso });
-  }
-
-  function badge(c) {
-    return c === "Alta" ? "danger" : c === "Baja" ? "secondary" : "warning";
-  }
-
   return (
     <Container fluid className="ordenes-container">
       <div className="ordenes-header">
         <h5>Órdenes de Producción</h5>
-        <Button onClick={openAdd}>Nueva</Button>
+        <Button onClick={() => setAdd(true)}>Nueva</Button>
       </div>
-
       <div className="ordenes-content">
         <div className="ordenes-list">
-          {ordenes.map((o) => {
-            const expanded = exp === o.id;
-            return (
-              <div
-                key={o.id}
-                className={`orden-item ${expanded ? "expanded" : ""}`}
-                onClick={() => setExp(expanded ? null : o.id)}
-              >
-                <div className="orden-top">
-                  <Badge bg={badge(o.prioridad)} className="me-2">
-                    {o.prioridad}
-                  </Badge>
-                  <span className="orden-num">{o.numero_orden}</span>
-                  <span className="orden-producto flex-grow-1">
-                    {o.producto}
-                  </span>
-                  <span className="orden-estado">{o.estado}</span>
-                </div>
-
-                <ProgressBar now={o.progreso} className="mb-1" />
-
-                <div className="orden-subinfo">
-                  <span>{o.proceso || "—"}</span>
-                  <span className="mx-2">|</span>
-                  <span>{o.responsable || "—"}</span>
-                </div>
-
-                {expanded && (
-                  <div className="orden-actions-expanded">
-                    <Button
-                      size="sm"
-                      variant="outline-primary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCopyOrden(o);
-                      }}
-                    >
-                      <FaIcons.FaClipboard />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="info"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDtO(o);
-                        setDet(true);
-                      }}
-                    >
-                      <FaIcons.FaEye />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        next(o);
-                      }}
-                    >
-                      <FaIcons.FaForward />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEdO(o);
-                        setEdit(true);
-                      }}
-                    >
-                      <FaIcons.FaEdit />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setRmO(o);
-                        setDel(true);
-                      }}
-                    >
-                      <FaIcons.FaTrash />
-                    </Button>
-                  </div>
-                )}
+          {ordenes.map((o) => (
+            <div
+              key={o.id}
+              className={`orden-item ${exp === o.id ? "expanded" : ""}`}
+              onClick={() => setExp(exp === o.id ? null : o.id)}
+            >
+              <div className="orden-top">
+                <Badge
+                  bg={
+                    o.prioridad === "Alta"
+                      ? "danger"
+                      : o.prioridad === "Baja"
+                      ? "secondary"
+                      : "warning"
+                  }
+                  className="me-2"
+                >
+                  {o.prioridad}
+                </Badge>
+                <span className="orden-num">{o.numero_orden}</span>
+                <span className="orden-producto flex-grow-1">{o.producto}</span>
+                <span className="orden-estado">{o.estado}</span>
               </div>
-            );
-          })}
+              <ProgressBar now={o.progreso} className="mb-1" />
+              <div className="orden-subinfo">
+                <span>{o.proceso || "—"}</span>
+                <span className="mx-2">|</span>
+                <span>{o.responsable || "—"}</span>
+              </div>
+              {exp === o.id && (
+                <div className="orden-actions-expanded">
+                  <Button
+                    size="sm"
+                    variant="outline-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopyOrden(o);
+                    }}
+                  >
+                    <FaIcons.FaClipboard />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="info"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDtO(o);
+                      setDet(true);
+                    }}
+                  >
+                    <FaIcons.FaEye />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      advanceStage(o);
+                    }}
+                  >
+                    <FaIcons.FaForward />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEdO(o);
+                      setEdit(true);
+                    }}
+                  >
+                    <FaIcons.FaEdit />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRmO(o);
+                      setDel(true);
+                    }}
+                  >
+                    <FaIcons.FaTrash />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-
         <div className="ordenes-summary">
           <Card className="summary-card">
             <Card.Body>
@@ -329,53 +315,45 @@ export default function OrdenesProduccion() {
           </Card>
         </div>
       </div>
-
-      {add && newO && (
+      {add && (
         <ModalRegistroOrden
           show={add}
           close={() => setAdd(false)}
-          data={newO}
-          setData={setNewO}
-          save={handleAdd}
+          save={(o) => handleOrder(o, "create")}
           uid={uid}
         />
       )}
-
       {edit && edO && (
         <ModalEdicionOrden
           show={edit}
           close={() => setEdit(false)}
           data={edO}
           setData={setEdO}
-          update={handleEdit}
+          update={(o) => handleOrder(o, "edit")}
           uid={uid}
         />
       )}
-
       {del && rmO && (
         <ModalEliminacionOrden
           show={del}
           close={() => setDel(false)}
           data={rmO}
-          confirm={handleDel}
+          confirm={() => handleOrder(rmO, "delete")}
         />
       )}
-
       {det && dtO && (
         <ModalDetalleOrden
           show={det}
           close={() => setDet(false)}
           data={dtO}
-          refresh={load}
+          refresh={loadOrders}
         />
       )}
-
       <ModalMensaje
         show={smsg}
         handleClose={() => setSmsg(false)}
         message={msg}
       />
-
       <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );

@@ -9,11 +9,27 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 export default function ModalRegistroOrden({
   show,
   close,
-  data,
-  setData,
   save,
   uid,
 }) {
+  const defaultData = {
+    prioridad: "Media", // Valor predeterminado
+    proceso: "",
+    producto: "",
+    cantidad_planeada: "",
+    fecha_inicio: "",
+    fecha_fin_estimada: "",
+    estado: "Planificada",
+    cantidad_real: "",
+    fecha_fin_real: "",
+    costo_estimado: "",
+    costo_real: "",
+    horas_trabajadas: "",
+    es_reproceso: false,
+    materias_primas: [],
+  };
+
+  const [data, setData] = useState(defaultData);
   const [repoInsumos, setRepoInsumos] = useState([]);
   const [repoProductos, setRepoProductos] = useState([]);
   const [errors, setErrors] = useState({});
@@ -22,7 +38,7 @@ export default function ModalRegistroOrden({
     (async () => {
       const q1 = query(
         collection(db, "materias_primas"),
-        where("usuario_id", "==", uid)
+        where("userId", "==", uid)
       );
       const snap1 = await getDocs(q1);
       setRepoInsumos(
@@ -34,7 +50,7 @@ export default function ModalRegistroOrden({
 
       const q2 = query(
         collection(db, "inventario"),
-        where("usuario_id", "==", uid)
+        where("userId", "==", uid)
       );
       const snap2 = await getDocs(q2);
       setRepoProductos(
@@ -228,7 +244,7 @@ export default function ModalRegistroOrden({
               <Form.Label>Prioridad</Form.Label>
               <Form.Select
                 name="prioridad"
-                value={data.prioridad}
+                value={data?.prioridad || "Media"} // Usa un valor predeterminado si `data.prioridad` es undefined
                 onChange={chg}
               >
                 <option>Alta</option>
