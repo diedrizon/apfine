@@ -1,18 +1,54 @@
 .educacion-container {
-  background-color: var(--card-bg); /* Fondo dinámico */
-  color: var(--text-normal); /* Texto dinámico */
+  background-color: var(--card-bg);
+  color: var(--text-normal);
   padding: 20px;
   transition: margin-left 0.3s ease, background-color 0.3s ease;
-  height: 100vh; /* Ocupa toda la altura de la ventana */
-  box-sizing: border-box; /* Incluye el padding en el cálculo del tamaño */
-  overflow-y: auto; /* Permite desplazamiento si el contenido es mayor que la pantalla */
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .educacion-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 1rem;
+}
+
+.educacion-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  color: var(--text-normal);
+  text-decoration: none;
+}
+
+.back-button:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.back-button:focus,
+.back-button:active {
+  color: var(--primary) !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  outline: none !important;
+}
+
+.back-button i {
+  font-size: 1.2rem;
+}
+
+.back-button .ms-1 {
+  margin-left: 0.25rem;
+}
+
+.educacion-header .ms-3 {
+  margin-left: 1rem;
 }
 
 .educacion-content {
