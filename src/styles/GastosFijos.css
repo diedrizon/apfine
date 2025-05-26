@@ -11,7 +11,13 @@
 }
 
 .gastos-fijos-container {
+  background-color: var(--card-bg); /* Fondo dinámico */
+  color: var(--text-normal); /* Texto dinámico */
   padding: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+  box-sizing: border-box; /* Incluye el padding en el cálculo del tamaño */
+  overflow-y: auto; /* Permite desplazamiento si el contenido es mayor que la pantalla */
 }
 
 .section-header {

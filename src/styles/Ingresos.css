@@ -2,9 +2,14 @@
 
 /* Contenedor principal */
 .ingresos-container {
+  background-color: var(--card-bg); /* Fondo dinámico */
+  color: var(--text-normal); /* Texto dinámico */
   padding: 20px;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, background-color 0.3s ease;
   margin-left: 0;
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+  box-sizing: border-box; /* Incluye el padding en el cálculo del tamaño */
+  overflow-y: auto; /* Permite desplazamiento si el contenido es mayor que la pantalla */
 }
 
 .ingresos-header {
