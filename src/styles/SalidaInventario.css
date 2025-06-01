@@ -1,0 +1,185 @@
+/* Light / Dark via data-theme attribute */
+
+:root {
+  --si-bg: #fff;
+  --si-text: #333;
+  --si-card-bg: #f9f9f9;
+  --si-border: #ddd;
+  --si-primary: #007bff;
+  --si-primary-hover: #0056b3;
+}
+
+[data-theme="dark"] {
+  --si-bg: #1e1e1e;
+  --si-text: #ddd;
+  --si-card-bg: #2a2a2a;
+  --si-border: #444;
+  --si-primary: #339af0;
+  --si-primary-hover: #1c7ed6;
+}
+
+.si-container {
+  background-color: var(--si-bg);
+  color: var(--si-text);
+  padding: 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.si-header {
+  margin-bottom: 1rem;
+}
+
+.si-form .si-row {
+  gap: 1rem;
+}
+
+.si-form .form-group label {
+  font-weight: 600;
+  color: var(--si-text);
+}
+
+.si-form .form-control,
+.si-form .form-select {
+  background-color: var(--si-card-bg);
+  border: 1px solid var(--si-border);
+  color: var(--si-text);
+}
+
+.si-form .form-control:focus,
+.si-form .form-select:focus {
+  border-color: var(--si-primary-hover);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(51, 122, 183, 0.25);
+}
+
+.si-table th,
+.si-table td {
+  vertical-align: middle;
+}
+
+.si-summary {
+  background-color: var(--si-card-bg);
+  border: 1px solid var(--si-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.si-summary h5 {
+  margin: 0;
+}
+
+.si-summary button {
+  background-color: var(--si-primary);
+  border: none;
+}
+
+.si-summary button:hover {
+  background-color: var(--si-primary-hover);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .si-form .si-row {
+    display: block;
+  }
+  .si-form .si-row > * {
+    margin-bottom: 1rem;
+  }
+}
+
+.si-item-card {
+  background-color: var(--bs-light);
+  border: 1px solid var(--bs-border-subtle);
+}
+.si-item-actions button {
+  color: var(--bs-secondary);
+  font-size: 1.2rem;
+}
+.si-item-actions button:hover {
+  color: var(--bs-primary);
+}
+
+/* Tarjetas en historial */
+.sv-historial-card {
+  background-color: var(--si-card-bg);
+  border: 1px solid var(--si-border);
+  border-radius: 6px;
+}
+.sv-historial-actions button {
+  color: var(--si-text);
+  font-size: 1.2rem;
+}
+.sv-historial-actions button:hover {
+  color: var(--si-primary-hover);
+}
+
+/* Limita el ancho y altura del modal, y centra */
+.si-custom-modal .modal-dialog {
+  max-width: 90vw;               /* Nunca más ancho que el 90% de la ventana */
+  margin: 1rem auto;             /* Centrado horizontal y un poco de espacio arriba/abajo */
+}
+
+.si-custom-modal .modal-content {
+  max-height: calc(100vh - 2rem); /* Para que quepa siempre en la ventana */
+  overflow: hidden;
+}
+
+.si-custom-modal .modal-body {
+  max-height: calc(100vh - 220px); /* Ajusta según header+footer, deja resto para el body */
+  overflow-y: auto;                /* Scroll interno solo para el body */
+}
+
+/* Modal de historial responsivo */
+.historial-modal .modal-dialog {
+  max-width: 90%; /* El modal ocupará como máximo el 90% del ancho de la ventana */
+  margin: auto; /* Centra el modal horizontalmente */
+}
+
+.historial-modal .modal-content {
+  max-height: calc(100vh - 2rem); /* Asegura que no se salga de la vista verticalmente */
+  overflow-y: auto; /* Agrega scroll interno si es necesario */
+  border-radius: 8px; /* Opcional: bordes redondeados */
+}
+
+/* Ajustes específicos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .historial-modal .modal-dialog {
+    max-width: 95%; /* En pantallas pequeñas, ocupa el 95% del ancho */
+  }
+}
+
+@media (max-width: 576px) {
+  .historial-modal .modal-dialog {
+    max-width: 100%; /* En pantallas muy pequeñas, ocupa todo el ancho */
+    margin: 0 1rem; /* Agrega un pequeño margen lateral */
+  }
+}
+
+/* Ajusta el diseño del modal en dispositivos móviles */
+.historial-modal .modal-body .row {
+  gap: 1rem; /* Añade espacio entre las columnas */
+}
+
+@media (max-width: 768px) {
+  .historial-modal .modal-body .row {
+    flex-direction: column; /* Apila los elementos verticalmente */
+  }
+
+  .historial-modal .modal-body .col-md-2 {
+    margin-top: 0.5rem; /* Añade un margen superior al botón "Filtrar" */
+  }
+}
+
+/* Espacio en móvil debajo de inputs */
+@media (max-width: 576px) {
+  .si-container .form-control,
+  .si-container .form-group {
+    margin-bottom: 0.75rem; /* añade margen inferior */
+  }
+
+  .si-container .d-grid.align-self-end {
+    margin-top: 0.5rem; /* separa el botón del campo arriba */
+  }
+}

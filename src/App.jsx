@@ -27,6 +27,8 @@ import GestionUsuario from "./views/GestionUsuarios";
 import Inventario from "./views/Inventario";
 import OrdenesProduccion from "./views/OrdenesProduccion";
 import Educacion from "./views/Educacion";
+import VistaGeneralProduccion from "./views/VistaGeneralProduccion";
+import InventarioSalida from "./views/InventarioSalida";
 
 import "./App.css";
 import ReactGA from "react-ga4";
@@ -170,6 +172,10 @@ function AppContent() {
 
           {/*Produccion*/}
           <Route
+            path="/vista-general-produccion"
+            element={<ProtectedRoute element={<VistaGeneralProduccion />} />}
+          />
+          <Route
             path="/materias-primas"
             element={<ProtectedRoute element={<MateriasPrimas />} />}
           />
@@ -180,6 +186,10 @@ function AppContent() {
           <Route
             path="/ordenes-produccion"
             element={<ProtectedRoute element={<OrdenesProduccion />} />}
+          />
+          <Route
+            path="/inventario-salida"
+            element={<ProtectedRoute element={<InventarioSalida />} />}
           />
 
           {/* Gestión de usuarios */}
