@@ -1,0 +1,102 @@
+.articulos-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.articulo-card {
+  flex: 0 1 480px;
+  width: 100%;
+  border: none;
+  border-radius: var(--modal-border-radius);
+  overflow: hidden;
+  background: #f5f5f5;
+  color: var(--text-normal);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+body:not(.dark-mode) .articulo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+body.dark-mode .articulo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(0, 150, 0, 0.75);
+}
+
+body.dark-mode .articulo-card {
+  background: #3b3b3b;
+  color: #fff;
+}
+
+.articulo-leer {
+  max-width: 800px;
+  margin: auto;
+  padding: 1rem;
+}
+
+.articulo-contenido {
+  padding: 1rem 0;
+}
+
+.articulo-contenido h4.articulo-seccion {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-title, #333);
+}
+
+.articulo-contenido h5.articulo-titulo {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-title, #333);
+}
+
+.articulo-contenido p.articulo-parrafo {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  color: var(--text-normal, #555);
+}
+
+.articulo-contenido li.articulo-item {
+  margin-left: 1.5rem;
+  list-style: disc;
+  margin-bottom: 0.5rem;
+  color: var(--text-normal, #555);
+}
+
+body.dark-mode .articulo-contenido h4.articulo-seccion,
+body.dark-mode .articulo-contenido h5.articulo-titulo,
+body.dark-mode .articulo-contenido p.articulo-parrafo,
+body.dark-mode .articulo-contenido li.articulo-item {
+  color: #ddd;
+}
+
+.btn-salir {
+  background-color: #ff5c5c;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-salir:hover {
+  background-color: #ff4040;
+}
+
+body.dark-mode .btn-salir {
+  background-color: #ff7b7b;
+  color: #000;
+}
+
+body.dark-mode .btn-salir:hover {
+  background-color: #ff5555;
+}

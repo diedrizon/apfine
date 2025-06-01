@@ -4,7 +4,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 import { useAuth } from '../database/authcontext';
 
 import Tutoriales from '../components/educacion/Tutoriales';
-import Documentos from '../components/educacion/Documentos';
+import ArticulosIA from '../components/educacion/ArticulosIA';
 import CardContenido from '../components/educacion/CardContenido';
 import ModalCrearMaterial from '../components/educacion/ModalCrearMaterial';
 
@@ -50,7 +50,7 @@ const Educacion = () => {
             {componenteActual ? (
                 <div className="educacion-content">
                     {componenteActual === 'tutoriales' && <Tutoriales />}
-                    {componenteActual === 'documentos' && <Documentos />}
+                    {componenteActual === 'articulos' && <ArticulosIA />}
                 </div>
             ) : (
                 <div className="educacion-content">
@@ -61,10 +61,10 @@ const Educacion = () => {
                         onClick={() => setComponenteActual('tutoriales')}
                     />
                     <CardContenido
-                        title="Documentos"
-                        description="Consulta material de referencia."
-                        imageSrc="/icons/documentos.png"
-                        onClick={() => setComponenteActual('documentos')}
+                        title="Articulos con IA"
+                        description="Consulta artículos generados con IA."
+                        imageSrc="/icons/articulo.png"
+                        onClick={() => setComponenteActual('articulos')}
                     />
                 </div>
             )}
