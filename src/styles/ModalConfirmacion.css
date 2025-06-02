@@ -1,0 +1,38 @@
+.modal-mensaje .modal-content {
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.modal-mensaje .modal-header {
+  border-bottom: none;
+}
+
+.modal-warning-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-warning-body .warning-icon {
+  color: #ff0707;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.modal-warning-body p {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.modal-mensaje .modal-footer {
+  border-top: none;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.modal-mensaje .btn {
+  min-width: 120px;
+  font-weight: 600;
+}

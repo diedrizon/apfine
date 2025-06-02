@@ -110,6 +110,7 @@ function ModalCrearMaterial({ show, handleClose, onMaterialCreado }) {
             });
 
             if (onMaterialCreado) onMaterialCreado();
+            setForm(initialFormState);
             setMensaje("✅ Material guardado exitosamente.");
         } catch (e) {
             console.error("Error al crear material:", e);

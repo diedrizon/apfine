@@ -100,3 +100,15 @@ body.dark-mode .btn-salir {
 body.dark-mode .btn-salir:hover {
   background-color: #ff5555;
 }
+
+.btn-eliminar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  padding: 0.3rem 0.5rem;
+}
+
+.articulo-card {
+  position: relative;
+}
