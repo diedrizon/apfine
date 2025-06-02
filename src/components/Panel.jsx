@@ -147,7 +147,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "produccion" && (
               <ul className="submenu">
-                {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => { })}
+                {renderSubItem(<BiBarChartAlt2 />, "Vista general", () => 
+                  handleNavigate("/vista-general-produccion")
+                )}
                 {renderSubItem(<BiCube />, "Materias primas", () =>
                   handleNavigate("/materias-primas")
                 )}
@@ -158,6 +160,9 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                   <BiClipboard />,
                   "Órdenes de producción",
                   () => handleNavigate("/ordenes-produccion")
+                )}
+                {renderSubItem(<BiPackage />, "Inventario salida", () =>
+                  handleNavigate("/inventario-salida")
                 )}
               </ul>
             )}

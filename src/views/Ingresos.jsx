@@ -1,3 +1,5 @@
+// src/pages/Ingresos.jsx
+
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../database/firebaseconfig";
 import {
@@ -7,6 +9,9 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  getDoc,
+  query,
+  where
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { Container, Button, Card } from "react-bootstrap";
@@ -30,7 +35,7 @@ function getIconComponent(tipo_ingreso) {
   return <FaIcons.FaInbox />;
 }
 
-function Ingresos() {
+export default function Ingresos() {
   const [userId, setUserId] = useState(null);
   const [ingresos, setIngresos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -57,63 +62,50 @@ function Ingresos() {
   const ingresosCollection = collection(db, "ingresos");
   const categoriasCollection = collection(db, "categorias");
 
+  // Auth listener
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) setUserId(user.uid);
     });
   }, []);
 
+  // Online/offline detector
   useEffect(() => {
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    const goOnline = () => setIsOffline(false);
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
     setIsOffline(!navigator.onLine);
-
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
     };
   }, []);
 
+  // Fetch on userId change
   useEffect(() => {
     if (userId) {
       fetchIngresos();
       fetchCategorias();
     }
-  });
+  }, [userId]);
 
   async function fetchIngresos() {
-    try {
-      const snapshot = await getDocs(ingresosCollection);
-      const all = snapshot.docs.map((docu) => ({
-        ...docu.data(),
-        id: docu.id,
-      }));
-      const filtered = all.filter((ing) => ing.userId === userId);
-      setIngresos(filtered);
-    } catch (error) {
-      console.error(error);
-    }
+    const snap = await getDocs(ingresosCollection);
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    setIngresos(all.filter(i => i.userId === userId));
   }
 
   async function fetchCategorias() {
-    try {
-      const snapshot = await getDocs(categoriasCollection);
-      const allCategorias = snapshot.docs.map((docu) => ({
-        ...docu.data(),
-        id: docu.id,
-      }));
-      const userCategorias = allCategorias.filter(
-        (cat) =>
-          cat.usuarioId === userId &&
-          (cat.aplicacion === "Ingreso" || cat.aplicacion === "Ambos")
-      );
-      setCategorias(userCategorias);
-    } catch (error) {
-      console.error(error);
-    }
+    const snap = await getDocs(categoriasCollection);
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    setCategorias(
+      all.filter(
+        c =>
+          c.usuarioId === userId &&
+          (c.aplicacion === "Ingreso" || c.aplicacion === "Ambos")
+      )
+    );
   }
 
   const openAddModal = () => {
@@ -126,25 +118,25 @@ function Ingresos() {
       medio_pago: "",
       descripcion: "",
       comprobanteURL: "",
+      ventaId: ""
     });
     setShowModalAdd(true);
   };
   const closeAddModal = () => setShowModalAdd(false);
 
-  const openEditModal = (ing) => {
+  const openEditModal = ing => {
     setIngresoEditado({ ...ing });
     setShowModalEdit(true);
   };
-  const closeEditModal = () => setShowModalEdit(false); 
+  const closeEditModal = () => setShowModalEdit(false);
 
-
-  const openDeleteModal = (ing) => {
+  const openDeleteModal = ing => {
     setIngresoAEliminar(ing);
     setShowModalDelete(true);
   };
   const closeDeleteModal = () => setShowModalDelete(false);
 
-  const openDetalleModal = (ing) => {
+  const openDetalleModal = ing => {
     setIngresoDetalle(ing);
     setShowModalDetalle(true);
   };
@@ -152,116 +144,123 @@ function Ingresos() {
 
   async function handleAddIngreso(nuevo) {
     closeAddModal();
-
     const tempId = `temp_${Date.now()}`;
-    const nuevoIngreso = { ...nuevo, userId };
-
+    const toSave = { ...nuevo, userId };
     if (isOffline) {
-      setIngresos((prev) => [...prev, { ...nuevoIngreso, id: tempId }]);
+      setIngresos(prev => [...prev, { ...toSave, id: tempId }]);
     }
-
     setMensaje("Ingreso registrado correctamente.");
     setShowModalMensaje(true);
-
-    try {
-      await addDoc(ingresosCollection, nuevoIngreso);
-    } catch (error) {
-      console.error(error);
-    }
-
+    await addDoc(ingresosCollection, toSave);
     fetchIngresos();
   }
 
   async function handleEditIngreso(editado) {
     closeEditModal();
-
     if (isOffline) {
-      setIngresos((prev) =>
-        prev.map((ing) => (ing.id === editado.id ? { ...editado } : ing))
+      setIngresos(prev =>
+        prev.map(i => (i.id === editado.id ? editado : i))
       );
     }
-
     setMensaje("Ingreso actualizado correctamente.");
     setShowModalMensaje(true);
-
     if (!editado.id.startsWith("temp_")) {
-      try {
-        const refDoc = doc(db, "ingresos", editado.id);
-        await updateDoc(refDoc, { ...editado });
-      } catch (error) {
-        console.error(error);
-      }
+      await updateDoc(doc(db, "ingresos", editado.id), editado);
     }
-
     fetchIngresos();
   }
 
   async function handleDeleteIngreso() {
     if (!ingresoAEliminar) return;
-
     closeDeleteModal();
 
     if (isOffline) {
-      setIngresos((prev) =>
-        prev.filter((ing) => ing.id !== ingresoAEliminar.id)
+      setIngresos(prev =>
+        prev.filter(i => i.id !== ingresoAEliminar.id)
       );
+      setMensaje("Ingreso eliminado (offline).");
+      setShowModalMensaje(true);
+      return;
     }
 
-    setMensaje("Ingreso eliminado correctamente.");
-    setShowModalMensaje(true);
-
-    if (!ingresoAEliminar.id.startsWith("temp_")) {
-      try {
-        const refDoc = doc(db, "ingresos", ingresoAEliminar.id);
-        await deleteDoc(refDoc);
-      } catch (error) {
-        console.error(error);
+    const { id: ingresoId, ventaId } = ingresoAEliminar;
+    try {
+      if (ventaId) {
+        // Restore stock & delete sale
+        const ventaRef = doc(db, "ventas", ventaId);
+        const ventaSnap = await getDoc(ventaRef);
+        if (ventaSnap.exists()) {
+          const { items } = ventaSnap.data();
+          for (const { productoId, cantidad } of items) {
+            const invRef = doc(db, "inventario", productoId);
+            const invSnap = await getDoc(invRef);
+            const prevStock = Number(invSnap.data().stock_actual || 0);
+            await updateDoc(invRef, {
+              stock_actual: prevStock + Number(cantidad)
+            });
+            // delete movimientos
+            const movQ = query(
+              collection(db, "inventario", productoId, "movimientos"),
+              where("ventaId", "==", ventaId)
+            );
+            const movSnap = await getDocs(movQ);
+            for (const m of movSnap.docs) {
+              await deleteDoc(
+                doc(db, "inventario", productoId, "movimientos", m.id)
+              );
+            }
+          }
+          await deleteDoc(ventaRef);
+        }
       }
+
+      // Delete ingreso
+      await deleteDoc(doc(db, "ingresos", ingresoId));
+      setMensaje("Ingreso y venta eliminados, stock restaurado.");
+      setShowModalMensaje(true);
+      fetchIngresos();
+    } catch (err) {
+      console.error(err);
+      setMensaje("Error al eliminar ingreso.");
+      setShowModalMensaje(true);
     }
-
-    fetchIngresos();
   }
 
-  function toggleExpanded(ingreso) {
-    setExpandedId(expandedId === ingreso.id ? null : ingreso.id);
-  }
+  const toggleExpanded = id =>
+    setExpandedId(expandedId === id ? null : id);
 
-  function handleCopyIngreso(ing) {
-    const texto = `Tipo: ${ing.tipo_ingreso}, Monto: C$${ing.monto}, Fecha: ${ing.fecha_ingreso}, Categoría: ${ing.categoria}`;
-    navigator.clipboard.writeText(texto).then(() => {
+  const handleCopyIngreso = ing => {
+    const txt = `Tipo: ${ing.tipo_ingreso}, Monto: C$${ing.monto}, Fecha: ${ing.fecha_ingreso}, Categoría: ${ing.categoria}`;
+    navigator.clipboard.writeText(txt).then(() => {
       setToastMsg("Ingreso copiado");
       setToastVisible(true);
       setTimeout(() => setToastVisible(false), 2000);
     });
-  }
-
-  const totalIngresos = ingresos.length;
+  };
 
   return (
     <Container fluid className="ingresos-container">
       <div className="ingresos-header">
         <h5>Lista de Ingresos</h5>
-        <Button variant="primary" onClick={openAddModal}>
-          Agregar
-        </Button>
+        <Button onClick={openAddModal}>Agregar</Button>
       </div>
 
       <div className="ingresos-content">
         <div className="ingresos-list">
-          {ingresos.map((ing) => {
-            const isExpanded = expandedId === ing.id;
+          {ingresos.map(ing => {
+            const expanded = expandedId === ing.id;
             return (
               <div
                 key={ing.id}
-                className={`ingreso-item ${isExpanded ? "expanded" : ""}`}
-                onClick={() => toggleExpanded(ing)}
+                className={`ingreso-item ${expanded ? "expanded" : ""}`}
+                onClick={() => toggleExpanded(ing.id)}
               >
                 <div className="ingreso-top">
                   <div className="ingreso-icon">
                     {getIconComponent(ing.tipo_ingreso)}
                   </div>
                   <span className="ingreso-nombre">
-                    {ing.tipo_ingreso || "—"} (C${ing.monto})
+                    {ing.tipo_ingreso} (C${ing.monto})
                   </span>
                 </div>
                 <div className="ingreso-subinfo">
@@ -269,13 +268,12 @@ function Ingresos() {
                   <span className="mx-2">|</span>
                   <span>{ing.categoria}</span>
                 </div>
-
-                {isExpanded && (
+                {expanded && (
                   <div className="ingreso-actions-expanded">
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         openDeleteModal(ing);
                       }}
@@ -285,7 +283,7 @@ function Ingresos() {
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         openEditModal(ing);
                       }}
@@ -295,7 +293,7 @@ function Ingresos() {
                     <Button
                       variant="info"
                       size="sm"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         openDetalleModal(ing);
                       }}
@@ -305,7 +303,7 @@ function Ingresos() {
                     <Button
                       variant="outline-primary"
                       size="sm"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleCopyIngreso(ing);
                       }}
@@ -323,7 +321,7 @@ function Ingresos() {
           <Card className="summary-card">
             <Card.Body>
               <Card.Title>Total Ingresos</Card.Title>
-              <Card.Text>{totalIngresos}</Card.Text>
+              <Card.Text>{ingresos.length}</Card.Text>
             </Card.Body>
           </Card>
         </div>
@@ -377,10 +375,7 @@ function Ingresos() {
         handleClose={() => setShowModalMensaje(false)}
         message={mensaje}
       />
-
       <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
     </Container>
   );
 }
-
-export default Ingresos;
