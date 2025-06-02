@@ -46,3 +46,15 @@ body.dark-mode .tutorial-card {
   padding: 0.75rem;
   text-align: center;
 }
+
+.btn-eliminar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  padding: 0.3rem 0.5rem;
+}
+
+.tutorial-card {
+  position: relative;
+}
