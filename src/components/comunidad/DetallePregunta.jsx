@@ -44,6 +44,12 @@ export default function DetallePregunta({ pregunta, onVolver }) {
         return () => unsub();
     }, [pregunta.id]);
 
+    useEffect(() => {
+        if (!mostrarFormRespuesta) {
+            setNuevaRespuesta("");
+        }
+    }, [mostrarFormRespuesta]);
+
     const handlePublicarRespuesta = async () => {
         if (!nuevaRespuesta.trim()) return;
 
@@ -60,7 +66,7 @@ export default function DetallePregunta({ pregunta, onVolver }) {
                 likesCount: 0,
             });
 
-            const preguntaRef = doc(db, "preguntasForo", pregunta.id);
+            const preguntaRef = doc(db, "foropreguntas", pregunta.id);
             await updateDoc(preguntaRef, {
                 respuestasCount: increment(1),
             });
