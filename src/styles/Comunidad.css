@@ -1,0 +1,110 @@
+.comunidad-container {
+  background-color: var(--card-bg);
+  color: var(--text-normal);
+  padding: 20px;
+  transition: margin-left 0.3s ease, background-color 0.3s ease;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.comunidad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.preguntas-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pregunta-card {
+  cursor: pointer;
+  background-color: var(--card-bg);
+  color: var(--text-normal);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pregunta-card:hover,
+.pregunta-detalle-card:hover,
+.respuesta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.icono-pregunta {
+  color: var(--primary);
+  margin-top: 4px;
+}
+
+.detalle-pregunta {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.respuestas-wrapper {
+  margin-top: 1rem;
+}
+
+.pregunta-detalle-card,
+.respuesta-card {
+  background-color: var(--card-bg);
+  color: var(--text-normal);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.respuesta-card {
+  margin-left: 20px;
+  border-left: 3px solid var(--primary);
+  padding-left: 12px;
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary);
+  background: transparent;
+  border: none;
+}
+
+.like-button:hover {
+  color: var(--primary-dark);
+}
+
+.custom-modal .modal-content {
+  background-color: var(--modal-bg);
+  color: var(--text-normal);
+}
+
+.custom-modal .form-label {
+  font-weight: bold;
+}
+
+.custom-modal textarea {
+  resize: vertical;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+body.dark-mode .text-muted {
+  color: #ccc !important;
+}
+
+/* Dark mode general */
+body.dark-mode .pregunta-card,
+body.dark-mode .pregunta-detalle-card,
+body.dark-mode .respuesta-card {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-mode .custom-modal .modal-content {
+  background-color: #333;
+  color: #fff;
+}
