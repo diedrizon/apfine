@@ -86,6 +86,7 @@ const Encabezado = ({
       "/vista-general-produccion",
       "/inventario-salida",
       "/educacion",
+      "/comunidad",
     ].includes(location.pathname);
 
   if (cargando || ocultarHeaderEn.includes(location.pathname) || esRuta404)

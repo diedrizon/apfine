@@ -205,7 +205,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             </li>
             {openModule === "comunidad" && (
               <ul className="submenu">
-                {renderSubItem(<BiUser />, "Comunidad", () => { })}
+                {renderSubItem(<BiUser />, "Comunidad", () => { handleNavigate("/comunidad") })}
                 {renderSubItem(<BiBook />, "Educación", () => { handleNavigate("/educacion") })}
                 {/* {renderSubItem(<BiBookOpen />, "Tutoriales", () => { })} */}
               </ul>

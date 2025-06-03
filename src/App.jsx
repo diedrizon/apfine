@@ -27,6 +27,7 @@ import GestionUsuario from "./views/GestionUsuarios";
 import Inventario from "./views/Inventario";
 import OrdenesProduccion from "./views/OrdenesProduccion";
 import Educacion from "./views/Educacion";
+import Comunidad from "./views/Comunidad";
 import VistaGeneralProduccion from "./views/VistaGeneralProduccion";
 import InventarioSalida from "./views/InventarioSalida";
 
@@ -139,6 +140,10 @@ function AppContent() {
           <Route
             path="/educacion"
             element={<ProtectedRoute element={<Educacion />} />}
+          />
+          <Route
+            path="/comunidad"
+            element={<ProtectedRoute element={<Comunidad />} />}
           />
           <Route
             path="/inicio"
