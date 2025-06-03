@@ -59,6 +59,7 @@
   --modal-btn-bg-hover: #444;
   --modal-border-radius: 8px;
   --modal-padding: 20px;
+  --text-muted: #6c757d;
 }
 
 body.dark-mode {
