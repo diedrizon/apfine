@@ -6,9 +6,12 @@ import {
   collection,
   getDocs,
   addDoc,
+  doc,
+  updateDoc,
   query,
   where,
   orderBy,
+  onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
 import {
@@ -25,50 +28,75 @@ import {
 import Paginacion from "../components/ordenamiento/Paginacion";
 import "../styles/recomendador.css";
 
+/* ───── helpers ───── */
 const iconList = [<Coins />, <TrendingUpIcon />, <BadgeCheck />];
-
 const hoy = () => new Date();
 const anioActual = () => hoy().getFullYear();
-const mesActual = () => hoy().getMonth(); // 0-11
+const mesActual = () => hoy().getMonth();
 const diaISO = () => hoy().toISOString().slice(0, 10);
-const esDelMes = (iso) => {
-  if (!iso) return false;
-  const d = new Date(iso);
-  return d.getFullYear() === anioActual() && d.getMonth() === mesActual();
-};
+const esDelMes = (iso) =>
+  iso &&
+  new Date(iso).getFullYear() === anioActual() &&
+  new Date(iso).getMonth() === mesActual();
+const cordoba = (v) =>
+  new Intl.NumberFormat("es-NI", { style: "currency", currency: "NIO" }).format(
+    v
+  );
+const sumar = (arr) => arr.reduce((s, e) => s + (+e.monto || 0), 0);
+const hash32 = (t) =>
+  t.split("").reduce((h, c) => (h = (h << 5) - h + c.charCodeAt(0)), 0);
 
-const formatoCordoba = (v) =>
-  new Intl.NumberFormat("es-NI", {
-    style: "currency",
-    currency: "NIO",
-    minimumFractionDigits: 2,
-  }).format(v);
+/* ══════════════════════════════════════════════════════ */
 
-const sumarMontos = (arr) =>
-  arr.reduce((acc, el) => acc + (parseFloat(el.monto) || 0), 0);
-
-const hash32 = (txt) =>
-  txt.split("").reduce((h, c) => (h = (h << 5) - h + c.charCodeAt(0)), 0);
-
-const Recomendador = () => {
+export default function Recomendaciones() {
   const { user } = useAuth();
 
-  const [respuesta, setRespuesta] = useState([]);
-  const [cargando, setCargando] = useState(false);
-  const [historial, setHistorial] = useState([]);
-  const [filtroMes, setFiltroMes] = useState("Todos");
-  const [filtroAnio, setFiltroAnio] = useState("Todos");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
-  const [limiteDiario, setLimiteDiario] = useState(false);
-  const [restantes, setRestantes] = useState(3);
+  /* tarjetas */
+  const [cards, setCards] = useState([]); // {txt,idx}
+  const [aceptadas, setAceptadas] = useState([]);
+  const [logId, setLogId] = useState(null);
 
+  /* cfg */
+  const [cfgG, setCfgG] = useState({
+    temperature: 0.7,
+    maxDaily: 3,
+    model: "gpt-4o-mini",
+  });
+  const [cfgU, setCfgU] = useState({});
+  const cfg = { ...cfgG, ...cfgU };
+
+  /* límites */
+  const [cargando, setCargando] = useState(false);
+  const [restantes, setRestantes] = useState(0);
+  const [limite, setLimite] = useState(false);
+
+  /* historial UI */
+  const [historial, setHistorial] = useState([]);
+  const [mesSel, setMesSel] = useState("Todos");
+  const [anioSel, setAnioSel] = useState("Todos");
+  const [page, setPage] = useState(1);
+  const porPagina = 3;
+
+  /* listeners cfg */
   useEffect(() => {
     if (!user?.uid) return;
+    const g = onSnapshot(
+      doc(db, "ia_config", "global"),
+      (d) => d.exists() && setCfgG(d.data())
+    );
+    const u = onSnapshot(doc(db, "ia_user_config", user.uid), (d) =>
+      setCfgU(d.exists() ? d.data() : {})
+    );
     cargarHistorial();
-    contarRecomendacionesHoy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      g();
+      u();
+    };
   }, [user]);
+
+  useEffect(() => {
+    if (user?.uid) contarHoy();
+  }, [cfg]); /* eslint-disable-line */
 
   async function cargarHistorial() {
     const q = query(
@@ -76,24 +104,23 @@ const Recomendador = () => {
       where("userId", "==", user.uid),
       orderBy("fecha", "desc")
     );
-    const snap = await getDocs(q);
-    setHistorial(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    const s = await getDocs(q);
+    setHistorial(s.docs.map((d) => ({ id: d.id, ...d.data() })));
   }
-
-  async function contarRecomendacionesHoy() {
+  async function contarHoy() {
     const q = query(
       collection(db, "recomendaciones"),
       where("userId", "==", user.uid),
       where("dia", "==", diaISO())
     );
-    const snap = await getDocs(q);
-    const n = snap.size;
-    setRestantes(Math.max(0, 3 - n));
-    setLimiteDiario(n >= 3);
+    const n = (await getDocs(q)).size;
+    setRestantes(Math.max(0, (cfg.maxDaily || 3) - n));
+    setLimite(n >= (cfg.maxDaily || 3));
   }
 
-  async function obtenerDatosFinancieros(uid) {
-    const [ingSnap, gasSnap, fixSnap, metaSnap] = await Promise.all([
+  /* datos + prompt */
+  async function datosFin(uid) {
+    const [iS, gS, fS, mS] = await Promise.all([
       getDocs(query(collection(db, "ingresos"), where("userId", "==", uid))),
       getDocs(query(collection(db, "gastos"), where("userId", "==", uid))),
       getDocs(
@@ -101,68 +128,44 @@ const Recomendador = () => {
       ),
       getDocs(query(collection(db, "metas"), where("userId", "==", uid))),
     ]);
-
-    const ingresosMes = ingSnap.docs
+    const iMes = iS.docs
       .map((d) => d.data())
-      .filter((i) => esDelMes(i.fecha_ingreso));
-
-    const gastosMes = gasSnap.docs
+      .filter((d) => esDelMes(d.fecha_ingreso));
+    const gMes = gS.docs
       .map((d) => d.data())
-      .filter((g) => esDelMes(g.fecha_gasto));
+      .filter((d) => esDelMes(d.fecha_gasto));
+    const gFix = fS.docs.map((d) => d.data());
+    const metas = mS.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-    const gastosFijos = fixSnap.docs.map((d) => d.data());
-    const metas = metaSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-
-    const totalIngresos = sumarMontos(ingresosMes);
-    const totalVar = sumarMontos(gastosMes);
-    const totalFijos = sumarMontos(
-      gastosFijos.map((g) => ({ monto: g.monto_mensual }))
-    );
-    const totalGastos = totalVar + totalFijos;
-    const excedente = totalIngresos - totalGastos;
-    const fondoMin = totalGastos * 3;
-    const fondoMax = totalGastos * 6;
+    const totalIng = sumar(iMes);
+    const varMes = sumar(gMes);
+    const fixMes = sumar(gFix.map((g) => ({ monto: g.monto_mensual })));
+    const totalG = varMes + fixMes;
 
     return {
-      ingresosMes,
-      gastosMes,
-      gastosFijos,
+      totalIng,
+      varMes,
+      fixMes,
+      excedente: totalIng - totalG,
+      fondoMin: totalG * 3,
+      fondoMax: totalG * 6,
       metas,
-      totalIngresos,
-      totalGastos,
-      excedente,
-      fondoMin,
-      fondoMax,
-      totalVar,
-      totalFijos,
     };
   }
 
-  function construirPrompt(datos) {
-    const {
-      totalIngresos,
-      totalVar,
-      totalFijos,
-      excedente,
-      fondoMin,
-      fondoMax,
-      metas,
-    } = datos;
-
-    const metasTxt = metas.length
-      ? metas
-          .map((m) => {
-            const prog =
-              ((parseFloat(m.monto_actual || 0) /
-                parseFloat(m.monto_objetivo || 1)) *
-                100) |
-              0;
-            return `«${m.nombre_meta}» ${prog}% (objetivo C$${m.monto_objetivo})`;
-          })
+  function prompt(d) {
+    const metasTxt = d.metas.length
+      ? d.metas
+          .map(
+            (m) =>
+              `«${m.nombre_meta}» ${Math.trunc(
+                ((+m.monto_actual || 0) * 100) / (+m.monto_objetivo || 1)
+              )}%`
+          )
           .join("; ")
       : "Sin metas registradas";
 
-    const prevMes = historial
+    const prev = historial
       .filter((h) => h.mes === mesActual() && h.anio === anioActual())
       .flatMap((h) => h.recomendaciones)
       .slice(0, 6);
@@ -171,55 +174,57 @@ const Recomendador = () => {
 Eres asesor financiero para emprendedores nicaragüenses.
 
 Datos del usuario (mes actual):
-• Ingresos variables: ${formatoCordoba(totalIngresos)}
-• Gastos variables:  ${formatoCordoba(totalVar)}
-• Gastos fijos:      ${formatoCordoba(totalFijos)}
-• Excedente:         ${formatoCordoba(excedente)}
-• Fondo de emergencia ideal: de ${formatoCordoba(fondoMin)} a ${formatoCordoba(
-      fondoMax
-    )}
-• Metas activas:     ${metasTxt}
+• Ingresos variables: ${cordoba(d.totalIng)}
+• Gastos variables : ${cordoba(d.varMes)}
+• Gastos fijos     : ${cordoba(d.fixMes)}
+• Excedente        : ${cordoba(d.excedente)}
+• Fondo ideal      : ${cordoba(d.fondoMin)} – ${cordoba(d.fondoMax)}
+• Metas activas    : ${metasTxt}
 
 Recomendaciones previas este mes (NO LAS REPITAS):
-${prevMes.map((r) => `- ${r}`).join("\n") || "- Ninguna"}
+${prev.map((r) => `- ${r}`).join("\n") || "- Ninguna"}
 
-Genera **3 recomendaciones nuevas, conectadas** (sin numerar).  
-Sé concreto y accionable; usa cifras solo cuando aporte valor.  
-Devuelve SOLO el JSON:
-
-[
-  "Recomendación 1...",
-  "Recomendación 2...",
-  "Recomendación 3..."
-]
-`;
+Devuelve **únicamente** un array JSON de 3 strings, sin texto adicional.
+`.trim();
   }
 
-  async function obtenerRecomendacion() {
-    if (limiteDiario || !user) return;
+  /* obtener IA */
+  async function obtener() {
+    if (limite || !user) return;
     setCargando(true);
-
     try {
-      const datos = await obtenerDatosFinancieros(user.uid);
-
-      if (datos.totalIngresos === 0 && datos.totalGastos === 0) {
-        setRespuesta([
-          "No has registrado ingresos ni gastos este mes. Ingresa tus movimientos para recibir recomendaciones personalizadas.",
+      const df = await datosFin(user.uid);
+      if (df.totalIng === 0 && df.varMes + df.fixMes === 0) {
+        setCards([
+          { txt: "No has registrado ingresos ni gastos este mes.", idx: 0 },
         ]);
         setCargando(false);
         return;
       }
 
-      const prompt = construirPrompt(datos);
+      const modelName = cfg.model || "gpt-4o-mini";
+      const supportsJson = modelName.startsWith("gpt-4");
 
-      const aiRes = await axios.post(
+      const body = {
+        model: modelName,
+        messages: [{ role: "user", content: prompt(df) }],
+        max_tokens: 300,
+        temperature:
+          cfg.temperature === "" || cfg.temperature === undefined
+            ? 0.7
+            : cfg.temperature,
+      };
+      if (supportsJson) {
+        body.response_format = { type: "json_object" };
+        body.messages.unshift({
+          role: "system",
+          content: "Devuelve solo JSON. Formato array de 3 strings.",
+        });
+      }
+
+      const ai = await axios.post(
         "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4o-mini",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 300,
-          temperature: 0.7,
-        },
+        body,
         {
           headers: {
             Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
@@ -228,74 +233,106 @@ Devuelve SOLO el JSON:
         }
       );
 
-      let recomendaciones = [];
+      /* ── normalizar ── */
+      let raw = ai.data.choices[0].message.content;
+      if (typeof raw === "string") {
+        const a = raw.indexOf("[");
+        const b = raw.lastIndexOf("]");
+        const c = raw.indexOf("{");
+        const d = raw.lastIndexOf("}");
+        if (a !== -1 && b !== -1) raw = raw.slice(a, b + 1);
+        else if (c !== -1 && d !== -1) raw = raw.slice(c, d + 1);
+      }
+      let recs;
       try {
-        recomendaciones = JSON.parse(aiRes.data.choices[0].message.content);
+        const parsed = JSON.parse(raw);
+        recs = Array.isArray(parsed)
+          ? parsed
+          : Object.values(parsed).filter((v) => typeof v === "string");
+        if (recs.length !== 3) throw new Error();
       } catch {
-        recomendaciones = [
-          "⚠ No se pudo interpretar la respuesta de la IA. Intenta de nuevo.",
-        ];
+        console.warn("Respuesta IA no válida:", raw);
+        recs = ["⚠ Error al interpretar la respuesta."];
       }
 
-      setRespuesta(recomendaciones);
+      setCards(recs.map((t, i) => ({ txt: t, idx: i })));
 
+      const log = await addDoc(collection(db, "ia_logs"), {
+        userId: user.uid,
+        recomendaciones: recs,
+        estados: recs.map(() => "pendiente"),
+        createdAt: serverTimestamp(),
+      });
+      setLogId(log.id);
+      setRestantes((r) => Math.max(0, r - 1));
+      if (restantes - 1 <= 0) setLimite(true);
+    } catch (e) {
+      console.error(e);
+      setCards([{ txt: "⚠ Error al generar la recomendación.", idx: 0 }]);
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  /* aceptar / rechazar */
+  const marcar = (idx, estado) => {
+    document.getElementById(`card-${idx}`)?.classList.add("fadeOut");
+    setTimeout(() => setCards((c) => c.filter((x) => x.idx !== idx)), 300);
+    if (estado === "aceptada")
+      setAceptadas((a) => [...a, cards.find((c) => c.idx === idx).txt]);
+    if (logId)
+      updateDoc(doc(db, "ia_logs", logId), { [`estados.${idx}`]: estado });
+  };
+
+  /* persistir aceptadas */
+  useEffect(() => {
+    if (cards.length > 0 || !aceptadas.length) return;
+    (async () => {
       await addDoc(collection(db, "recomendaciones"), {
         userId: user.uid,
         fecha: serverTimestamp(),
         dia: diaISO(),
         mes: mesActual(),
         anio: anioActual(),
-        hash: hash32(recomendaciones.join("|")),
-        resumen: {
-          ingresos: datos.totalIngresos,
-          gastos: datos.totalGastos,
-          excedente: datos.excedente,
-        },
-        recomendaciones,
+        hash: hash32(aceptadas.join("|")),
+        recomendaciones: aceptadas,
+        estados: aceptadas.map(() => "aceptada"),
       });
-
-      setRestantes((p) => Math.max(0, p - 1));
-      if (restantes - 1 <= 0) setLimiteDiario(true);
+      setAceptadas([]);
+      setLogId(null);
       cargarHistorial();
-    } catch (e) {
-      console.error(e);
-      setRespuesta(["⚠ Error al generar la recomendación."]);
-    } finally {
-      setCargando(false);
-    }
-  }
+    })();
+  }, [cards]); /* eslint-disable-line */
 
-  const historialFiltrado = historial.filter((item) => {
-    const fecha = item.fecha?.toDate ? item.fecha.toDate() : null;
-    const mes = fecha?.getMonth();
-    const anio = fecha?.getFullYear();
+  /* filtros historial */
+  const filtrado = historial.filter((h) => {
+    const f = h.fecha?.toDate();
+    const m = f?.getMonth();
+    const a = f?.getFullYear();
     return (
-      (filtroMes === "Todos" || mes === parseInt(filtroMes)) &&
-      (filtroAnio === "Todos" || anio === parseInt(filtroAnio))
+      (mesSel === "Todos" || m === +mesSel) &&
+      (anioSel === "Todos" || a === +anioSel)
     );
   });
+  const pag = filtrado.slice((page - 1) * porPagina, page * porPagina);
 
-  const paginado = historialFiltrado.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
+  /* UI */
   return (
     <div className="recomendador-container">
       <button
-        onClick={obtenerRecomendacion}
-        disabled={cargando || !user || limiteDiario}
         className="recomendador-boton"
+        onClick={obtener}
+        disabled={cargando || !user || limite}
       >
-        {cargando ? "Generando..." : "Obtener Recomendación Financiera"}
+        {cargando ? "Generando…" : "Obtener Recomendación Financiera"}
       </button>
 
       <div className="estado-recomendacion">
-        {limiteDiario ? (
+        {limite ? (
           <>
             <AlertTriangle color="#dc3545" size={18} />
             <span style={{ color: "#dc3545" }}>
-              Ya alcanzaste el límite diario de 3 recomendaciones.
+              Ya alcanzaste el límite diario de {cfg.maxDaily} recomendaciones.
             </span>
           </>
         ) : (
@@ -308,18 +345,33 @@ Devuelve SOLO el JSON:
         )}
       </div>
 
-      {Array.isArray(respuesta) && respuesta.length > 0 && (
+      {cards.length > 0 && (
         <div className="recomendaciones-lista">
-          {respuesta.map((reco, index) => (
+          {cards.map((c, i) => (
             <div
-              key={index}
+              key={c.idx}
+              id={`card-${c.idx}`}
               className="recomendacion-tarjeta"
-              style={{ animationDelay: `${index * 0.15}s` }}
+              style={{ animationDelay: `${i * 0.1}s` }}
             >
               <h4 className="recomendacion-titulo">
-                {iconList[index % iconList.length]}
+                {iconList[i % iconList.length]}
               </h4>
-              <p className="recomendacion-texto">{reco}</p>
+              <p className="recomendacion-texto">{c.txt}</p>
+              <div className="reco-acciones">
+                <button
+                  className="btn-aceptar"
+                  onClick={() => marcar(c.idx, "aceptada")}
+                >
+                  Aceptar
+                </button>
+                <button
+                  className="btn-rechazar"
+                  onClick={() => marcar(c.idx, "rechazada")}
+                >
+                  Rechazar
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -329,12 +381,8 @@ Devuelve SOLO el JSON:
         <h3>
           <History size={20} /> Historial de Recomendaciones
         </h3>
-
         <div className="filtros-historial">
-          <select
-            onChange={(e) => setFiltroMes(e.target.value)}
-            value={filtroMes}
-          >
+          <select value={mesSel} onChange={(e) => setMesSel(e.target.value)}>
             <option value="Todos">Todos los meses</option>
             {[...Array(12)].map((_, i) => (
               <option key={i} value={i}>
@@ -342,36 +390,30 @@ Devuelve SOLO el JSON:
               </option>
             ))}
           </select>
-
-          <select
-            onChange={(e) => setFiltroAnio(e.target.value)}
-            value={filtroAnio}
-          >
+          <select value={anioSel} onChange={(e) => setAnioSel(e.target.value)}>
             <option value="Todos">Todos los años</option>
             {[...new Set(historial.map((h) => h.anio))].map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
+              <option key={y}>{y}</option>
             ))}
           </select>
         </div>
 
-        {historialFiltrado.length === 0 ? (
-          <p>No hay recomendaciones guardadas para ese filtro.</p>
+        {filtrado.length === 0 ? (
+          <p>No hay recomendaciones para ese filtro.</p>
         ) : (
           <>
-            {paginado.map((item, idx) => (
+            {pag.map((it, idx) => (
               <div
-                key={item.id}
+                key={it.id}
                 className="historial-item"
                 style={{
-                  borderLeft: `5px solid hsl(${(idx * 55) % 360}, 85%, 55%)`,
+                  borderLeft: `5px solid hsl(${(idx * 55) % 360},85%,55%)`,
                   animationDelay: `${idx * 0.15}s`,
                 }}
               >
                 <div className="historial-fecha">
                   <CalendarDays size={16} />
-                  {item.fecha?.toDate().toLocaleString("es-NI", {
+                  {it.fecha?.toDate().toLocaleString("es-NI", {
                     day: "2-digit",
                     month: "long",
                     year: "numeric",
@@ -380,7 +422,7 @@ Devuelve SOLO el JSON:
                   })}
                 </div>
                 <ul className="historial-lista">
-                  {item.recomendaciones.map((r, i) => (
+                  {it.recomendaciones.map((t, i) => (
                     <li key={i}>
                       <span className="historial-icono">
                         {i === 0 ? (
@@ -391,24 +433,21 @@ Devuelve SOLO el JSON:
                           <ShieldCheck size={16} />
                         )}
                       </span>{" "}
-                      {r}
+                      {t}
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
-
             <Paginacion
-              itemsPerPage={itemsPerPage}
-              totalItems={historialFiltrado.length}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
+              itemsPerPage={porPagina}
+              totalItems={filtrado.length}
+              currentPage={page}
+              setCurrentPage={setPage}
             />
           </>
         )}
       </div>
     </div>
   );
-};
-
-export default Recomendador;
+}

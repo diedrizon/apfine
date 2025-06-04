@@ -1,10 +1,10 @@
 .recomendador-container {
-  background-color: var(--card-bg); /* Fondo dinámico */
-  color: var(--text-normal); /* Texto dinámico */
+  background-color: var(--card-bg);
+  color: var(--text-normal);
   padding: 2rem 2%;
-  box-sizing: border-box; /* Incluye el padding en el cálculo del tamaño */
-  height: 100vh; /* Ocupa toda la altura de la ventana */
-  overflow-y: auto; /* Permite desplazamiento si el contenido es mayor que la pantalla */
+  box-sizing: border-box;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 /* === BOTÓN PRINCIPAL === */
@@ -13,7 +13,7 @@
   font-size: 1rem;
   font-weight: 600;
   background-color: #0d6efd;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -39,17 +39,16 @@
   margin-bottom: 1.5rem;
 }
 
-/* === LISTA DE RECOMENDACIONES === */
+/* === LISTA === */
 .recomendaciones-lista {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  margin-bottom: 3rem;
-  margin-top: 2rem;
+  margin: 2rem 0 3rem;
 }
 .recomendacion-tarjeta {
   padding: 1.5rem;
-  background-color: var(--reco-bg);
+  background: var(--reco-bg);
   border-left: 4px solid #0d6efd;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
@@ -64,11 +63,11 @@
 .recomendacion-titulo {
   display: flex;
   align-items: center;
+  gap: 0.6rem;
   font-size: 1.2rem;
   font-weight: 600;
   color: #0d6efd;
   margin-bottom: 0.5rem;
-  gap: 0.6rem;
 }
 .recomendacion-texto {
   font-size: 1rem;
@@ -76,9 +75,37 @@
   line-height: 1.5;
 }
 
-/* === TARJETAS HISTORIAL MEJORADAS === */
+/* acciones */
+.reco-acciones {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.8rem;
+}
+.btn-aceptar,
+.btn-rechazar {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+.btn-aceptar {
+  background: #198754;
+}
+.btn-aceptar:hover {
+  background: #146c43;
+}
+.btn-rechazar {
+  background: #dc3545;
+}
+.btn-rechazar:hover {
+  background: #b02a37;
+}
+
+/* HISTORIAL */
 .historial-item {
-  background-color: var(--historial-bg);
+  background: var(--historial-bg);
   padding: 1.2rem 1.5rem;
   border-radius: 14px;
   margin-bottom: 1.8rem;
@@ -98,8 +125,8 @@
 }
 .historial-lista {
   padding-left: 0.8rem;
-  color: var(--historial-texto);
   list-style: none;
+  color: var(--historial-texto);
 }
 .historial-lista li {
   position: relative;
@@ -115,17 +142,17 @@
   display: inline-flex;
 }
 
-/* === FILTROS DE HISTORIAL === */
+/* FILTROS */
 .historial-recomendaciones {
   margin-top: 2.8rem;
 }
 .historial-recomendaciones h3 {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  gap: 0.5rem;
   color: var(--historial-titulo);
 }
 .filtros-historial {
@@ -139,17 +166,17 @@
   font-size: 0.95rem;
   border: 1px solid #ddd;
   border-radius: 10px;
-  background-color: var(--select-bg);
+  background: var(--select-bg);
   color: var(--select-text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: border 0.2s ease;
+  transition: border 0.2s;
 }
 .filtros-historial select:focus {
   border-color: #0d6efd;
   outline: none;
 }
 
-/* === ANIMACIÓN === */
+/* animaciones */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -160,8 +187,17 @@
     transform: translateY(0);
   }
 }
+.recomendacion-tarjeta.fadeOut {
+  animation: fadeOut 0.3s forwards;
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
 
-/* === MODO CLARO === */
+/* variables claros / oscuros … (sin cambios previos) */
 body.light-mode {
   --reco-bg: #f9fafb;
   --reco-text: #333;
@@ -172,29 +208,25 @@ body.light-mode {
   --select-bg: #fff;
   --select-text: #333;
 }
-
-/* === MODO OSCURO === */
 body.dark-mode {
   --reco-bg: #1f1f1f;
   --reco-text: #e6e6e6;
   --historial-bg: #2a2a2a;
-  --historial-texto: #dddddd;
+  --historial-texto: #ddd;
   --historial-titulo: #f3f3f3;
-  --historial-fecha: #cccccc;
+  --historial-fecha: #ccc;
   --select-bg: #333;
   --select-text: #f9f9f9;
 }
 
-/* === RESPONSIVE === */
+/* responsive */
 @media (max-width: 768px) {
   .recomendador-container {
     padding: 1.5rem 1rem;
   }
-
   .recomendador-boton {
     width: 100%;
   }
-
   .filtros-historial {
     flex-direction: column;
   }

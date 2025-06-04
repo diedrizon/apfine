@@ -237,10 +237,11 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                       () => { }
                     )}
                     {renderSubItem(
-                      <BiBulb />,
-                      "Supervisión de IA",
-                      () => { }
+                      <BiBook />,
+                      "Supervisión IA",
+                      () => { handleNavigate("/ia-supervision") }
                     )}
+
                     {renderSubItem(
                       <BiCog />,
                       "Monitoreo / Configuración",

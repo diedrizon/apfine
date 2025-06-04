@@ -31,6 +31,7 @@ import Comunidad from "./views/Comunidad";
 import VistaGeneralProduccion from "./views/VistaGeneralProduccion";
 import InventarioSalida from "./views/InventarioSalida";
 import Reportess from "./views/Reportes";
+import IASupervision from "./views/IASupervision";
 
 import "./App.css";
 import ReactGA from "react-ga4";
@@ -205,6 +206,11 @@ function AppContent() {
           <Route
             path="/gestion-usuarios"
             element={<ProtectedRoute element={<GestionUsuario />} />}
+          />
+          {/* IA Supervision */}
+          <Route
+            path="/ia-supervision"            
+            element={<ProtectedRoute element={<IASupervision />} />}
           />
 
           {/* Página no encontrada */}
