@@ -85,6 +85,7 @@ const Encabezado = ({
       "/ordenes-produccion",
       "/vista-general-produccion",
       "/inventario-salida",
+      "/reportes",
       "/educacion",
       "/comunidad",
     ].includes(location.pathname);

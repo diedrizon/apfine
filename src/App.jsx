@@ -30,6 +30,7 @@ import Educacion from "./views/Educacion";
 import Comunidad from "./views/Comunidad";
 import VistaGeneralProduccion from "./views/VistaGeneralProduccion";
 import InventarioSalida from "./views/InventarioSalida";
+import Reportess from "./views/Reportes";
 
 import "./App.css";
 import ReactGA from "react-ga4";
@@ -173,7 +174,10 @@ function AppContent() {
             path="/recomendaciones"
             element={<ProtectedRoute element={<Recomendaciones />} />}
           />
-
+          <Route
+            path="/reportes"
+            element={<ProtectedRoute element={<Reportess />} />}
+          />
 
           {/*Produccion*/}
           <Route

@@ -180,11 +180,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
             {openModule === "reportes" && (
               <ul className="submenu">
                 {renderSubItem(<BiPackage />, "Dashboard", () => { })}
-                {renderSubItem(
-                  <BiBarChartAlt2 />,
-                  "Datos / Reportes",
-                  () => { }
-                )}
+                {renderSubItem(<BiBarChartAlt2 />, "Datos/Reportes", () => { handleNavigate("/reportes") })}
                 {renderSubItem(<BiCube />, "Exportar", () => { })}
                 {renderSubItem(<BiBell />, "Alertas", () => { })}
               </ul>

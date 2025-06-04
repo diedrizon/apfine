@@ -1,0 +1,71 @@
+/* --- contenedor principal --- */
+.vg-container {
+  padding: 1.5rem 1rem 3rem;
+  background-color: var(--background);
+  color: var(--text-normal);
+  min-height: calc(100vh - 60px); /* ajusta si tu header cambia */
+}
+
+.vg-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 1.2rem;
+}
+
+/* --- Filtros --- */
+.vg-filtros {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+}
+
+.vg-filtros .form-control,
+.vg-filtros .form-select {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-normal);
+}
+.vg-filtros .form-control:focus,
+.vg-filtros .form-select:focus {
+  border-color: var(--primary);
+  box-shadow: none;
+}
+
+/* --- Tarjeta de gráfico --- */
+.vg-card {
+  height: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+.vg-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-title);
+}
+
+/* El canvas ocupa todo el espacio restante */
+.vg-card canvas {
+  flex: 1;
+  max-height: 280px; /* alto deseado; cambia si quieres */
+}
+
+/* --- Responsivo --- */
+@media (max-width: 991px) {
+  .vg-card canvas {
+    max-height: 320px;
+  }
+}
+@media (max-width: 767px) {
+  .vg-title {
+    font-size: 1.25rem;
+  }
+  .vg-card canvas {
+    max-height: 260px;
+  }
+}

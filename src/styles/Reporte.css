@@ -1,0 +1,85 @@
+/* ------------ CONTENEDOR GENERAL ------------ */
+.vg-container {
+  padding: 1.5rem 1rem 3rem;
+  background-color: var(--card-bg); /* Cambiado para usar el mismo fondo que Categorías */
+  color: var(--text-normal);
+  min-height: calc(100vh - 60px);
+}
+
+.vg-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 1.2rem;
+}
+
+/* ------------ FILTROS ------------ */
+.vg-filtros {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+}
+.vg-filtros .form-control,
+.vg-filtros .form-select {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-normal);
+}
+.vg-filtros .form-control:focus,
+.vg-filtros .form-select:focus {
+  border-color: var(--primary);
+  box-shadow: none;
+}
+.vg-filtros .form-label {
+  color: var(--text-title);
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* ------------ TARJETAS DE GRÁFICO ------------ */
+.vg-card {
+  height: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.vg-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.vg-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-title);
+}
+
+/* canvas ocupa resto */
+.vg-card canvas {
+  flex: 1;
+  max-height: 290px;
+}
+
+@media (max-width: 991px) {
+  .vg-card canvas {
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 767px) {
+  .vg-title {
+    font-size: 1.25rem;
+  }
+  .vg-card canvas {
+    max-height: 260px;
+  }
+}
