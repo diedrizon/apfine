@@ -18,7 +18,7 @@ import {
   Eye,
   Search,
 } from "lucide-react";
-import "../styles/iaPanel.css";
+import "../styles/IAPanel.css"
 
 /* mini KPI */
 const Kpi = ({ icon, label, value }) => (
