@@ -1,6 +1,7 @@
 import React from "react";
 import Pagination from "react-bootstrap/Pagination";
 import { Row, Col } from "react-bootstrap";
+import "../../styles/Paginacion.css"; 
 
 const Paginacion = ({
   itemsPerPage,
@@ -16,9 +17,8 @@ const Paginacion = ({
     }
   };
 
-  // Generar los items de paginación
   const paginationItems = [];
-  const maxPagesToShow = 3; // Máximo de páginas visibles a la vez
+  const maxPagesToShow = 3;
   let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
   let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
@@ -41,7 +41,7 @@ const Paginacion = ({
   return (
     <Row className="mt-3">
       <Col className="d-flex justify-content-center">
-        <Pagination>
+        <Pagination className="custom-pagination">
           <Pagination.First
             onClick={() => handlePageChange(1)}
             disabled={currentPage === 1}
@@ -50,9 +50,9 @@ const Paginacion = ({
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           />
-          {startPage > 1 && <Pagination.Ellipsis />}
+          {startPage > 1 && <Pagination.Ellipsis disabled />}
           {paginationItems}
-          {endPage < totalPages && <Pagination.Ellipsis />}
+          {endPage < totalPages && <Pagination.Ellipsis disabled />}
           <Pagination.Next
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
