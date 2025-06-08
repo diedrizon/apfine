@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -7,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./database/authcontext";
+import ReactGA from "react-ga4";
 import {
   collection,
   doc,
@@ -17,7 +17,6 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "./database/firebaseconfig";
-import ReactGA from "react-ga4";
 
 import Encabezado from "./components/Encabezado";
 import Panel from "./components/Panel";
@@ -50,6 +49,7 @@ import MonitoreoSistema from "./views/MonitoreoSistema";
 
 import "./App.css";
 
+// === Rastreador de rutas para monitoreo ===
 function RouteChangeTracker() {
   const location = useLocation();
   const { user, perfil } = useAuth();
@@ -67,7 +67,7 @@ function RouteChangeTracker() {
     ReactGA.send({ hitType: "pageview", page: location.pathname });
 
     if (
-      user &&
+      user?.uid &&
       perfil?.rol === "Beneficiario" &&
       monitorEnabled &&
       location.pathname
@@ -82,7 +82,7 @@ function RouteChangeTracker() {
             mainRef,
             {
               userId: user.uid,
-              userEmail: user.email,
+              userEmail: perfil.correo || user.email,
               role: perfil.rol,
               lastRoute: location.pathname,
               lastTimestamp: serverTimestamp(),
@@ -99,20 +99,20 @@ function RouteChangeTracker() {
           await setDoc(
             metaRef,
             {
-              userEmail: user.email,
+              userEmail: perfil.correo || user.email,
               lastRoute: location.pathname,
               timestamp: serverTimestamp(),
             },
             { merge: true }
           );
 
-          console.log("Monitoreo sincronizado correctamente.");
+          console.log("[✅ Monitoreo] Ruta registrada:", location.pathname);
         } catch (error) {
-          console.warn("Monitoreo guardado localmente:", error);
+          console.warn("[⚠️ Monitoreo] Error en guardado:", error);
         }
       })();
     }
-  }, [location, user, perfil, monitorEnabled]);
+  }, [location.pathname, user?.uid, perfil?.rol, monitorEnabled]);
 
   return null;
 }
@@ -218,20 +218,14 @@ function AppContent() {
           <Route path="/metas" element={<ProtectedRoute element={<Metas />} />} />
           <Route path="/recomendaciones" element={<ProtectedRoute element={<Recomendaciones />} />} />
           <Route path="/reportes" element={<ProtectedRoute element={<Reportess />} />} />
-
-          <Route
-            path="/vista-general-produccion"
-            element={<ProtectedRoute element={<VistaGeneralProduccion />} />}
-          />
+          <Route path="/vista-general-produccion" element={<ProtectedRoute element={<VistaGeneralProduccion />} />} />
           <Route path="/materias-primas" element={<ProtectedRoute element={<MateriasPrimas />} />} />
           <Route path="/inventario" element={<ProtectedRoute element={<Inventario />} />} />
           <Route path="/ordenes-produccion" element={<ProtectedRoute element={<OrdenesProduccion />} />} />
           <Route path="/inventario-salida" element={<ProtectedRoute element={<InventarioSalida />} />} />
-
           <Route path="/gestion-usuarios" element={<ProtectedRoute element={<GestionUsuario />} />} />
           <Route path="/ia-supervision" element={<ProtectedRoute element={<IASupervision />} />} />
           <Route path="/monitoreo-sistema" element={<ProtectedRoute element={<MonitoreoSistema />} />} />
-
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
