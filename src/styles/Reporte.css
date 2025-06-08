@@ -1,7 +1,7 @@
 /* ------------ CONTENEDOR GENERAL ------------ */
 .vg-container {
   padding: 1.5rem 1rem 3rem;
-  background-color: var(--card-bg); /* Cambiado para usar el mismo fondo que Categorías */
+  background-color: var(--card-bg);
   color: var(--text-normal);
   min-height: calc(100vh - 60px);
 }
@@ -38,7 +38,7 @@
   font-size: 0.9rem;
 }
 
-/* ------------ TARJETAS DE GRÁFICO ------------ */
+/* ------------ TARJETAS DE MÉTRICAS & GRÁFICOS ------------ */
 .vg-card {
   height: 100%;
   background: var(--card-bg);
@@ -47,23 +47,20 @@
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
+  color: var(--text-normal);
 }
-
 .vg-header-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.25rem;
 }
-
 .vg-card-title {
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
   color: var(--text-title);
 }
-
-/* canvas ocupa resto */
 .vg-card canvas {
   flex: 1;
   max-height: 290px;
@@ -74,7 +71,6 @@
     max-height: 320px;
   }
 }
-
 @media (max-width: 767px) {
   .vg-title {
     font-size: 1.25rem;
@@ -82,4 +78,24 @@
   .vg-card canvas {
     max-height: 260px;
   }
+}
+
+/* ------------ BOTÓN EXPORTAR EXCEL (fuera de tarjetas) ------------ */
+.vg-export-btn {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.vg-export-btn:hover {
+  background-color: var(--primary);
+  color: var(--card-bg);
+}
+
+/* ------------ BOTONES PDF EN CABECERAS DE GRÁFICO ------------ */
+.vg-header-card .btn-outline-primary {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.vg-header-card .btn-outline-primary:hover {
+  background-color: var(--primary);
+  color: var(--card-bg);
 }
