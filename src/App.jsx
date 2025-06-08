@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -5,10 +6,23 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { AuthProvider } from "./database/authcontext";
+import { AuthProvider, useAuth } from "./database/authcontext";
+import {
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  serverTimestamp,
+  increment,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "./database/firebaseconfig";
+import ReactGA from "react-ga4";
+
 import Encabezado from "./components/Encabezado";
 import Panel from "./components/Panel";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 import Login from "./views/Login";
 import LandingPage from "./views/LandingPage";
 import Inicio from "./views/Inicio";
@@ -32,45 +46,100 @@ import VistaGeneralProduccion from "./views/VistaGeneralProduccion";
 import InventarioSalida from "./views/InventarioSalida";
 import Reportess from "./views/Reportes";
 import IASupervision from "./views/IASupervision";
+import MonitoreoSistema from "./views/MonitoreoSistema";
 
 import "./App.css";
-import ReactGA from "react-ga4";
 
-const RouteChangeTracker = () => {
+function RouteChangeTracker() {
   const location = useLocation();
+  const { user, perfil } = useAuth();
+  const [monitorEnabled, setMonitorEnabled] = useState(true);
+
+  useEffect(() => {
+    const cfgRef = doc(db, "config", "system_settings");
+    const unsub = onSnapshot(cfgRef, (snap) => {
+      if (snap.exists()) setMonitorEnabled(snap.data().monitoringEnabled);
+    });
+    return () => unsub();
+  }, []);
+
   useEffect(() => {
     ReactGA.send({ hitType: "pageview", page: location.pathname });
-  }, [location]);
+
+    if (
+      user &&
+      perfil?.rol === "Beneficiario" &&
+      monitorEnabled &&
+      location.pathname
+    ) {
+      const mainRef = doc(db, "logs_uso", user.uid);
+      const subRutaRef = collection(mainRef, "routes");
+      const metaRef = doc(db, "monitor_config", "last_beneficiario");
+
+      (async () => {
+        try {
+          await setDoc(
+            mainRef,
+            {
+              userId: user.uid,
+              userEmail: user.email,
+              role: perfil.rol,
+              lastRoute: location.pathname,
+              lastTimestamp: serverTimestamp(),
+              totalRoutes: increment(1),
+            },
+            { merge: true }
+          );
+
+          await addDoc(subRutaRef, {
+            route: location.pathname,
+            timestamp: serverTimestamp(),
+          });
+
+          await setDoc(
+            metaRef,
+            {
+              userEmail: user.email,
+              lastRoute: location.pathname,
+              timestamp: serverTimestamp(),
+            },
+            { merge: true }
+          );
+
+          console.log("Monitoreo sincronizado correctamente.");
+        } catch (error) {
+          console.warn("Monitoreo guardado localmente:", error);
+        }
+      })();
+    }
+  }, [location, user, perfil, monitorEnabled]);
+
   return null;
-};
+}
 
 function AppContent() {
   const location = useLocation();
+  const { cargando } = useAuth();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
     const saved = localStorage.getItem("sidebarState");
     const justLoggedIn = sessionStorage.getItem("justLoggedIn");
-
     if (justLoggedIn === "true") {
       sessionStorage.removeItem("justLoggedIn");
       localStorage.setItem("sidebarState", "open");
       return true;
     }
-
     if (saved === null) {
       localStorage.setItem("sidebarState", "open");
       return true;
     }
-
     return saved === "open";
   });
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme
-      ? savedTheme === "dark"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const t = localStorage.getItem("theme");
+    return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
@@ -92,9 +161,9 @@ function AppContent() {
   }, []);
 
   const toggleSidebar = () => {
-    const newState = !isSidebarOpen;
-    setIsSidebarOpen(newState);
-    localStorage.setItem("sidebarState", newState ? "open" : "closed");
+    const next = !isSidebarOpen;
+    setIsSidebarOpen(next);
+    localStorage.setItem("sidebarState", next ? "open" : "closed");
   };
 
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
@@ -107,6 +176,8 @@ function AppContent() {
     "/terminos-condiciones",
     "/404",
   ];
+
+  if (cargando) return null;
 
   return (
     <div className="App">
@@ -121,99 +192,46 @@ function AppContent() {
           <Panel isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         </>
       )}
-
       <main
-        className={`main ${isSidebarOpen &&
-          !isMobile &&
-          !sinEncabezado.includes(location.pathname)
-          ? "sidebar-open"
-          : ""
-          } ${sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
-          }`}
+        className={`main ${
+          isSidebarOpen && !isMobile && !sinEncabezado.includes(location.pathname)
+            ? "sidebar-open"
+            : ""
+        } ${
+          sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
+        }`}
       >
         <Routes>
-          {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar" element={<Recuperar />} />
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/terminos-condiciones" element={<Terminos />} />
-          {/* Rutas protegidas */}
-          <Route
-            path="/educacion"
-            element={<ProtectedRoute element={<Educacion />} />}
-          />
-          <Route
-            path="/comunidad"
-            element={<ProtectedRoute element={<Comunidad />} />}
-          />
-          <Route
-            path="/inicio"
-            element={<ProtectedRoute element={<Inicio />} />}
-          />
-          <Route
-            path="/categorias"
-            element={<ProtectedRoute element={<Categorias />} />}
-          />
-          <Route
-            path="/ingresos"
-            element={<ProtectedRoute element={<Ingresos />} />}
-          />
-          <Route
-            path="/gastos"
-            element={<ProtectedRoute element={<Gastos />} />}
-          />
-          <Route
-            path="/gastofijos"
-            element={<ProtectedRoute element={<Gastofijos />} />}
-          />
-          <Route
-            path="/metas"
-            element={<ProtectedRoute element={<Metas />} />}
-          />
-          <Route
-            path="/recomendaciones"
-            element={<ProtectedRoute element={<Recomendaciones />} />}
-          />
-          <Route
-            path="/reportes"
-            element={<ProtectedRoute element={<Reportess />} />}
-          />
 
-          {/*Produccion*/}
+          <Route path="/educacion" element={<ProtectedRoute element={<Educacion />} />} />
+          <Route path="/comunidad" element={<ProtectedRoute element={<Comunidad />} />} />
+          <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
+          <Route path="/categorias" element={<ProtectedRoute element={<Categorias />} />} />
+          <Route path="/ingresos" element={<ProtectedRoute element={<Ingresos />} />} />
+          <Route path="/gastos" element={<ProtectedRoute element={<Gastos />} />} />
+          <Route path="/gastofijos" element={<ProtectedRoute element={<Gastofijos />} />} />
+          <Route path="/metas" element={<ProtectedRoute element={<Metas />} />} />
+          <Route path="/recomendaciones" element={<ProtectedRoute element={<Recomendaciones />} />} />
+          <Route path="/reportes" element={<ProtectedRoute element={<Reportess />} />} />
+
           <Route
             path="/vista-general-produccion"
             element={<ProtectedRoute element={<VistaGeneralProduccion />} />}
           />
-          <Route
-            path="/materias-primas"
-            element={<ProtectedRoute element={<MateriasPrimas />} />}
-          />
-          <Route
-            path="/inventario"
-            element={<ProtectedRoute element={<Inventario />} />}
-          />
-          <Route
-            path="/ordenes-produccion"
-            element={<ProtectedRoute element={<OrdenesProduccion />} />}
-          />
-          <Route
-            path="/inventario-salida"
-            element={<ProtectedRoute element={<InventarioSalida />} />}
-          />
+          <Route path="/materias-primas" element={<ProtectedRoute element={<MateriasPrimas />} />} />
+          <Route path="/inventario" element={<ProtectedRoute element={<Inventario />} />} />
+          <Route path="/ordenes-produccion" element={<ProtectedRoute element={<OrdenesProduccion />} />} />
+          <Route path="/inventario-salida" element={<ProtectedRoute element={<InventarioSalida />} />} />
 
-          {/* Gestión de usuarios */}
-          <Route
-            path="/gestion-usuarios"
-            element={<ProtectedRoute element={<GestionUsuario />} />}
-          />
-          {/* IA Supervision */}
-          <Route
-            path="/ia-supervision"            
-            element={<ProtectedRoute element={<IASupervision />} />}
-          />
+          <Route path="/gestion-usuarios" element={<ProtectedRoute element={<GestionUsuario />} />} />
+          <Route path="/ia-supervision" element={<ProtectedRoute element={<IASupervision />} />} />
+          <Route path="/monitoreo-sistema" element={<ProtectedRoute element={<MonitoreoSistema />} />} />
 
-          {/* Página no encontrada */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -222,7 +240,7 @@ function AppContent() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <AuthProvider>
       <Router>
@@ -232,5 +250,3 @@ function App() {
     </AuthProvider>
   );
 }
-
-export default App;

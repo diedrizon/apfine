@@ -245,7 +245,7 @@ function Panel({ isSidebarOpen, toggleSidebar }) {
                     {renderSubItem(
                       <BiCog />,
                       "Monitoreo / Configuración",
-                      () => { }
+                      () => { handleNavigate("/monitoreo-sistema") }
                     )}
                   </ul>
                 )}

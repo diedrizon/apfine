@@ -1,0 +1,159 @@
+/* MonitoreoSistema.css */
+
+/* Contenedor principal */
+.monitoreo-container {
+  padding: 20px;
+  background-color: var(--background);
+  min-height: calc(100vh - 60px); /* deja espacio para el encabezado fijo */
+}
+
+/* Título de sección */
+.monitoreo-header {
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+/* Grid responsivo de tarjetas */
+.monitoreo-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Wrapper de cada “card” */
+.monitoreo-card {
+  display: flex;
+}
+
+/* Estilo general de cada panel */
+.monitoreo-panel {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Sombra distinta en modo oscuro */
+body.dark-mode .monitoreo-panel {
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Encabezado interno del panel */
+.panel-titulo {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-title);
+}
+
+/* Icono del título */
+.panel-icono {
+  margin-right: 8px;
+  font-size: 1.2rem;
+  color: var(--icon-active);
+}
+
+/* Contenido del panel */
+.panel-contenido {
+  padding: 16px;
+  flex: 1;
+  color: var(--text-general);
+  font-size: 0.9rem;
+}
+
+/* Párrafos dentro del contenido */
+.panel-contenido p {
+  margin: 8px 0;
+}
+
+/* Negritas con color de título */
+.panel-contenido p strong {
+  color: var(--text-title);
+}
+
+/* Lista de errores sin viñetas */
+.errores-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Cada error */
+.error-item {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Fecha/nota en cursiva */
+.error-item em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Inputs y selects en SubirReporteManual */
+.ms-form-control {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  color: var(--text-normal);
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+}
+
+/* Ajuste específico para el input de archivos */
+.archivo-input {
+  padding: 4px 0;
+}
+
+/* Botones “ms-button” */
+.ms-button {
+  display: inline-block;
+  padding: 6px 12px; /* Reduce el alto del botón */
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  border: 2px solid transparent; /* Borde dinámico */
+  border-radius: 8px; /* Bordes más redondeados */
+  background-color: transparent; /* Fondo transparente */
+  color: var(--text-button); /* Texto dinámico */
+  cursor: pointer;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover del botón */
+.ms-button:hover {
+  border-color: var(--button-hover-primary); /* Cambia el borde en hover */
+  color: var(--text-hover); /* Cambia el color del texto en hover */
+}
+
+/* Botón deshabilitado */
+.ms-button:disabled {
+  border-color: var(--button-disabled); /* Borde deshabilitado */
+  color: var(--text-secondary); /* Texto deshabilitado */
+  cursor: not-allowed;
+}
+
+/* Modo claro */
+body.light-mode .ms-button {
+  border-color: #007bff; /* Azul en modo claro */
+  color: #007bff; /* Texto azul en modo claro */
+}
+
+/* Modo oscuro */
+body.dark-mode .ms-button {
+  border-color: #28a745; /* Verde en modo oscuro */
+  color: #28a745; /* Texto verde en modo oscuro */
+}
