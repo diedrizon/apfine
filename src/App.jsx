@@ -55,6 +55,7 @@ function RouteChangeTracker() {
   const { user, perfil } = useAuth();
   const [monitorEnabled, setMonitorEnabled] = useState(true);
 
+  // Lee si el monitoreo está habilitado desde Firestore
   useEffect(() => {
     const cfgRef = doc(db, "config", "system_settings");
     const unsub = onSnapshot(cfgRef, (snap) => {
@@ -63,6 +64,7 @@ function RouteChangeTracker() {
     return () => unsub();
   }, []);
 
+  // Registra navegación solo si el usuario es Beneficiario
   useEffect(() => {
     ReactGA.send({ hitType: "pageview", page: location.pathname });
 
@@ -105,18 +107,24 @@ function RouteChangeTracker() {
             },
             { merge: true }
           );
-
-          console.log("[✅ Monitoreo] Ruta registrada:", location.pathname);
-        } catch (error) {
-          console.warn("[⚠️ Monitoreo] Error en guardado:", error);
+        } catch {
+          // Error al registrar la ruta
         }
       })();
     }
-  }, [location.pathname, user?.uid, perfil?.rol, monitorEnabled]);
+  }, [
+    location.pathname,
+    user?.uid,
+    user?.email,
+    perfil?.rol,
+    perfil?.correo,
+    monitorEnabled,
+  ]);
 
   return null;
 }
 
+// === Contenido de la aplicación ===
 function AppContent() {
   const location = useLocation();
   const { cargando } = useAuth();
@@ -139,7 +147,9 @@ function AppContent() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const t = localStorage.getItem("theme");
-    return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return t
+      ? t === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
@@ -189,27 +199,30 @@ function AppContent() {
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
           />
-          <Panel isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+          <Panel
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+          />
         </>
       )}
       <main
         className={`main ${
-          isSidebarOpen && !isMobile && !sinEncabezado.includes(location.pathname)
+          isSidebarOpen &&
+          !isMobile &&
+          !sinEncabezado.includes(location.pathname)
             ? "sidebar-open"
             : ""
-        } ${
-          sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""
-        }`}
+        } ${sinEncabezado.includes(location.pathname) ? "sin-encabezado" : ""}`}
       >
         <Routes>
+          {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar" element={<Recuperar />} />
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/terminos-condiciones" element={<Terminos />} />
 
-          <Route path="/educacion" element={<ProtectedRoute element={<Educacion />} />} />
-          <Route path="/comunidad" element={<ProtectedRoute element={<Comunidad />} />} />
+          {/* Finanzas */}
           <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
           <Route path="/categorias" element={<ProtectedRoute element={<Categorias />} />} />
           <Route path="/ingresos" element={<ProtectedRoute element={<Ingresos />} />} />
@@ -217,15 +230,27 @@ function AppContent() {
           <Route path="/gastofijos" element={<ProtectedRoute element={<Gastofijos />} />} />
           <Route path="/metas" element={<ProtectedRoute element={<Metas />} />} />
           <Route path="/recomendaciones" element={<ProtectedRoute element={<Recomendaciones />} />} />
-          <Route path="/reportes" element={<ProtectedRoute element={<Reportess />} />} />
+
+          {/* Producción */}
           <Route path="/vista-general-produccion" element={<ProtectedRoute element={<VistaGeneralProduccion />} />} />
           <Route path="/materias-primas" element={<ProtectedRoute element={<MateriasPrimas />} />} />
           <Route path="/inventario" element={<ProtectedRoute element={<Inventario />} />} />
           <Route path="/ordenes-produccion" element={<ProtectedRoute element={<OrdenesProduccion />} />} />
           <Route path="/inventario-salida" element={<ProtectedRoute element={<InventarioSalida />} />} />
+
+          {/* Comunidad y Educación */}
+          <Route path="/educacion" element={<ProtectedRoute element={<Educacion />} />} />
+          <Route path="/comunidad" element={<ProtectedRoute element={<Comunidad />} />} />
+
+          {/* Reportes */}
+          <Route path="/reportes" element={<ProtectedRoute element={<Reportess />} />} />
+
+          {/* Administración */}
           <Route path="/gestion-usuarios" element={<ProtectedRoute element={<GestionUsuario />} />} />
           <Route path="/ia-supervision" element={<ProtectedRoute element={<IASupervision />} />} />
           <Route path="/monitoreo-sistema" element={<ProtectedRoute element={<MonitoreoSistema />} />} />
+
+          {/* Errores */}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
