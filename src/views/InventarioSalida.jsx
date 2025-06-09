@@ -22,6 +22,7 @@ import ModalEliminarVenta from "../components/salidainventario/ModalEliminarVent
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
 import { generarComprobantePDF } from "../components/salidainventario/SalidaInventarioPDF";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 import "../styles/SalidaInventario.css";
 
@@ -48,6 +49,10 @@ function VentasInventario() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
+
   const ventasCollection = collection(db, "ventas");
 
   useEffect(() => {
@@ -59,6 +64,15 @@ function VentasInventario() {
         cargarCategorias(user.uid);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    const ajustarItems = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    ajustarItems();
+    window.addEventListener("resize", ajustarItems);
+    return () => window.removeEventListener("resize", ajustarItems);
   }, []);
 
   function cargarVentas(uid) {
@@ -408,6 +422,15 @@ function VentasInventario() {
   const montoTotal = ventas.reduce((sum, v) => sum + Number(v.total), 0);
   const ultimaVenta = ventas.length > 0 ? ventas[ventas.length - 1].cliente : "N/A";
 
+  const ventasFiltradas = ventas.filter((v) =>
+    v.cliente.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const ventasPaginadas = ventasFiltradas.slice(
+    (paginaActual - 1) * itemsPorPagina,
+    paginaActual * itemsPorPagina
+  );
+
   return (
     <Container fluid className="si-container">
       <div className="si-header d-flex justify-content-between align-items-center mb-3">
@@ -417,9 +440,20 @@ function VentasInventario() {
         </Button>
       </div>
 
+      <div className="floating-label-input mb-3">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar cliente</label>
+      </div>
+
       <div className="categorias-content">
         <div className="categorias-list">
-          {ventas.map((v) => (
+          {ventasPaginadas.map((v) => (
             <div
               className="categoria-item"
               key={v.id}
@@ -506,6 +540,13 @@ function VentasInventario() {
           </Card>
         </div>
       </div>
+
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={ventasFiltradas.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
 
       <ModalRegistroVenta
         show={showAddModal}

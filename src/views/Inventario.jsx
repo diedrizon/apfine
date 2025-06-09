@@ -18,6 +18,7 @@ import ModalEliminacionInventario from "../components/inventario/ModalEliminacio
 import ModalDetalleInventario from "../components/inventario/ModalDetalleInventario";
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
+import Paginacion from "../components/ordenamiento/Paginacion";
 import "../styles/Inventario.css";
 
 const icono = (s, m) =>
@@ -40,6 +41,9 @@ export default function Inventario() {
   const [detalle, setDetalle] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
   const col = collection(db, "inventario");
 
   useEffect(() => onAuthStateChanged(auth, (u) => u && setUserId(u.uid)), []);
@@ -55,6 +59,14 @@ export default function Inventario() {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
     };
+  }, []);
+  useEffect(() => {
+    const ajustarItems = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    ajustarItems();
+    window.addEventListener("resize", ajustarItems);
+    return () => window.removeEventListener("resize", ajustarItems);
   }, []);
 
   const cargar = async () => {
@@ -155,6 +167,14 @@ export default function Inventario() {
     });
   }
 
+  const productosFiltrados = productos.filter((p) =>
+    p.nombre_producto.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexFinal = paginaActual * itemsPorPagina;
+  const indexInicio = indexFinal - itemsPorPagina;
+  const productosPaginados = productosFiltrados.slice(indexInicio, indexFinal);
+
   return (
     <Container fluid className="inv-container">
       <div className="inv-header">
@@ -162,9 +182,20 @@ export default function Inventario() {
         <Button onClick={openAdd}>Agregar</Button>
       </div>
 
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar producto</label>
+      </div>
+
       <div className="inv-content">
         <div className="inv-list">
-          {productos.map((p) => {
+          {productosPaginados.map((p) => {
             const open = expandedId === p.id;
             return (
               <div
@@ -245,6 +276,13 @@ export default function Inventario() {
           </Card>
         </div>
       </div>
+
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={productosFiltrados.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
 
       {nuevo && (
         <ModalRegistroInventario

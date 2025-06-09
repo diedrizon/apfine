@@ -17,6 +17,7 @@ import ModalEliminacionOrden from "../components/ordenesproduccion/ModalEliminac
 import ModalDetalleOrden from "../components/ordenesproduccion/ModalDetalleOrden";
 import ModalRegistroAvance from "../components/ordenesproduccion/ModalRegistroAvance";
 import ModalMensaje from "../components/ModalMensaje";
+import Paginacion from "../components/ordenamiento/Paginacion";
 import "../styles/OrdenesProduccion.css";
 
 export default function OrdenesProduccion() {
@@ -38,6 +39,9 @@ export default function OrdenesProduccion() {
   const [msg, setMsg] = useState("");
   const [showMsg, setShowMsg] = useState(false);
   const [offline, setOffline] = useState(!navigator.onLine);
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
 
   const colOrdenes = collection(db, "ordenes_produccion");
   const colInventario = collection(db, "inventario");
@@ -59,6 +63,14 @@ export default function OrdenesProduccion() {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
     };
+  }, []);
+  useEffect(() => {
+    const ajustarCantidad = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    ajustarCantidad();
+    window.addEventListener("resize", ajustarCantidad);
+    return () => window.removeEventListener("resize", ajustarCantidad);
   }, []);
 
   const loadProductos = async () => {
@@ -217,15 +229,35 @@ export default function OrdenesProduccion() {
     setShowAdd(true);
   };
 
+  const ordenesFiltradas = ordenes.filter((op) =>
+    op.producto.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexFinal = paginaActual * itemsPorPagina;
+  const indexInicio = indexFinal - itemsPorPagina;
+  const ordenesPaginadas = ordenesFiltradas.slice(indexInicio, indexFinal);
+
   return (
     <Container fluid className="op-container">
       <header className="op-header">
         <h4>Órdenes de Producción</h4>
         <Button onClick={openAdd}>Agregar</Button>
       </header>
+
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar producto</label>
+      </div>
+
       <div className="op-content">
         <section className="op-list">
-          {ordenes.map((op) => {
+          {ordenesPaginadas.map((op) => {
             const open = expandedId === op.id;
             return (
               <div
@@ -306,6 +338,12 @@ export default function OrdenesProduccion() {
           </Card>
         </aside>
       </div>
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={ordenesFiltradas.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
       {showAdd && (
         <ModalRegistroOrden
           show={showAdd}

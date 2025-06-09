@@ -17,6 +17,7 @@ import ModalEliminacionMateria from "../components/materiasprimas/ModalEliminaci
 import ModalDetalleMateria from "../components/materiasprimas/ModalDetalleMateria";
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
+import Paginacion from "../components/ordenamiento/Paginacion";
 import "../styles/MateriasPrimas.css";
 
 export default function MateriasPrimas() {
@@ -36,6 +37,9 @@ export default function MateriasPrimas() {
   const [detalle, setDetalle] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
   const col = collection(db, "materias_primas");
 
   useEffect(() => {
@@ -56,6 +60,15 @@ export default function MateriasPrimas() {
   useEffect(() => {
     if (userId) fetchMaterias();
   }, [userId]);
+
+  useEffect(() => {
+    const ajustarItemsPorPantalla = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    ajustarItemsPorPantalla();
+    window.addEventListener("resize", ajustarItemsPorPantalla);
+    return () => window.removeEventListener("resize", ajustarItemsPorPantalla);
+  }, []);
 
   async function fetchMaterias() {
     const snap = await getDocs(col);
@@ -136,15 +149,35 @@ export default function MateriasPrimas() {
   const toggleExpanded = (m) =>
     setExpandedId(expandedId === m.id ? null : m.id);
 
+  const materiasFiltradas = materias.filter((m) =>
+    m.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexUltimo = paginaActual * itemsPorPagina;
+  const indexPrimero = indexUltimo - itemsPorPagina;
+  const materiasPaginadas = materiasFiltradas.slice(indexPrimero, indexUltimo);
+
   return (
     <Container fluid className="materias-container">
       <div className="materias-header">
         <h5>Materias Primas / Insumos</h5>
         <Button onClick={openAdd}>Agregar</Button>
       </div>
+
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar insumo</label>
+      </div>
+
       <div className="materias-content">
         <div className="materias-list">
-          {materias.map((m) => {
+          {materiasPaginadas.map((m) => {
             const exp = expandedId === m.id;
             return (
               <div
@@ -230,6 +263,13 @@ export default function MateriasPrimas() {
           </Card>
         </div>
       </div>
+
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={materiasFiltradas.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
 
       {showAdd && nueva && (
         <ModalRegistroMateria
