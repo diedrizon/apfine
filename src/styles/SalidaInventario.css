@@ -79,48 +79,53 @@
   background-color: var(--si-primary-hover);
 }
 
-/* Floating Label Inputs */
+/* ==== Caja de búsqueda con etiqueta flotante ==== */
 .floating-label-input {
   position: relative;
   width: 100%;
   margin-bottom: 1rem;
 }
 
+/* Estilo del input */
 .floating-label-input input.search-input {
   width: 100%;
   padding: 0.75rem;
   font-size: 0.95rem;
   background-color: transparent;
-  border: 1px solid var(--si-border, #ccc);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  color: var(--si-text);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  color: var(--text-normal);
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
 }
 
+/* Ocultar placeholder */
 .floating-label-input input.search-input::placeholder {
   color: transparent;
 }
 
+/* Label flotante (sin fondo) */
 .floating-label-input label {
   position: absolute;
   top: 0.85rem;
   left: 0.75rem;
   padding: 0 4px;
   font-size: 0.85rem;
-  color: var(--si-text);
+  color: var(--text-secondary);
   pointer-events: none;
   transition: 0.2s ease all;
   z-index: 1;
 }
 
+/* Cuando flota */
 .floating-label-input input.search-input:focus + label,
 .floating-label-input input.search-input:not(:placeholder-shown) + label {
   top: -0.5rem;
   left: 0.6rem;
   font-size: 0.75rem;
-  color: var(--si-primary);
+  color: var(--primary);
 }
 
+/* Capa invisible que corta el borde solo al flotar */
 .floating-label-input label::before {
   content: "";
   position: absolute;
@@ -128,22 +133,24 @@
   left: 0;
   right: 0;
   height: 1.2em;
-  background: var(--si-bg);
+  background: var(--card-bg);
   z-index: -1;
   transform: translateY(-50%);
   border-radius: 4px;
   display: none;
 }
 
+/* Solo visible cuando el label flota */
 .floating-label-input input.search-input:focus + label::before,
 .floating-label-input input.search-input:not(:placeholder-shown) + label::before {
   display: block;
 }
 
+/* Efecto de foco */
 .floating-label-input input.search-input:focus {
-  border-color: var(--si-primary);
+  border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.1);
 }
 
 /* Responsive */
@@ -250,3 +257,177 @@
     margin-top: 0.5rem; /* separa el botón del campo arriba */
   }
 }
+
+/* Fondo según modo */
+body.light-mode .si-container {
+  background-color: #ffffff;
+}
+body.dark-mode .si-container {
+  background-color: #1C1F2A;
+}
+
+/* Ocultar botones excepto Ver PDF */
+.categoria-item .categoria-actions-expanded .btn:not(.btn-link) {
+  display: none;
+}
+
+/* Mostrar botones solo cuando la tarjeta está expandida */
+.categoria-item.expanded .categoria-actions-expanded .btn {
+  display: inline-flex;
+  margin-left: 0.5rem;
+}
+
+/* Ajustar diseño de la tarjeta */
+.categoria-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.categoria-item.expanded {
+  background-color: var(--si-card-bg);
+}
+
+.categoria-top {
+  display: flex;
+  align-items: center;
+}
+
+/* Título en modo oscuro */
+body.dark-mode .si-header h4 {
+  color: #ffffff; /* Cambia el color del título a blanco en modo oscuro */
+}
+
+/* Ajustar diseño de los íconos y detalles */
+.categoria-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Asegura que Total y Medio estén en la misma fila */
+  gap: 10px; /* Reduce el espacio entre los elementos */
+}
+
+.categoria-actions-expanded {
+  display: flex;
+  justify-content: flex-start; /* Alinea los íconos a la izquierda */
+  gap: 10px; /* Espacio entre los botones */
+  margin-top: 10px;
+}
+
+/* ————————————————
+   Tarjeta más compacta
+   ———————————————— */
+.categoria-item {
+  /* antes tenías 10px; aquí reducimos ligeramente */
+  padding: 0.5rem 0.75rem;
+}
+
+/* Ajusta la fuente y el interlineado para que el contenido ocupe menos alto */
+.categoria-details p {
+  margin: 0;
+  line-height: 1.2;
+  font-size: 0.9rem;
+}
+
+/* ————————————————
+   Iconos más grandes
+   ———————————————— */
+.categoria-icon {
+  /* aumenta el contenedor un poco */
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.categoria-icon svg {
+  /* agranda el SVG dentro */
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* ————————————————————————
+   Caja flotante de búsqueda (como en Categorías)
+   ———————————————————————— */
+.si-container .floating-label-input {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.si-container .floating-label-input input.search-input {
+  width: 100%;
+  padding: 8px 12px;                /* igual que Categorías */
+  font-size: 1rem;
+  background-color: transparent;    /* para que el fondo de .si-container se vea */
+  border: 1px solid #ccc;           /* mismo borde */
+  border-radius: 4px;               /* mismo radio de esquina */
+  color: inherit;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Modo claro / oscuro */
+body.light-mode .si-container .floating-label-input input.search-input {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
+}
+body.dark-mode .si-container .floating-label-input input.search-input {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
+}
+
+/* Enfoque igual que Categorías */
+.si-container .floating-label-input input.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* Label flotante igual que Categorías */
+.si-container .floating-label-input label {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.75rem;
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: #6c757d; /* var(--text-secondary) en Categorías */
+  pointer-events: none;
+  transition: 0.2s ease all;
+  z-index: 1;
+}
+
+/* Label en float */
+.si-container .floating-label-input input.search-input:focus + label,
+.si-container .floating-label-input input.search-input:not(:placeholder-shown) + label {
+  top: -0.5rem;
+  left: 0.6rem;
+  font-size: 0.75rem;
+  color: #007bff; /* var(--primary) en Categorías */
+}
+
+/* Capa que “corta” el borde detrás del label */
+.si-container .floating-label-input label::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.2em;
+  background: inherit;
+  z-index: -1;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  display: none;
+}
+.si-container .floating-label-input input.search-input:focus + label::before,
+.si-container .floating-label-input input.search-input:not(:placeholder-shown) + label::before {
+  display: block;
+}
+

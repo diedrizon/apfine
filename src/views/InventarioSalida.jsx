@@ -53,6 +53,8 @@ function VentasInventario() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(3);
 
+  const [expandedVenta, setExpandedVenta] = useState(null);
+
   const ventasCollection = collection(db, "ventas");
 
   useEffect(() => {
@@ -440,74 +442,94 @@ function VentasInventario() {
         </Button>
       </div>
 
-      <div className="floating-label-input mb-3">
+      <div className="floating-label-input">
         <input
+          id="busqueda"
           type="text"
-          placeholder=" "
           className="search-input"
+          placeholder="Buscar cliente"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
-        <label>Buscar cliente</label>
+        <label htmlFor="busqueda">Buscar cliente</label>
       </div>
 
       <div className="categorias-content">
         <div className="categorias-list">
-          {ventasPaginadas.map((v) => (
-            <div
-              className="categoria-item"
-              key={v.id}
-              style={{ borderColor: "#007bff" }}
-            >
-              <div className="categoria-top">
-                <div className="categoria-icon" style={{ backgroundColor: "#007bff" }}>
-                  <FaIcons.FaReceipt />
+          {ventasPaginadas.map((v) => {
+            const isExpanded = expandedVenta === v.id;
+            return (
+              <div
+                key={v.id}
+                className={`categoria-item ${isExpanded ? "expanded" : ""}`}
+                style={{ borderColor: "#007bff" }}
+                onClick={() => setExpandedVenta(isExpanded ? null : v.id)}
+              >
+                <div className="categoria-top d-flex align-items-center">
+                  <div className="categoria-icon" style={{ backgroundColor: "#007bff" }}>
+                    <FaIcons.FaReceipt />
+                  </div>
+                  <span className="categoria-nombre">
+                    {v.fecha} – {v.cliente}
+                  </span>
+                  {v.comprobanteURL && (
+                    <Button
+                      variant="link"
+                      href={v.comprobanteURL}
+                      target="_blank"
+                      title="Ver comprobante PDF"
+                      className="ms-auto pdf-button"
+                    >
+                      <FaIcons.FaFilePdf />
+                    </Button>
+                  )}
                 </div>
-                <span className="categoria-nombre">
-                  {v.fecha} – {v.cliente}
-                </span>
-              </div>
-              <div className="categoria-actions-expanded mt-2">
-                <p>
-                  <strong>Total:</strong> C${Number(v.total).toFixed(2)} <br />
-                  <strong>Medio:</strong> {v.medio_pago || "No especificado"}
-                </p>
-                {v.comprobanteURL && (
-                  <Button
-                    variant="link"
-                    href={v.comprobanteURL}
-                    target="_blank"
-                    title="Ver comprobante PDF"
-                  >
-                    <FaIcons.FaFilePdf /> Ver PDF
-                  </Button>
+
+                <div className="categoria-details">
+                  <p>
+                    <strong>Total:</strong> C${Number(v.total).toFixed(2)}
+                    <span style={{ marginLeft: "10px" }}>
+                      <strong>Medio:</strong> {v.medio_pago || "No especificado"}
+                    </span>
+                  </p>
+                </div>
+
+                {isExpanded && (
+                  <div className="categoria-actions-expanded">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() =>
+                        handleCopy(
+                          `Cliente: ${v.cliente}, Total: C$${v.total}`,
+                          "Venta copiada"
+                        )
+                      }
+                      title="Copiar"
+                    >
+                      <FaIcons.FaClipboard />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleOpenEditModal(v)}
+                      title="Editar"
+                    >
+                      <FaIcons.FaEdit />
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleOpenDeleteModal(v)}
+                      title="Eliminar"
+                    >
+                      <FaIcons.FaTrash />
+                    </Button>
+                  </div>
                 )}
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() =>
-                    handleCopy(`Cliente: ${v.cliente}, Total: C$${v.total}`, "Venta copiada")
-                  }
-                >
-                  <FaIcons.FaClipboard />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleOpenEditModal(v)}
-                >
-                  <FaIcons.FaEdit />
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleOpenDeleteModal(v)}
-                >
-                  <FaIcons.FaTrash />
-                </Button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="categorias-summary">
