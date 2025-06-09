@@ -18,6 +18,7 @@ import ToastFlotante from "../components/ui/ToastFlotante";
 import "../styles/Categorias.css";
 import { onAuthStateChanged } from "firebase/auth";
 import ReactGA from "react-ga4";
+import Paginacion from "../components/ordenamiento/Paginacion"; // 🔸 A. Importa el componente de paginación
 
 function getIconComponent(iconName) {
   const IconComponent = FaIcons[iconName];
@@ -26,6 +27,9 @@ function getIconComponent(iconName) {
 
 function Categorias() {
   const [categorias, setCategorias] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Nuevo estado para búsqueda
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(3); 
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
@@ -266,6 +270,29 @@ function Categorias() {
   const totalCategorias = categorias.length;
   const mayorGasto = categorias[0] ? categorias[0].nombre : "N/A";
 
+  const filteredCategorias = categorias.filter((cat) =>
+    cat.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // 🔸 D. Aplica la paginación a las categorías filtradas
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCategorias = filteredCategorias.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      const isSmallScreen = window.innerWidth <= 768;
+      setItemsPerPage(isSmallScreen ? 5 : 3);
+    };
+
+    updateItemsPerPage(); // valor inicial
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []); // 🔸 C. Detecta tamaño de pantalla para cambiar itemsPerPage
+
   return (
     <Container fluid className="categorias-container">
       <div className="categorias-header">
@@ -275,9 +302,21 @@ function Categorias() {
         </Button>
       </div>
 
+      <div className="floating-label-input">
+        <input
+          id="busqueda"
+          type="text"
+          className="search-input"
+          placeholder="Buscar categoría"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <label htmlFor="busqueda">Buscar categoría</label>
+      </div>
+
       <div className="categorias-content">
         <div className="categorias-list">
-          {categorias.map((cat) => {
+          {currentCategorias.map((cat) => {
             const isExpanded = expandedCategory === cat.id;
             return (
               <div
@@ -307,7 +346,9 @@ function Categorias() {
                       onClick={(e) => {
                         e.stopPropagation();
                         handleCopy(
-                          `Nombre: ${cat.nombre}, Aplicación: ${cat.aplicacion || "Sin definir"}`,
+                          `Nombre: ${cat.nombre}, Aplicación: ${
+                            cat.aplicacion || "Sin definir"
+                          }`,
                           "Categoría copiada"
                         );
                       }}
@@ -339,6 +380,12 @@ function Categorias() {
               </div>
             );
           })}
+          <Paginacion // 🔸 F. Agrega el componente Paginacion al final de la lista
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredCategorias.length}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
 
         <div className="categorias-summary">

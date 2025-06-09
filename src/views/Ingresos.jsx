@@ -23,6 +23,7 @@ import ModalEliminacionIngreso from "../components/ingresos/ModalEliminacionIngr
 import ModalDetalleIngreso from "../components/ingresos/ModalDetalleIngreso";
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 import "../styles/Ingresos.css";
 
@@ -39,6 +40,10 @@ export default function Ingresos() {
   const [userId, setUserId] = useState(null);
   const [ingresos, setIngresos] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const esPantallaPequena = window.innerWidth <= 768;
+  const elementosPorPagina = esPantallaPequena ? 5 : 3;
 
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -238,6 +243,16 @@ export default function Ingresos() {
     });
   };
 
+  const ingresosFiltrados = ingresos.filter((ing) =>
+    ing.tipo_ingreso?.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexInicio = (paginaActual - 1) * elementosPorPagina;
+  const ingresosPaginados = ingresosFiltrados.slice(
+    indexInicio,
+    indexInicio + elementosPorPagina
+  );
+
   return (
     <Container fluid className="ingresos-container">
       <div className="ingresos-header">
@@ -245,9 +260,20 @@ export default function Ingresos() {
         <Button onClick={openAddModal}>Agregar</Button>
       </div>
 
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar Ingreso</label>
+      </div>
+
       <div className="ingresos-content">
         <div className="ingresos-list">
-          {ingresos.map(ing => {
+          {ingresosPaginados.map(ing => {
             const expanded = expandedId === ing.id;
             return (
               <div
@@ -376,6 +402,12 @@ export default function Ingresos() {
         message={mensaje}
       />
       <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={ingresosFiltrados.length}
+        itemsPorPagina={elementosPorPagina}
+        onPageChange={setPaginaActual}
+      />
     </Container>
   );
 }

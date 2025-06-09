@@ -268,11 +268,61 @@ body.dark-mode .react-date-picker__wrapper {
   border-radius: 6px;
 }
 
-@media (max-width: 576px) {
-  .modal-group input,
-  .modal-group select,
-  .modal-group textarea {
-      width: 100%;
-      box-sizing: border-box;
-  }
+/* === Caja de búsqueda flotante === */
+.floating-label-input {
+  position: relative;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.floating-label-input input {
+  width: 100%;
+  padding: 12px 12px 12px 12px;
+  font-size: 1rem;
+  border: 1px solid var(--input-border-color, #ccc);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--text-normal);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.floating-label-input label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: var(--card-bg);
+  padding: 0 4px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+
+.floating-label-input input:focus + label,
+.floating-label-input input:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 10px;
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+body.dark-mode .floating-label-input input {
+  background-color: #1c1f2a;
+  color: #fff;
+  border-color: #555;
+}
+
+body.dark-mode .floating-label-input label {
+  background-color: #1c1f2a;
+  color: #aaa;
+}
+
+body.light-mode .floating-label-input input {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
+}
+
+body.light-mode .floating-label-input label {
+  background-color: #fff;
 }

@@ -26,6 +26,7 @@ import ModalEliminacionMeta from "../components/metas/ModalEliminacionMeta";
 import ModalDetalleMeta from "../components/metas/ModalDetalleMeta";
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 import "../styles/Metas.css";
 
@@ -63,6 +64,10 @@ function Metas() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
+
   const colRef = collection(db, "metas");
 
   useEffect(() => {
@@ -73,6 +78,15 @@ function Metas() {
     if (!userId) return;
     fetchMetas();
   });
+
+  useEffect(() => {
+    const actualizarCantidad = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    actualizarCantidad();
+    window.addEventListener("resize", actualizarCantidad);
+    return () => window.removeEventListener("resize", actualizarCantidad);
+  }, []);
 
   async function fetchMetas() {
     const snap = await getDocs(colRef);
@@ -119,6 +133,14 @@ function Metas() {
     setExpandedId(expandedId === meta.id ? null : meta.id);
   }
 
+  const metasFiltradas = metas.filter((m) =>
+    m.nombre_meta.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexFinal = paginaActual * itemsPorPagina;
+  const indexInicio = indexFinal - itemsPorPagina;
+  const metasPaginadas = metasFiltradas.slice(indexInicio, indexFinal);
+
   return (
     <Container fluid className="metas-container">
       <div className="section-header">
@@ -126,9 +148,20 @@ function Metas() {
         <Button onClick={() => setShowAdd(true)}>Agregar</Button>
       </div>
 
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar meta</label>
+      </div>
+
       <div className="content">
         <div className="listado">
-          {metas.map((m) => {
+          {metasPaginadas.map((m) => {
             const actual = parseFloat(m.monto_actual || 0);
             const objetivo = parseFloat(m.monto_objetivo || 1);
             const porcentaje = ((actual / objetivo) * 100).toFixed(0);
@@ -224,6 +257,13 @@ function Metas() {
           </Card>
         </div>
       </div>
+
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={metasFiltradas.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
 
       <ModalRegistroMeta
         show={showAdd}

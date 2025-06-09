@@ -18,6 +18,7 @@ import ModalEliminacionGastoFijo from "../components/gastosfijos/ModalEliminacio
 import ModalDetalleGastoFijo from "../components/gastosfijos/ModalDetalleGastoFijo";
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 import "../styles/GastosFijos.css";
 
@@ -53,6 +54,10 @@ function GastosFijos() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
+
   const colRef = collection(db, "gastos_fijos");
 
   useEffect(() => {
@@ -80,6 +85,15 @@ function GastosFijos() {
       fetchGastosFijos();
     }
   });
+
+  useEffect(() => {
+    const actualizarItemsPorPantalla = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    actualizarItemsPorPantalla();
+    window.addEventListener("resize", actualizarItemsPorPantalla);
+    return () => window.removeEventListener("resize", actualizarItemsPorPantalla);
+  }, []);
 
   async function fetchGastosFijos() {
     try {
@@ -178,6 +192,14 @@ function GastosFijos() {
 
   const totalFijos = gastosFijos.length;
 
+  const gastosFiltrados = gastosFijos.filter((g) =>
+    g.nombre_gasto.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexUltimo = paginaActual * itemsPorPagina;
+  const indexPrimero = indexUltimo - itemsPorPagina;
+  const gastosPaginados = gastosFiltrados.slice(indexPrimero, indexUltimo);
+
   return (
     <Container fluid className="gastos-fijos-container">
       <div className="section-header">
@@ -187,9 +209,20 @@ function GastosFijos() {
         </Button>
       </div>
 
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar gasto fijo</label>
+      </div>
+
       <div className="content">
         <div className="listado">
-          {gastosFijos.map((g) => {
+          {gastosPaginados.map((g) => {
             const isExpanded = expandedId === g.id;
             return (
               <div
@@ -274,6 +307,13 @@ function GastosFijos() {
           </Card>
         </div>
       </div>
+
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={gastosFiltrados.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
 
       {/* Modales */}
       <ModalRegistroGastoFijo

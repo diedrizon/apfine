@@ -138,6 +138,28 @@
 .icon-item.selected {
   border: 2px solid #000;
 }
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+body.light-mode .search-input {
+  background-color: #fff;
+  color: #000;
+}
+body.dark-mode .search-input {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
 @media (max-width: 768px) {
   .categorias-content {
     flex-direction: column;
@@ -177,4 +199,77 @@ body.light-mode .categoria-nombre {
 }
 body.dark-mode .categoria-nombre {
   color: #fff;
+}
+/* ==== Caja de búsqueda con etiqueta flotante ==== */
+.floating-label-input {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Estilo del input */
+.floating-label-input input.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  background-color: transparent;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-normal);
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+/* Ocultar placeholder */
+.floating-label-input input.search-input::placeholder {
+  color: transparent;
+}
+
+/* Label flotante (sin fondo) */
+.floating-label-input label {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.75rem;
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: 0.2s ease all;
+  z-index: 1;
+}
+
+/* Cuando flota */
+.floating-label-input input.search-input:focus + label,
+.floating-label-input input.search-input:not(:placeholder-shown) + label {
+  top: -0.5rem;
+  left: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+/* Capa invisible que corta el borde solo al flotar */
+.floating-label-input label::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.2em;
+  background: var(--card-bg);
+  z-index: -1;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  display: none;
+}
+
+/* Solo visible cuando el label flota */
+.floating-label-input input.search-input:focus + label::before,
+.floating-label-input input.search-input:not(:placeholder-shown) + label::before {
+  display: block;
+}
+
+/* Efecto de foco */
+.floating-label-input input.search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.1);
 }

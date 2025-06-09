@@ -18,6 +18,7 @@ import ModalEliminacionGasto from "../components/gastos/ModalEliminacionGasto";
 import ModalDetalleGasto from "../components/gastos/ModalDetalleGasto";
 import ModalMensaje from "../components/ModalMensaje";
 import ToastFlotante from "../components/ui/ToastFlotante";
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 import "../styles/Gastos.css";
 
@@ -70,6 +71,10 @@ function Gastos() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
+  const [busqueda, setBusqueda] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(3);
+
   const handleCopy = (texto, mensaje) => {
     navigator.clipboard.writeText(texto).then(() => {
       setToastMsg(mensaje);
@@ -107,6 +112,15 @@ function Gastos() {
       fetchCategorias();
     }
   });
+
+  useEffect(() => {
+    const actualizarItemsPorPantalla = () => {
+      setItemsPorPagina(window.innerWidth < 768 ? 5 : 3);
+    };
+    actualizarItemsPorPantalla();
+    window.addEventListener("resize", actualizarItemsPorPantalla);
+    return () => window.removeEventListener("resize", actualizarItemsPorPantalla);
+  }, []);
 
   async function fetchGastos() {
     try {
@@ -263,6 +277,16 @@ function Gastos() {
 
   const totalGastos = gastos.length;
 
+  const gastosFiltrados = gastos.filter((g) =>
+    (g.tipo_gasto || "").toLowerCase().includes(busqueda.toLowerCase()) ||
+    (g.categoria || "").toLowerCase().includes(busqueda.toLowerCase()) ||
+    (g.descripcion || "").toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const indexUltimo = paginaActual * itemsPorPagina;
+  const indexPrimero = indexUltimo - itemsPorPagina;
+  const gastosPaginados = gastosFiltrados.slice(indexPrimero, indexUltimo);
+
   return (
     <Container fluid className="gastos-container">
       <div className="gastos-header">
@@ -272,9 +296,20 @@ function Gastos() {
         </Button>
       </div>
 
+      <div className="floating-label-input">
+        <input
+          type="text"
+          placeholder=" "
+          className="search-input"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <label>Buscar gasto</label>
+      </div>
+
       <div className="gastos-content">
         <div className="gastos-list">
-          {gastos.map((g) => {
+          {gastosPaginados.map((g) => {
             const isExpanded = expandedId === g.id;
             return (
               <div
@@ -355,6 +390,13 @@ function Gastos() {
           </Card>
         </div>
       </div>
+
+      <Paginacion
+        paginaActual={paginaActual}
+        totalItems={gastosFiltrados.length}
+        itemsPorPagina={itemsPorPagina}
+        onPageChange={setPaginaActual}
+      />
 
       {/* Modales */}
       {gastoNuevo && (
