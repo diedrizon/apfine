@@ -362,57 +362,43 @@ body.dark-mode .si-header h4 {
 
 .si-container .floating-label-input input.search-input {
   width: 100%;
-  padding: 8px 12px;                /* igual que Categorías */
-  font-size: 1rem;
-  background-color: transparent;    /* para que el fondo de .si-container se vea */
-  border: 1px solid #ccc;           /* mismo borde */
-  border-radius: 4px;               /* mismo radio de esquina */
-  color: inherit;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  background-color: transparent; /* Fondo transparente */
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-normal);
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
 }
 
-/* Modo claro / oscuro */
-body.light-mode .si-container .floating-label-input input.search-input {
-  background-color: #fff;
-  color: #000;
-  border-color: #ccc;
-}
-body.dark-mode .si-container .floating-label-input input.search-input {
-  background-color: #333;
-  color: #fff;
-  border-color: #555;
+/* Ocultar placeholder */
+.si-container .floating-label-input input.search-input::placeholder {
+  color: transparent;
 }
 
-/* Enfoque igual que Categorías */
-.si-container .floating-label-input input.search-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
-}
-
-/* Label flotante igual que Categorías */
+/* Label flotante (sin fondo) */
 .si-container .floating-label-input label {
   position: absolute;
   top: 0.85rem;
   left: 0.75rem;
   padding: 0 4px;
   font-size: 0.85rem;
-  color: #6c757d; /* var(--text-secondary) en Categorías */
+  color: var(--text-secondary);
   pointer-events: none;
   transition: 0.2s ease all;
   z-index: 1;
 }
 
-/* Label en float */
+/* Cuando flota */
 .si-container .floating-label-input input.search-input:focus + label,
 .si-container .floating-label-input input.search-input:not(:placeholder-shown) + label {
   top: -0.5rem;
   left: 0.6rem;
   font-size: 0.75rem;
-  color: #007bff; /* var(--primary) en Categorías */
+  color: var(--primary);
 }
 
-/* Capa que “corta” el borde detrás del label */
+/* Capa invisible que corta el borde solo al flotar */
 .si-container .floating-label-input label::before {
   content: "";
   position: absolute;
@@ -420,14 +406,23 @@ body.dark-mode .si-container .floating-label-input input.search-input {
   left: 0;
   right: 0;
   height: 1.2em;
-  background: inherit;
+  background: var(--card-bg);
   z-index: -1;
   transform: translateY(-50%);
   border-radius: 4px;
   display: none;
 }
+
+/* Solo visible cuando el label flota */
 .si-container .floating-label-input input.search-input:focus + label::before,
 .si-container .floating-label-input input.search-input:not(:placeholder-shown) + label::before {
   display: block;
+}
+
+/* Efecto de foco */
+.si-container .floating-label-input input.search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.1);
 }
 

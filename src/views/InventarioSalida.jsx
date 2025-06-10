@@ -30,6 +30,7 @@ function VentasInventario() {
   const [ventas, setVentas] = useState([]);
   const [productos, setProductos] = useState([]);
   const [categoriasIngreso, setCategoriasIngreso] = useState([]);
+  const [busqueda, setBusqueda] = useState(""); // Estado para búsqueda
   const [medioOpciones] = useState([
     { label: "Efectivo" },
     { label: "Transferencia" },
@@ -49,7 +50,6 @@ function VentasInventario() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
-  const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(3);
 
@@ -106,6 +106,19 @@ function VentasInventario() {
       );
     setCategoriasIngreso(cats);
   }
+
+  const totalVentas = ventas.length;
+  const montoTotal = ventas.reduce((sum, v) => sum + Number(v.total), 0);
+  const ultimaVenta = ventas.length > 0 ? ventas[ventas.length - 1].cliente : "N/A";
+
+  const ventasFiltradas = ventas.filter((v) =>
+    v.cliente.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const ventasPaginadas = ventasFiltradas.slice(
+    (paginaActual - 1) * itemsPorPagina,
+    paginaActual * itemsPorPagina
+  );
 
   function handleOpenAddModal() {
     setShowAddModal(true);
@@ -420,18 +433,6 @@ function VentasInventario() {
     });
   };
 
-  const totalVentas = ventas.length;
-  const montoTotal = ventas.reduce((sum, v) => sum + Number(v.total), 0);
-  const ultimaVenta = ventas.length > 0 ? ventas[ventas.length - 1].cliente : "N/A";
-
-  const ventasFiltradas = ventas.filter((v) =>
-    v.cliente.toLowerCase().includes(busqueda.toLowerCase())
-  );
-
-  const ventasPaginadas = ventasFiltradas.slice(
-    (paginaActual - 1) * itemsPorPagina,
-    paginaActual * itemsPorPagina
-  );
 
   return (
     <Container fluid className="si-container">
@@ -442,6 +443,7 @@ function VentasInventario() {
         </Button>
       </div>
 
+      {/* Caja de búsqueda */}
       <div className="floating-label-input">
         <input
           id="busqueda"
