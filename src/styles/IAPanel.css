@@ -1,12 +1,12 @@
-.ia-panel {
+/* styles/IAPanel.css */
+#iasupervision .ia-panel {
   background: var(--card-bg);
   color: var(--text-normal);
   padding: 2rem 2%;
-  box-sizing: border-box;
   min-height: 100vh;
   overflow-y: auto;
 }
-.ia-title {
+#iasupervision .ia-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -16,179 +16,187 @@
 }
 
 /* KPI */
-.kpi-grid {
+#iasupervision .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 1.2rem;
   margin-bottom: 2.5rem;
 }
-.kpi-card {
+#iasupervision .kpi-card {
   background: var(--reco-bg);
   border-left: 4px solid #0d6efd;
   border-radius: 12px;
-  padding: 1.2rem 1rem;
+  padding: 1.2rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
-.kpi-card svg {
-  flex-shrink: 0;
-}
-.kpi-text h4 {
+#iasupervision .kpi-text h4 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
 }
-.kpi-text small {
+#iasupervision .kpi-text small {
   opacity: 0.8;
 }
 
-/* cajas */
-.config-box,
-.logs-box {
-  background: var(--historial-bg);
-  border-radius: 12px;
-  padding: 1.5rem 1.3rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-.config-box h3,
-.logs-box h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
-}
-
-/* filtro cédula */
-.filtro-box {
-  margin-bottom: 2rem;
+/* FILTRO */
+#iasupervision .filtro-box {
   display: flex;
   gap: 0.8rem;
   align-items: flex-end;
+  margin-bottom: 2rem;
 }
-.filtro-box input {
+#iasupervision .filtro-box input {
+  flex: 1;
+  min-width: 230px;
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background: var(--reco-bg);
   color: var(--reco-text);
-  flex: 1;
-  min-width: 230px;
 }
-.btn-buscar {
+#iasupervision .btn-buscar {
   padding: 6px 16px;
-  border: none;
-  border-radius: 8px;
   background: #0d6efd;
   color: #fff;
+  border: none;
+  border-radius: 8px;
   font-weight: 600;
   display: flex;
-  gap: 4px;
   align-items: center;
+  gap: 4px;
   cursor: pointer;
 }
-.btn-buscar:hover {
+#iasupervision .btn-buscar:hover {
   background: #084cdf;
 }
 
-/* user cfg */
-.user-config-box {
+/* CONFIGURACIÓN USUARIO */
+#iasupervision .user-config-box {
   background: var(--historial-bg);
   border-radius: 12px;
-  padding: 1.5rem 1.3rem;
+  padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
-.user-config-row {
+#iasupervision .user-config-row {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-end;
 }
-.user-config-row label {
+#iasupervision .user-config-row label {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
   font-size: 0.9rem;
 }
-.user-config-row input,
-.user-config-row select {
+#iasupervision .user-config-row input,
+#iasupervision .user-config-row select {
   padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background: var(--reco-bg);
   color: var(--reco-text);
 }
-.user-config-row input {
-  width: 100px;
-}
-.user-config-row select {
-  width: 200px;
-}
-.btn-guardar-user {
+#iasupervision .btn-guardar-user {
   padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
   background: #0d6efd;
   color: #fff;
+  border: none;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
 }
-.btn-guardar-user:hover {
+#iasupervision .btn-guardar-user:hover {
   background: #084cdf;
 }
 
-/* Logs  */
-.cedula-block {
-  margin-bottom: 1.8rem;
+/* LISTADO POR CÉDULA */
+#iasupervision .logs-box {
+  background: var(--historial-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
-.cedula-block h4 {
-  margin: 0 0 0.6rem;
-  font-size: 1.05rem;
-  font-weight: 700;
+#iasupervision .logs-box h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
-.cedula-block ul {
-  list-style: none;
-  padding-left: 0;
+#iasupervision .info-text {
   font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
 }
-.cedula-block li {
-  border-bottom: 1px solid #0d6efd20;
-  padding: 0.7rem 0;
+#iasupervision .user-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 1rem;
 }
-
-/* tag estado */
-.tag {
+#iasupervision .records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+#iasupervision .record-item {
+  background: var(--reco-bg);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+#iasupervision .record-item .tag {
   display: inline-block;
+  align-self: flex-start;
   padding: 2px 8px;
   font-size: 0.7rem;
   border-radius: 10px;
   color: #fff;
   text-transform: capitalize;
-  margin-right: 6px;
+  margin-bottom: 0.5rem;
 }
-.tag.generada {
-  background: #6c757d;
+#iasupervision .record-item .tag.generada  { background: #6c757d; }
+#iasupervision .record-item .tag.aceptada  { background: #198754; }
+#iasupervision .record-item .tag.rechazada { background: #dc3545; }
+#iasupervision .record-date {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
 }
-.tag.aceptada {
-  background: #198754;
-}
-.tag.rechazada {
-  background: #dc3545;
+#iasupervision .record-text {
+  font-size: 0.9rem;
+  color: var(--reco-text);
+  margin: 0;
 }
 
-/* responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .user-config-row {
+  #iasupervision .user-config-row {
     flex-direction: column;
   }
-  .user-config-row input,
-  .user-config-row select,
-  .btn-guardar-user {
+  #iasupervision .user-config-row input,
+  #iasupervision .user-config-row select,
+  #iasupervision .btn-guardar-user {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  #iasupervision .user-config-row{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .8rem;
+  }
+  #iasupervision .user-config-row label,
+  #iasupervision .btn-guardar-user {
     width: 100%;
   }
 }
