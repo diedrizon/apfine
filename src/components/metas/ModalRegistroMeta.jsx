@@ -50,6 +50,16 @@ function ModalRegistroMeta({
     e.preventDefault();
     if (!validar()) return;
     handleAddMeta({ ...metaNueva, monto_actual: 0 });
+    limpiarCampos();
+  }
+
+  function limpiarCampos() {
+    setMetaNueva({
+      nombre_meta: "",
+      tipo: "",
+      monto_objetivo: "",
+      fecha_limite: "",
+    });
   }
 
   return (

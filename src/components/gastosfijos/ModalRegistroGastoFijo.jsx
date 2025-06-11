@@ -53,6 +53,17 @@ function ModalRegistroGastoFijo({
     e.preventDefault();
     if (!validar()) return;
     handleAddGastoFijo(gastoFijoNuevo);
+    limpiarCampos();
+  }
+
+  function limpiarCampos() {
+    setGastoFijoNuevo({
+      nombre_gasto: "",
+      monto_mensual: "",
+      frecuencia: "",
+      proximo_pago: "",
+      recordatorio_activado: false
+    });
   }
 
   return (

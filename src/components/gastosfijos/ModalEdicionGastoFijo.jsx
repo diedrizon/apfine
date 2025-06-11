@@ -23,13 +23,13 @@ function ModalEdicionGastoFijo({
   function validar() {
     const hoy = new Date();
     if (!gastoFijoEditado.nombre_gasto.trim()) {
-      setMensaje("Falta el nombre");
+      setMensaje("Falta el nombre del gasto fijo");
       setShowModalMensaje(true);
       return false;
     }
     const monto = parseFloat(gastoFijoEditado.monto_mensual);
     if (isNaN(monto) || monto <= 0) {
-      setMensaje("Monto inválido");
+      setMensaje("Monto mensual inválido");
       setShowModalMensaje(true);
       return false;
     }
@@ -39,12 +39,12 @@ function ModalEdicionGastoFijo({
       return false;
     }
     if (!gastoFijoEditado.proximo_pago) {
-      setMensaje("Fecha requerida");
+      setMensaje("Indica la fecha del próximo pago");
       setShowModalMensaje(true);
       return false;
     }
     if (new Date(gastoFijoEditado.proximo_pago) < hoy) {
-      setMensaje("La fecha no puede ser pasada");
+      setMensaje("La fecha de próximo pago no puede ser pasada");
       setShowModalMensaje(true);
       return false;
     }
@@ -64,7 +64,6 @@ function ModalEdicionGastoFijo({
       </Modal.Header>
       <Form onSubmit={onSubmit}>
         <Modal.Body>
-          {/* mismos campos que registro */}
           <Form.Group className="mb-3">
             <Form.Label>Nombre *</Form.Label>
             <Form.Control
@@ -72,6 +71,7 @@ function ModalEdicionGastoFijo({
               name="nombre_gasto"
               value={gastoFijoEditado.nombre_gasto}
               onChange={handleChange}
+              placeholder="Ej. Alquiler"
             />
           </Form.Group>
 
@@ -84,6 +84,7 @@ function ModalEdicionGastoFijo({
                   name="monto_mensual"
                   value={gastoFijoEditado.monto_mensual}
                   onChange={handleChange}
+                  placeholder=">= 0"
                 />
               </Form.Group>
             </Col>
