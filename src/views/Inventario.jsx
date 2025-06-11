@@ -185,7 +185,7 @@ export default function Inventario() {
       <div className="floating-label-input">
         <input
           type="text"
-          placeholder=" "
+          placeholder="Buscar producto"
           className="search-input"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
@@ -278,12 +278,13 @@ export default function Inventario() {
       </div>
 
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={itemsPorPagina}
         totalItems={productosFiltrados.length}
-        itemsPorPagina={itemsPorPagina}
-        onPageChange={setPaginaActual}
+        currentPage={paginaActual}
+        setCurrentPage={setPaginaActual}
       />
 
+      {/* Modales */}
       {nuevo && (
         <ModalRegistroInventario
           show={showAdd}
@@ -319,7 +320,7 @@ export default function Inventario() {
           show={showDet}
           handleClose={() => setShowDet(false)}
           item={detalle}
-          actualizarVista={cargar} // ✅ Importante: actualizar al guardar entrada
+          actualizarVista={cargar}
         />
       )}
       <ModalMensaje

@@ -403,10 +403,10 @@ export default function Ingresos() {
       />
       <ToastFlotante mensaje={toastMsg} visible={toastVisible} />
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={elementosPorPagina}
         totalItems={ingresosFiltrados.length}
-        itemsPorPagina={elementosPorPagina}
-        onPageChange={setPaginaActual}
+        currentPage={paginaActual}
+        setCurrentPage={setPaginaActual}
       />
     </Container>
   );

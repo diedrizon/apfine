@@ -287,6 +287,7 @@ function Gastos() {
   const indexPrimero = indexUltimo - itemsPorPagina;
   const gastosPaginados = gastosFiltrados.slice(indexPrimero, indexUltimo);
 
+
   return (
     <Container fluid className="gastos-container">
       <div className="gastos-header">
@@ -392,10 +393,10 @@ function Gastos() {
       </div>
 
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={itemsPorPagina} // Cambiado para usar el nombre correcto
         totalItems={gastosFiltrados.length}
-        itemsPorPagina={itemsPorPagina}
-        onPageChange={setPaginaActual}
+        currentPage={paginaActual}
+        setCurrentPage={setPaginaActual}
       />
 
       {/* Modales */}

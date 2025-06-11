@@ -247,7 +247,7 @@ export default function OrdenesProduccion() {
       <div className="floating-label-input">
         <input
           type="text"
-          placeholder=" "
+          placeholder="Buscar producto"
           className="search-input"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
@@ -338,19 +338,22 @@ export default function OrdenesProduccion() {
           </Card>
         </aside>
       </div>
+
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={itemsPorPagina}
         totalItems={ordenesFiltradas.length}
-        itemsPorPagina={itemsPorPagina}
-        onPageChange={setPaginaActual}
+        currentPage={paginaActual}
+        setCurrentPage={setPaginaActual}
       />
+
+      {/* Modales */}
       {showAdd && (
         <ModalRegistroOrden
           show={showAdd}
           handleClose={() => setShowAdd(false)}
           handleAdd={add}
-          nueva={nueva} // Pasamos el estado nueva
-          setNueva={setNueva} // Pasamos setNueva para actualizarlo
+          nueva={nueva}
+          setNueva={setNueva}
           setMsg={setMsg}
           setShowMsg={setShowMsg}
           productosList={productosList}

@@ -3,57 +3,6 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../database/firebaseconfig";
 
-// ✅ Función de validación externa
-function validarGasto(gasto, archivo, setMensaje, setShowModalMensaje) {
-  const hoy = new Date();
-  const fecha = new Date(gasto.fecha_gasto);
-
-  if (!gasto.fecha_gasto || isNaN(fecha) || fecha > hoy) {
-    setMensaje("La fecha es inválida o futura.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  const monto = parseFloat(gasto.monto);
-  if (isNaN(monto) || monto < 1 || monto > 1000000) {
-    setMensaje("El monto debe estar entre C$1 y C$1,000,000.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  if (!gasto.tipo_gasto) {
-    setMensaje("Selecciona un tipo de gasto.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  if (!gasto.categoria) {
-    setMensaje("Selecciona una categoría.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  if (gasto.proveedor && gasto.proveedor.length > 50) {
-    setMensaje("El proveedor no puede exceder los 50 caracteres.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  if (gasto.descripcion && gasto.descripcion.length > 100) {
-    setMensaje("La descripción no puede exceder los 100 caracteres.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  if (archivo && archivo.size > 5 * 1024 * 1024) {
-    setMensaje("El archivo no puede superar los 5MB.");
-    setShowModalMensaje(true);
-    return false;
-  }
-
-  return true;
-}
-
 function ModalEdicionGasto({
   show,
   handleClose,
@@ -65,22 +14,69 @@ function ModalEdicionGasto({
   categorias,
 }) {
   const [fileComprobante, setFileComprobante] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setGastoEditado((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setFileComprobante(e.target.files[0]);
+      if (errors.comprobante) setErrors((prev) => ({ ...prev, comprobante: null }));
     }
+  };
+
+  const validarGasto = () => {
+    const newErrors = {};
+    const hoy = new Date();
+    const fecha = new Date(gastoEditado.fecha_gasto);
+
+    if (!gastoEditado.fecha_gasto || isNaN(fecha) || fecha > hoy) {
+      newErrors.fecha_gasto = "La fecha es inválida o futura.";
+    }
+
+    const monto = parseFloat(gastoEditado.monto);
+    if (isNaN(monto) || monto < 1 || monto > 1000000) {
+      newErrors.monto = "El monto debe estar entre C$1 y C$1,000,000.";
+    }
+
+    if (!gastoEditado.tipo_gasto) {
+      newErrors.tipo_gasto = "Selecciona un tipo de gasto.";
+    }
+
+    if (!gastoEditado.categoria) {
+      newErrors.categoria = "Selecciona una categoría.";
+    }
+
+    if (gastoEditado.proveedor && gastoEditado.proveedor.length > 50) {
+      newErrors.proveedor = "El proveedor no puede exceder los 50 caracteres.";
+    }
+
+    if (gastoEditado.descripcion && gastoEditado.descripcion.length > 100) {
+      newErrors.descripcion = "La descripción no puede exceder los 100 caracteres.";
+    }
+
+    if (fileComprobante && fileComprobante.size > 5 * 1024 * 1024) {
+      newErrors.comprobante = "El archivo no puede superar los 5MB.";
+    }
+
+    setErrors(newErrors);
+
+    // Si hay errores, mostrar mensaje en el modal
+    if (Object.keys(newErrors).length > 0) {
+      setMensaje("Por favor corrige los errores en el formulario.");
+      setShowModalMensaje(true);
+    }
+
+    return Object.keys(newErrors).length === 0;
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const valido = validarGasto(gastoEditado, fileComprobante, setMensaje, setShowModalMensaje);
-    if (!valido) return;
+    if (!validarGasto()) return;
 
     let urlArchivo = gastoEditado.comprobanteURL || "";
     if (fileComprobante) {
@@ -92,7 +88,8 @@ function ModalEdicionGasto({
         urlArchivo = await getDownloadURL(storageRef);
       } catch (error) {
         console.error(error);
-        setMensaje("Error al subir el comprobante.");
+        setErrors((prev) => ({ ...prev, comprobante: "Error al subir el comprobante." }));
+        setMensaje("Hubo un error al subir el comprobante.");
         setShowModalMensaje(true);
         return;
       }
@@ -118,55 +115,69 @@ function ModalEdicionGasto({
 
       <Form onSubmit={onSubmit}>
         <Modal.Body>
-          <div className="modal-group">
-            <label htmlFor="fecha_gasto">Fecha del Gasto *</label>
-            <input
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="fecha_gasto">Fecha del Gasto *</Form.Label>
+            <Form.Control
               type="date"
               id="fecha_gasto"
               name="fecha_gasto"
               value={gastoEditado.fecha_gasto}
               onChange={handleChange}
-              className="form-control-fecha"
-              required
+              className={errors.fecha_gasto ? "is-invalid" : ""}
             />
-          </div>
+            {errors.fecha_gasto && (
+              <Form.Control.Feedback type="invalid">
+                {errors.fecha_gasto}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
 
-          <div className="modal-group">
-            <label htmlFor="monto">Monto *</label>
-            <input
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="monto">Monto *</Form.Label>
+            <Form.Control
               type="number"
               id="monto"
               name="monto"
               value={gastoEditado.monto}
               onChange={handleChange}
               placeholder="Ej: 500"
-              required
+              className={errors.monto ? "is-invalid" : ""}
             />
-          </div>
+            {errors.monto && (
+              <Form.Control.Feedback type="invalid">
+                {errors.monto}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
 
-          <div className="modal-group">
-            <label htmlFor="tipo_gasto">Tipo de Gasto *</label>
-            <select
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="tipo_gasto">Tipo de Gasto *</Form.Label>
+            <Form.Select
               id="tipo_gasto"
               name="tipo_gasto"
               value={gastoEditado.tipo_gasto}
               onChange={handleChange}
-              required
+              className={errors.tipo_gasto ? "is-invalid" : ""}
             >
               <option value="">Seleccione</option>
               <option value="Personal">Personal</option>
               <option value="Operativo">Operativo</option>
-            </select>
-          </div>
+            </Form.Select>
+            {errors.tipo_gasto && (
+              <Form.Control.Feedback type="invalid">
+                {errors.tipo_gasto}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
 
-          <div className="modal-group">
-            <label htmlFor="categoria">Categoría *</label>
-            <select
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="categoria">Categoría *</Form.Label>
+            <Form.Select
               id="categoria"
               name="categoria"
               value={gastoEditado.categoria}
               onChange={handleChange}
-              required
+              className={errors.categoria ? "is-invalid" : ""}
             >
               <option value="">Seleccione</option>
               {categorias.map((cat) => (
@@ -174,65 +185,77 @@ function ModalEdicionGasto({
                   {cat.nombre}
                 </option>
               ))}
-            </select>
-          </div>
+            </Form.Select>
+            {errors.categoria && (
+              <Form.Control.Feedback type="invalid">
+                {errors.categoria}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
 
-          <div className="modal-group">
-            <label htmlFor="proveedor">Proveedor</label>
-            <input
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="proveedor">Proveedor</Form.Label>
+            <Form.Control
               type="text"
               id="proveedor"
               name="proveedor"
               value={gastoEditado.proveedor}
               onChange={handleChange}
               placeholder="Máx 50 caracteres"
+              className={errors.proveedor ? "is-invalid" : ""}
             />
-          </div>
+            {errors.proveedor && (
+              <Form.Control.Feedback type="invalid">
+                {errors.proveedor}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
 
-          <div className="modal-group">
-            <label htmlFor="medio_pago">Medio de Pago</label>
-            <select
-              id="medio_pago"
-              name="medio_pago"
-              value={gastoEditado.medio_pago}
-              onChange={handleChange}
-            >
-              <option value="">Seleccione</option>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Transferencia">Transferencia</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-
-          <div className="modal-group">
-            <label htmlFor="descripcion">Descripción</label>
-            <textarea
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="descripcion">Descripción</Form.Label>
+            <Form.Control
+              as="textarea"
               id="descripcion"
               name="descripcion"
               value={gastoEditado.descripcion}
               onChange={handleChange}
               placeholder="Máx 100 caracteres"
               rows={3}
-            ></textarea>
-          </div>
+              className={errors.descripcion ? "is-invalid" : ""}
+            />
+            {errors.descripcion && (
+              <Form.Control.Feedback type="invalid">
+                {errors.descripcion}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
 
-          <div className="modal-group">
-            <label htmlFor="comprobante">Comprobante</label>
-            <input
+          <Form.Group className="modal-group">
+            <Form.Label htmlFor="comprobante">Comprobante</Form.Label>
+            <Form.Control
               type="file"
               id="comprobante"
               accept=".jpg,.jpeg,.png,.pdf"
               onChange={handleFileChange}
+              className={errors.comprobante ? "is-invalid" : ""}
             />
+            {errors.comprobante && (
+              <Form.Control.Feedback type="invalid">
+                {errors.comprobante}
+              </Form.Control.Feedback>
+            )}
             <small>(Opcional, máximo 5MB)</small>
             {gastoEditado.comprobanteURL && (
-              <div style={{ marginTop: "8px" }}>
-                <a href={gastoEditado.comprobanteURL} target="_blank" rel="noreferrer">
-                  Ver comprobante actual
-                </a>
-              </div>
+              <a
+                href={gastoEditado.comprobanteURL}
+                target="_blank"
+                rel="noreferrer"
+                className="comprobante-link"
+              >
+                Ver comprobante actual
+              </a>
             )}
-          </div>
+          </Form.Group>
         </Modal.Body>
 
         <Modal.Footer>
@@ -240,7 +263,7 @@ function ModalEdicionGasto({
             Cancelar
           </Button>
           <Button variant="primary" type="submit">
-            Guardar cambios
+            Guardar Cambios
           </Button>
         </Modal.Footer>
       </Form>

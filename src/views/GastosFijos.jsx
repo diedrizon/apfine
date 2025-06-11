@@ -190,15 +190,16 @@ function GastosFijos() {
     setShowDetalle(true);
   }
 
-  const totalFijos = gastosFijos.length;
 
   const gastosFiltrados = gastosFijos.filter((g) =>
     g.nombre_gasto.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  const indexUltimo = paginaActual * itemsPorPagina;
-  const indexPrimero = indexUltimo - itemsPorPagina;
-  const gastosPaginados = gastosFiltrados.slice(indexPrimero, indexUltimo);
+  const indexInicio = (paginaActual - 1) * itemsPorPagina;
+  const gastosPaginados = gastosFiltrados.slice(
+    indexInicio,
+    indexInicio + itemsPorPagina
+  );
 
   return (
     <Container fluid className="gastos-fijos-container">
@@ -302,17 +303,17 @@ function GastosFijos() {
           <Card className="summary-card">
             <Card.Body>
               <Card.Title>Total Fijos</Card.Title>
-              <Card.Text>{totalFijos}</Card.Text>
+              <Card.Text>{gastosFiltrados.length}</Card.Text>
             </Card.Body>
           </Card>
         </div>
       </div>
 
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={itemsPorPagina}
         totalItems={gastosFiltrados.length}
-        itemsPorPagina={itemsPorPagina}
-        onPageChange={setPaginaActual}
+        currentPage={paginaActual}
+        setCurrentPage={setPaginaActual}
       />
 
       {/* Modales */}

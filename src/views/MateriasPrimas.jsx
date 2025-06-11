@@ -149,6 +149,8 @@ export default function MateriasPrimas() {
   const toggleExpanded = (m) =>
     setExpandedId(expandedId === m.id ? null : m.id);
 
+  const totalMaterias = materias.length;
+
   const materiasFiltradas = materias.filter((m) =>
     m.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
@@ -167,7 +169,7 @@ export default function MateriasPrimas() {
       <div className="floating-label-input">
         <input
           type="text"
-          placeholder=" "
+          placeholder="Buscar insumo"
           className="search-input"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
@@ -258,17 +260,17 @@ export default function MateriasPrimas() {
           <Card className="summary-card">
             <Card.Body>
               <Card.Title>Total Insumos</Card.Title>
-              <Card.Text>{materias.length}</Card.Text>
+              <Card.Text>{totalMaterias}</Card.Text>
             </Card.Body>
           </Card>
         </div>
       </div>
 
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={itemsPorPagina}
         totalItems={materiasFiltradas.length}
-        itemsPorPagina={itemsPorPagina}
-        onPageChange={setPaginaActual}
+        currentPage={paginaActual}
+        setCurrentPage={setPaginaActual}
       />
 
       {showAdd && nueva && (

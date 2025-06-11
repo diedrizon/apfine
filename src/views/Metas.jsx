@@ -259,9 +259,9 @@ function Metas() {
       </div>
 
       <Paginacion
-        paginaActual={paginaActual}
+        itemsPerPage={itemsPorPagina}
         totalItems={metasFiltradas.length}
-        itemsPorPagina={itemsPorPagina}
+        currentPage={paginaActual}
         onPageChange={setPaginaActual}
       />
 

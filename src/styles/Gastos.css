@@ -395,15 +395,18 @@ body.dark-mode .modal-header {
 
 /* Íconos de tipo de gasto con colores dinámicos */
 .gasto-icon.personal {
-  color: var(--icon-warning); /* amarillo */
+  background-color: var(--primary); /* Fondo dinámico */
+  color: #fff; /* Ícono blanco */
 }
 
 .gasto-icon.operativo {
-  color: var(--icon-success); /* verde */
+  background-color: var(--primary); /* Fondo dinámico */
+  color: #fff; /* Ícono blanco */
 }
 
 .gasto-icon.default {
-  color: var(--icon-inactive); /* gris */
+  background-color: var(--primary); /* Fondo dinámico */
+  color: #fff; /* Ícono blanco */
 }
 
 
