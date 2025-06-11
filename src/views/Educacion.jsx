@@ -10,10 +10,10 @@ import ModalCrearMaterial from '../components/educacion/ModalCrearMaterial';
 
 import '../styles/Educacion.css';
 
-
 const Educacion = () => {
     const [componenteActual, setComponenteActual] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [busqueda, setBusqueda] = useState(""); // Estado para la búsqueda
     const { isAdmin } = useAuth();
 
     const handleCreateClick = () => setShowCreateModal(true);
@@ -32,7 +32,6 @@ const Educacion = () => {
                             <FiArrowLeft size={20} />
                             <span className="ms-1">Volver a Recursos</span>
                         </Button>
-                        {/* <h1 className="mb-0 ms-3">Educación</h1> */}
                     </div>
                 ) : (
                     <div className="d-flex align-items-center justify-content-between w-100">
@@ -46,10 +45,26 @@ const Educacion = () => {
                 )}
             </div>
 
+            {/* Campo de búsqueda */}
+            {componenteActual === 'tutoriales' && (
+                <div className="floating-label-input">
+                    <input
+                        type="text"
+                        placeholder=" "
+                        className="search-input"
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                    />
+                    <label>Buscar tutorial</label>
+                </div>
+            )}
+
             {/* CONTENIDO */}
             {componenteActual ? (
                 <div className="educacion-content">
-                    {componenteActual === 'tutoriales' && <Tutoriales />}
+                    {componenteActual === 'tutoriales' && (
+                        <Tutoriales busqueda={busqueda} />
+                    )}
                     {componenteActual === 'articulos' && <ArticulosIA />}
                 </div>
             ) : (
@@ -74,7 +89,6 @@ const Educacion = () => {
                 show={showCreateModal}
                 handleClose={handleCloseModal}
             />
-
         </Container>
     );
 };

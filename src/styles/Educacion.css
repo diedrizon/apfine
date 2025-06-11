@@ -169,3 +169,70 @@ body.dark-mode .card-contenido:hover {
   font-size: 1rem;
   line-height: 1.4;
 }
+
+/* Campo de búsqueda */
+.floating-label-input {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.floating-label-input input.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  background-color: transparent;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-normal);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.floating-label-input input.search-input::placeholder {
+  color: transparent;
+}
+
+.floating-label-input label {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.75rem;
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: 0.2s ease all;
+  z-index: 1;
+}
+
+.floating-label-input input.search-input:focus + label,
+.floating-label-input input.search-input:not(:placeholder-shown) + label {
+  top: -0.5rem;
+  left: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+.floating-label-input label::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.2em;
+  background: var(--card-bg);
+  z-index: -1;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  display: none;
+}
+
+.floating-label-input input.search-input:focus + label::before,
+.floating-label-input input.search-input:not(:placeholder-shown) + label::before {
+  display: block;
+}
+
+.floating-label-input input.search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.1);
+}

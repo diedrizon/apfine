@@ -17,7 +17,7 @@ import ModalMensaje from "../../components/ModalMensaje";
 import ModalConfirmacion from "../../components/ModalConfirmacion";
 import "../../styles/Tutoriales.css";
 
-export default function Tutoriales() {
+const Tutoriales = ({ busqueda }) => {
   const [tutoriales, setTutoriales] = useState([]);
   const [cargando, setCargando] = useState(true);
   const { isAdmin } = useAuth();
@@ -90,10 +90,14 @@ export default function Tutoriales() {
     );
   }
 
+  const tutorialesFiltrados = tutoriales.filter((tutorial) =>
+    tutorial.nombreRecurso.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
   return (
     <>
       <div className="tutoriales-wrapper">
-        {tutoriales.map((t) => (
+        {tutorialesFiltrados.map((t) => (
           <Card key={t.id} className="tutorial-card">
             {isAdmin && (
               <Button
@@ -144,4 +148,6 @@ export default function Tutoriales() {
       />
     </>
   );
-}
+};
+
+export default Tutoriales;
