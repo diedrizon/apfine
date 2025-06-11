@@ -1,5 +1,5 @@
 // src/components/categorias/ModalEdicionCategoria.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 
@@ -70,13 +70,34 @@ function ModalEdicionCategoria({
   handleChangeEditada,
   handleEditCategoria
 }) {
+  const [errors, setErrors] = useState({});
+
   if (!categoriaEditada) return null;
+
+  function validateFields() {
+    const newErrors = {};
+    if (!categoriaEditada.nombre.trim()) newErrors.nombre = "El nombre es obligatorio.";
+    if (!categoriaEditada.color) newErrors.color = "Selecciona un color.";
+    if (!categoriaEditada.icono) newErrors.icono = "Selecciona un ícono.";
+    if (!categoriaEditada.aplicacion) newErrors.aplicacion = "Selecciona una aplicación.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
+  function handleSubmit() {
+    if (validateFields()) {
+      handleEditCategoria();
+    }
+  }
 
   function handleSelectColor(color) {
     setCategoriaEditada(prev => ({ ...prev, color }));
+    if (errors.color) setErrors(prev => ({ ...prev, color: null }));
   }
+
   function handleSelectIcon(iconName) {
     setCategoriaEditada(prev => ({ ...prev, icono: iconName }));
+    if (errors.icono) setErrors(prev => ({ ...prev, icono: null }));
   }
 
   return (
@@ -99,17 +120,29 @@ function ModalEdicionCategoria({
             placeholder="Nombre de la categoría"
             name="nombre"
             value={categoriaEditada.nombre}
-            onChange={handleChangeEditada}
+            onChange={(e) => {
+              handleChangeEditada(e);
+              if (errors.nombre) setErrors(prev => ({ ...prev, nombre: null }));
+            }}
+            className={errors.nombre ? "is-invalid" : ""}
           />
+          {errors.nombre && (
+            <Form.Control.Feedback type="invalid">
+              {errors.nombre}
+            </Form.Control.Feedback>
+          )}
         </Form.Group>
 
-        {/* NUEVO CAMPO: aplicacion */}
         <Form.Group className="mb-3">
           <Form.Label>Aplicación</Form.Label>
           <Form.Select
             name="aplicacion"
             value={categoriaEditada.aplicacion || ""}
-            onChange={handleChangeEditada}
+            onChange={(e) => {
+              handleChangeEditada(e);
+              if (errors.aplicacion) setErrors(prev => ({ ...prev, aplicacion: null }));
+            }}
+            className={errors.aplicacion ? "is-invalid" : ""}
           >
             <option value="">Seleccione</option>
             <option value="Ingreso">Ingreso</option>
@@ -117,6 +150,11 @@ function ModalEdicionCategoria({
             <option value="Ambos">Ambos</option>
             <option value="Otro">Otro</option>
           </Form.Select>
+          {errors.aplicacion && (
+            <Form.Control.Feedback type="invalid">
+              {errors.aplicacion}
+            </Form.Control.Feedback>
+          )}
         </Form.Group>
 
         <Form.Label>Color</Form.Label>
@@ -132,6 +170,8 @@ function ModalEdicionCategoria({
             />
           ))}
         </div>
+        {errors.color && <p className="text-danger mt-2">{errors.color}</p>}
+
         <Form.Label className="mt-3">Ícono</Form.Label>
         <div className="icon-grid">
           {iconOptions.map(icon => (
@@ -146,12 +186,13 @@ function ModalEdicionCategoria({
             </div>
           ))}
         </div>
+        {errors.icono && <p className="text-danger mt-2">{errors.icono}</p>}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleEditCategoria}>
+        <Button variant="primary" onClick={handleSubmit}>
           Guardar cambios
         </Button>
       </Modal.Footer>

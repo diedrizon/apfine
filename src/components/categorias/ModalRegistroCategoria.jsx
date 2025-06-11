@@ -1,5 +1,5 @@
 // src/components/categorias/ModalRegistroCategoria.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 
@@ -71,11 +71,22 @@ function ModalRegistroCategoria({
   handleChangeNueva,
   handleAddCategoria
 }) {
-  function handleSelectColor(color) {
-    setCategoriaNueva(prev => ({ ...prev, color }));
+  const [errors, setErrors] = useState({});
+
+  function validateFields() {
+    const newErrors = {};
+    if (!categoriaNueva.nombre.trim()) newErrors.nombre = "El nombre es obligatorio.";
+    if (!categoriaNueva.color) newErrors.color = "Selecciona un color.";
+    if (!categoriaNueva.icono) newErrors.icono = "Selecciona un ícono.";
+    if (!categoriaNueva.aplicacion) newErrors.aplicacion = "Selecciona una aplicación.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   }
-  function handleSelectIcon(iconName) {
-    setCategoriaNueva(prev => ({ ...prev, icono: iconName }));
+
+  function handleSubmit() {
+    if (validateFields()) {
+      handleAddCategoria();
+    }
   }
 
   return (
@@ -98,8 +109,17 @@ function ModalRegistroCategoria({
             placeholder="Nombre de la categoría"
             name="nombre"
             value={categoriaNueva.nombre}
-            onChange={handleChangeNueva}
+            onChange={(e) => {
+              handleChangeNueva(e);
+              if (errors.nombre) setErrors(prev => ({ ...prev, nombre: null }));
+            }}
+            className={errors.nombre ? "is-invalid" : ""}
           />
+          {errors.nombre && (
+            <Form.Control.Feedback type="invalid">
+              {errors.nombre}
+            </Form.Control.Feedback>
+          )}
         </Form.Group>
 
         {/* NUEVO CAMPO: 'aplicacion' o 'tipoCategoria' */}
@@ -108,7 +128,11 @@ function ModalRegistroCategoria({
           <Form.Select
             name="aplicacion"
             value={categoriaNueva.aplicacion}
-            onChange={handleChangeNueva}
+            onChange={(e) => {
+              handleChangeNueva(e);
+              if (errors.aplicacion) setErrors(prev => ({ ...prev, aplicacion: null }));
+            }}
+            className={errors.aplicacion ? "is-invalid" : ""}
           >
             <option value="">Seleccione</option>
             <option value="Ingreso">Ingreso</option>
@@ -116,6 +140,11 @@ function ModalRegistroCategoria({
             <option value="Ambos">Ambos</option>
             <option value="Otro">Otro</option>
           </Form.Select>
+          {errors.aplicacion && (
+            <Form.Control.Feedback type="invalid">
+              {errors.aplicacion}
+            </Form.Control.Feedback>
+          )}
         </Form.Group>
 
         <Form.Label>Color</Form.Label>
@@ -127,10 +156,14 @@ function ModalRegistroCategoria({
                 categoriaNueva.color === col ? "selected" : ""
               }`}
               style={{ backgroundColor: col }}
-              onClick={() => handleSelectColor(col)}
+              onClick={() => {
+                setCategoriaNueva(prev => ({ ...prev, color: col }));
+                if (errors.color) setErrors(prev => ({ ...prev, color: null }));
+              }}
             />
           ))}
         </div>
+        {errors.color && <p className="text-danger mt-2">{errors.color}</p>}
 
         <Form.Label className="mt-3">Ícono</Form.Label>
         <div className="icon-grid">
@@ -140,18 +173,22 @@ function ModalRegistroCategoria({
               className={`icon-item ${
                 categoriaNueva.icono === icon.name ? "selected" : ""
               }`}
-              onClick={() => handleSelectIcon(icon.name)}
+              onClick={() => {
+                setCategoriaNueva(prev => ({ ...prev, icono: icon.name }));
+                if (errors.icono) setErrors(prev => ({ ...prev, icono: null }));
+              }}
             >
               {icon.component}
             </div>
           ))}
         </div>
+        {errors.icono && <p className="text-danger mt-2">{errors.icono}</p>}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleAddCategoria}>
+        <Button variant="primary" onClick={handleSubmit}>
           Crear categoría
         </Button>
       </Modal.Footer>
