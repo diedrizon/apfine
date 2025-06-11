@@ -142,7 +142,9 @@
 
 /* Solo visible cuando el label flota */
 .floating-label-input input.search-input:focus + label::before,
-.floating-label-input input.search-input:not(:placeholder-shown) + label::before {
+.floating-label-input
+  input.search-input:not(:placeholder-shown)
+  + label::before {
   display: block;
 }
 
@@ -191,18 +193,94 @@
 
 /* Limita el ancho y altura del modal, y centra */
 .si-custom-modal .modal-dialog {
-  max-width: 90vw;               /* Nunca más ancho que el 90% de la ventana */
-  margin: 1rem auto;             /* Centrado horizontal y un poco de espacio arriba/abajo */
+  max-width: 90vw; /* Nunca más ancho que el 90% de la ventana */
+  margin: 1rem auto; /* Centrado horizontal y un poco de espacio arriba/abajo */
 }
 
 .si-custom-modal .modal-content {
   max-height: calc(100vh - 2rem); /* Para que quepa siempre en la ventana */
   overflow: hidden;
+  background-color: var(--card-bg); /* Fondo dinámico */
+  color: var(--text-normal); /* Texto dinámico */
+  border: 2px solid var(--primary); /* Borde azul/verde */
+  border-radius: 12px;
 }
 
 .si-custom-modal .modal-body {
-  max-height: calc(100vh - 220px); /* Ajusta según header+footer, deja resto para el body */
-  overflow-y: auto;                /* Scroll interno solo para el body */
+  max-height: calc(
+    100vh - 220px
+  ); /* Ajusta según header+footer, deja resto para el body */
+  overflow-y: auto; /* Scroll interno solo para el body */
+}
+
+/* Cabecera y pie con la misma franja */
+.si-custom-modal .modal-header,
+.si-custom-modal .modal-footer {
+  background-color: var(--secondary-bg); /* Franja verde claro/gris */
+  border-color: var(--card-border);
+}
+.si-custom-modal .modal-title {
+  color: var(--text-title);
+}
+
+/* Etiquetas y controles */
+.si-custom-modal label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  color: var(--text-secondary);
+}
+.si-custom-modal .form-control,
+.si-custom-modal .rbt-input-main,
+.si-custom-modal .form-select {
+  background-color: var(--secondary-bg);
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  color: var(--text-normal);
+}
+.si-custom-modal .form-control:focus,
+.si-custom-modal .rbt-input-main:focus,
+.si-custom-modal .form-select:focus {
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.2);
+}
+
+/* Validación */
+.si-custom-modal .form-control.is-invalid,
+.si-custom-modal .rbt-input-main.is-invalid {
+  border-color: var(--icon-error);
+}
+.si-custom-modal .invalid-feedback {
+  font-size: 0.8rem;
+}
+
+/* Tarjetas de producto dentro del modal */
+.si-custom-modal .si-item-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+.si-custom-modal .si-item-actions button {
+  color: var(--text-secondary);
+}
+.si-custom-modal .si-item-actions button:hover {
+  color: var(--primary);
+}
+
+/* Botones coherentes */
+.si-custom-modal .btn-primary,
+.si-custom-modal .btn-success {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.si-custom-modal .btn-primary:hover,
+.si-custom-modal .btn-success:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+.si-custom-modal .btn-danger {
+  background-color: var(--icon-error);
+  border-color: var(--icon-error);
 }
 
 /* Modal de historial responsivo */
@@ -212,7 +290,9 @@
 }
 
 .historial-modal .modal-content {
-  max-height: calc(100vh - 2rem); /* Asegura que no se salga de la vista verticalmente */
+  max-height: calc(
+    100vh - 2rem
+  ); /* Asegura que no se salga de la vista verticalmente */
   overflow-y: auto; /* Agrega scroll interno si es necesario */
   border-radius: 8px; /* Opcional: bordes redondeados */
 }
@@ -263,7 +343,7 @@ body.light-mode .si-container {
   background-color: #ffffff;
 }
 body.dark-mode .si-container {
-  background-color: #1C1F2A;
+  background-color: #1c1f2a;
 }
 
 /* Ocultar botones excepto Ver PDF */
@@ -391,7 +471,10 @@ body.dark-mode .si-header h4 {
 
 /* Cuando flota */
 .si-container .floating-label-input input.search-input:focus + label,
-.si-container .floating-label-input input.search-input:not(:placeholder-shown) + label {
+.si-container
+  .floating-label-input
+  input.search-input:not(:placeholder-shown)
+  + label {
   top: -0.5rem;
   left: 0.6rem;
   font-size: 0.75rem;
@@ -415,7 +498,10 @@ body.dark-mode .si-header h4 {
 
 /* Solo visible cuando el label flota */
 .si-container .floating-label-input input.search-input:focus + label::before,
-.si-container .floating-label-input input.search-input:not(:placeholder-shown) + label::before {
+.si-container
+  .floating-label-input
+  input.search-input:not(:placeholder-shown)
+  + label::before {
   display: block;
 }
 
@@ -424,5 +510,108 @@ body.dark-mode .si-header h4 {
   border-color: var(--primary);
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.1);
+}
+
+.form-control.is-valid,
+.rbt-input-main.is-valid,
+.form-control.is-invalid,
+.rbt-input-main.is-invalid {
+  background-image: none !important;
+}
+
+/* ─────────────────────────────────────────
+   MODALES UNIFICADOS (Registrar / Editar / Eliminar)
+────────────────────────────────────────── */
+.si-custom-modal .modal-content {
+  background-color: var(--card-bg); /* Fondo dinámico */
+  color: var(--text-normal); /* Texto dinámico */
+  border: 2px solid var(--primary); /* Borde azul/verde */
+  border-radius: 12px;
+}
+
+/* Cabecera y pie con la misma franja */
+.si-custom-modal .modal-header,
+.si-custom-modal .modal-footer {
+  background-color: var(--secondary-bg); /* Franja verde claro/gris */
+  border-color: var(--card-border);
+}
+.si-custom-modal .modal-title {
+  color: var(--text-title);
+}
+
+/* Etiquetas y controles */
+.si-custom-modal label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  color: var(--text-secondary);
+}
+.si-custom-modal .form-control,
+.si-custom-modal .rbt-input-main,
+.si-custom-modal .form-select {
+  background-color: var(--secondary-bg);
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  color: var(--text-normal);
+}
+.si-custom-modal .form-control:focus,
+.si-custom-modal .rbt-input-main:focus,
+.si-custom-modal .form-select:focus {
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 0 2px rgba(0, 51, 204, 0.2);
+}
+
+/* Validación */
+.si-custom-modal .form-control.is-invalid,
+.si-custom-modal .rbt-input-main.is-invalid {
+  border-color: var(--icon-error);
+}
+.si-custom-modal .invalid-feedback {
+  font-size: 0.8rem;
+}
+
+/* Tarjetas de producto dentro del modal */
+.si-custom-modal .si-item-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+.si-custom-modal .si-item-actions button {
+  color: var(--text-secondary);
+}
+.si-custom-modal .si-item-actions button:hover {
+  color: var(--primary);
+}
+
+/* Botones coherentes */
+.si-custom-modal .btn-primary,
+.si-custom-modal .btn-success {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.si-custom-modal .btn-primary:hover,
+.si-custom-modal .btn-success:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+.si-custom-modal .btn-danger {
+  background-color: var(--icon-error);
+  border-color: var(--icon-error);
+}
+
+/* Modo oscuro */
+body.dark-mode .si-custom-modal .modal-content {
+  background-color: #1c1f2a;
+}
+body.dark-mode .si-custom-modal .modal-header,
+body.dark-mode .si-custom-modal .modal-footer {
+  background-color: #2a2a2a;
+}
+body.dark-mode .si-custom-modal .form-control,
+body.dark-mode .si-custom-modal .rbt-input-main,
+body.dark-mode .si-custom-modal .form-select {
+  background-color: #0f141d;
+  border-color: var(--primary);
+  color: #fff;
 }
 
